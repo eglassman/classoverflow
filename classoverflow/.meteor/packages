@@ -7,7 +7,7 @@
 meteor-platform
 autopublish
 insecure
-accounts-ui
 accounts-password
 bootstrap-3
 jquery
+ian:accounts-ui-bootstrap-3
