@@ -12,11 +12,11 @@ if (Meteor.isClient) {
     
     //To make this more general, revisit the use of 'this' described here: http://robertdickert.com/blog/2014/05/08/iron-router-first-steps/
     Template.navbar.helpers({
-    errorCoords: function(classtitle) {
-        var thisclass = Classes.findOne({title:classtitle});
+    errorCoords: function(title) {
+        var thisclass = Classes.findOne({classtitle: title });
         return thisclass['errorCoords'];
-    }
-  });
+        }
+      });
 }
 
 if (Meteor.isServer) {
@@ -25,14 +25,14 @@ if (Meteor.isServer) {
     //if (! Classes.findOne()){
       Classes.remove({});
        var classes = [
-           {title: '6.004', errorCoords: [
+           {classtitle: '6.004', errorCoords: [
       { name: "module" , placeholder: 'Module'},
       { name: "testNum" , placeholder: 'Test Number'}
-    ], route: '6004class'},
-           {title: '6.005', errorCoords: [
+    ], route: '/class/6.004'},
+           {classtitle: '6.005', errorCoords: [
       { name: "package" , placeholder: 'Package'},
       { name: "testName" , placeholder: 'Test Name'}
-    ], route: '6005class'}
+    ], route: '/class/6.005'}
            ];
           classes.forEach(function(c){Classes.insert(c);})
       //}
@@ -51,9 +51,10 @@ Router.map(function () {
   this.route('6005class', {
     data: function () {return true} //{return Articles.find({class: '6.004'})}  //set template data context
   });
-  this.route('class', { //I'm not using this route yet, because the composition of a class page is still by hand right now. There is no generic class template--yet!
-    path: '/class/:classNum',
-    data: function () {return true},
-    template: 'class',
+  this.route('/class/:classtitle', function () { 
+    console.log(this.params.classtitle);
+    var theclass = Classes.findOne({classtitle: this.params.classtitle});
+    console.log(theclass);
+    this.render('navbar',{data: theclass});
   });
 });
