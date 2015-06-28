@@ -4,8 +4,8 @@ if (Meteor.isClient) {
 });
     Template.classes.helpers({
     classes: [
-      { text: "6.004" , route: 'class6004'},
-      { text: "Class 2" }
+      { text: "6.004" , route: '6004class'},
+      { text: "6.005" , route: '6005class'}
     ]
   });
 }
@@ -22,7 +22,10 @@ Router.map(function () {
     path: '/',  //overrides the default '/home'
     //data: function () {return Classes.find()}
   });
-  this.route('class6004', {
+  this.route('6004class', {
+    data: function () {return true} //{return Articles.find({class: '6.004'})}  //set template data context
+  });
+  this.route('6005class', {
     data: function () {return true} //{return Articles.find({class: '6.004'})}  //set template data context
   });
 });
