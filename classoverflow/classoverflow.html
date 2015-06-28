@@ -60,12 +60,9 @@
           </ul>
           <ul class="nav navbar-nav">
 <form class="navbar-form" role="search">
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="module" placeholder="module">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="testNum" placeholder="testNum">
-                    </div>
+                    {{#each errorCoords}}
+                        {{> errorCoord}}
+                    {{/each}}
                     <button type="submit" class="btn btn-default btn-primary">Find/Add Error</button>
                 </form>
           </ul>
@@ -74,4 +71,10 @@
       </div>
     </nav>
 
+</template>
+
+<template name="errorCoord">
+    <div class="form-group">
+        <input type="text" class="form-control" name="{{name}}" placeholder="{{placeholder}}">
+    </div>
 </template>
