@@ -1,7 +1,7 @@
 Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
-SiteUsers = new Mongo.Collection("users");
+SiteUsers = new Mongo.Collection("siteusers");
 Feedback = new Mongo.Collection("feedback");
 Log = new Mongo.Collection("log");
 
