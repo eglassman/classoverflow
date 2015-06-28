@@ -1,24 +1,41 @@
+Classes = new Meteor.Collection('classes');
+
 if (Meteor.isClient) {
     Accounts.ui.config({
         passwordSignupFields: "USERNAME_ONLY"
     });
     Template.classes.helpers({
-    classes: [
-      { text: "6.004" , route: '6004class'},
-      { text: "6.005" , route: '6005class'}
-    ]
+        classes: function(){
+            return Classes.find().fetch();
+        }
   });
+    
+    //To make this more general, revisit the use of 'this' described here: http://robertdickert.com/blog/2014/05/08/iron-router-first-steps/
     Template.navbar6004.helpers({
-    errorCoords: [
-      { name: "module" , placeholder: 'Module'},
-      { name: "testNum" , placeholder: 'Test Number'}
-    ]
+    errorCoords: function() {
+        var thisclass = Classes.findOne({title:'6.004'});
+        return thisclass['errorCoords'];
+    }
   });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+    //if (! Classes.findOne()){
+      Classes.remove({});
+       var classes = [
+           {title: '6.004', errorCoords: [
+      { name: "module" , placeholder: 'Module'},
+      { name: "testNum" , placeholder: 'Test Number'}
+    ], route: '6004class'},
+           {title: '6.005', errorCoords: [
+      { name: "package" , placeholder: 'Package'},
+      { name: "testName" , placeholder: 'Test Name'}
+    ], route: '6005class'}
+           ];
+          classes.forEach(function(c){Classes.insert(c);})
+      //}
   });
 }
 
