@@ -9,8 +9,6 @@ if (Meteor.isClient) {
             return Classes.find().fetch();
         }
   });
-    
-    //To make this more general, revisit the use of 'this' described here: http://robertdickert.com/blog/2014/05/08/iron-router-first-steps/
     Template.navbar.helpers({
     errorCoords: function(title) {
         var thisclass = Classes.findOne({classtitle: title });
@@ -44,12 +42,6 @@ Router.map(function () {
   this.route('classes', {
     path: '/',  //overrides the default '/home'
     //data: function () {return Classes.find()}
-  });
-  this.route('6004class', {
-    data: function () {return true} //{return Articles.find({class: '6.004'})}  //set template data context
-  });
-  this.route('6005class', {
-    data: function () {return true} //{return Articles.find({class: '6.004'})}  //set template data context
   });
   this.route('/class/:classtitle', function () { 
     console.log(this.params.classtitle);
