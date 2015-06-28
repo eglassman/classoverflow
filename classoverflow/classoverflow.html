@@ -30,14 +30,14 @@
 </template>
 
 <template name="6004class">
-{{> navbar6004}}
+{{>navbar classtitle="6.004"}}
 </template>
 
 <template name="6005class">
-{{> navbar6004}}
+{{> navbar classtitle="6.005"}}
 </template>
 
-<template name="navbar6004">
+<template name="navbar">
 <!-- Fixed navbar -->
     
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -58,7 +58,7 @@
           </ul>
           <ul class="nav navbar-nav">
 <form class="navbar-form" role="search">
-                    {{#each errorCoords}}
+                    {{#each errorCoords classtitle }}
                         {{> errorCoord}}
                     {{/each}}
                     <button type="submit" class="btn btn-default btn-primary">Find/Add Error</button>

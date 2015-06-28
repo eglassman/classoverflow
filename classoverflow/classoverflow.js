@@ -11,9 +11,9 @@ if (Meteor.isClient) {
   });
     
     //To make this more general, revisit the use of 'this' described here: http://robertdickert.com/blog/2014/05/08/iron-router-first-steps/
-    Template.navbar6004.helpers({
-    errorCoords: function() {
-        var thisclass = Classes.findOne({title:'6.004'});
+    Template.navbar.helpers({
+    errorCoords: function(classtitle) {
+        var thisclass = Classes.findOne({title:classtitle});
         return thisclass['errorCoords'];
     }
   });
