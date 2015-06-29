@@ -92,7 +92,7 @@
 <template name="error">
     <tr>
         <td>
-            <button type="button" class="btn btn-default request {{#if ifRequested}}requested{{else}}notrequested{{/if}}">
+            <button type="button" class="btn btn-default btn-primary btn-sm request {{#if ifRequested}}requested{{else}}notrequested{{/if}}">
           {{#if ifRequested}}Requested{{else}}Request{{/if}} | {{requests}}
             </button>
             <!--button type="button" class="btn btn-default btn-primary request">Request | {{requests}}</button-->
@@ -105,7 +105,7 @@
                     <form class="new-hint-entry form-inline">
                         <!--textarea class="hintTextarea" rows="1" placeholder="Add a hint!"></textarea-->
                         <input type="text" class="form-control" size="75" placeholder="Resolved this test failure? Add a hint!">
-                        <button type="submit" class="btn btn-default btn-primary">Submit Hint</button>
+                        <button type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
                     </form>
                 </li>
             </ul>
@@ -123,9 +123,11 @@
 
 <template name="hint">
     <li>
-        <button type="button" class="btn btn-default btn-primary upvote {{#if ifUpvoted}}upvoted{{else}}notupvoted{{/if}}">
+        <div class="clearfix hintText">
+        {{hint}}
+        <button type="button" class="btn btn-default btn-primary btn-sm pull-right upvote {{#if ifUpvoted}}upvoted{{else}}notupvoted{{/if}}">
             {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
         </button>
-        {{hint}}
+        </div>
     </li>
 </template>

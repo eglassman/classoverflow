@@ -40,6 +40,10 @@ if (Meteor.isServer) {
                 classtitle: '6.004',
                 errorCoords: [
                     {
+                        name: "lab",
+                        placeholder: 'Lab Number'
+                    },
+                    {
                         name: "module",
                         placeholder: 'Module'
                     },
