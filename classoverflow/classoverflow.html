@@ -73,14 +73,6 @@
     </div>
 </template>
 
-<template name="errorCoordTableHeader">
-    <th>{{placeholder}}</th>
-</template>
-
-<template name="errorCoordTableRow">
-    <td>{{module}} {{placeholder}}</td>
-</template>
-
 <template name="errorTable">
     <div class="container">
         <!--div id="errorTable">This is where the table will go!</div-->
@@ -100,8 +92,14 @@
 <template name="error">
     <tr>
         <td><button type="button" class="btn btn-default">Request</button></td>
-        <td>{{module}}</td>
-        <td>{{testNum}}</td>
-        <!--{{#each errorCoords }} {{> errorCoordTableRow}} {{/each}}-->
+        {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
     </tr>
+</template>
+
+<template name="errorCoordTableHeader">
+    <th>{{placeholder}}</th>
+</template>
+
+<template name="errorCoordTableRow">
+    <td>{{val}}</td>
 </template>

@@ -78,7 +78,32 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             //console.log(thisclass);
+            console.log(thisclass['errorCoords']);
             return thisclass['errorCoords'];
+        } else {
+            console.log('no title supplied');
+        }
+    });
+    Template.registerHelper('errorCoordsForAnError',function(){
+        //console.log(title)
+        console.log(this)
+        var curError = this;
+        var title = Session.get('class');
+        var coordVals = [];
+        if (title) {
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            console.log(thisclass['errorCoords']);
+            thisclass['errorCoords'].forEach(function(ec){
+                console.log(ec['name'])
+                coordVals.push({val: curError[ec['name']]});
+                //coordVals[ec['name']] = curError[ec['name']]
+                console.log(coordVals);
+            });
+            console.log(coordVals);
+                                            
+            return coordVals;
         } else {
             console.log('no title supplied');
         }
