@@ -13,3 +13,7 @@ ian:accounts-ui-bootstrap-3
 iron:router
 houston:admin
 npm-bcrypt
+meteorhacks:npm
+
+
+npm-container
