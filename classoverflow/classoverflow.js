@@ -100,22 +100,17 @@ if (Meteor.isClient) {
     });
     
     Template.registerHelper('errorCoords',function(){
-        //console.log(title)
         var title = Session.get('class');
         if (title) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            //console.log(thisclass);
-            //console.log(thisclass['errorCoords']);
             return thisclass['errorCoords'];
         } else {
             console.log('no title supplied');
         }
     });
     Template.registerHelper('errorCoordsForAnError',function(){
-        //console.log(title)
-        //console.log(this)
         var curError = this;
         var title = Session.get('class');
         var coordVals = [];
@@ -123,15 +118,9 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            //console.log(thisclass['errorCoords']);
             thisclass['errorCoords'].forEach(function(ec){
-                //console.log(ec['name'])
                 coordVals.push({val: curError[ec['name']]});
-                //coordVals[ec['name']] = curError[ec['name']]
-                //console.log(coordVals);
-            });
-            //console.log(coordVals);
-                                            
+            });                
             return coordVals;
         } else {
             console.log('no title supplied');
@@ -145,7 +134,18 @@ if (Meteor.isClient) {
     });
     Template.errorTable.helpers({
         errors: function () {
-            return Errors.find({class: Session.get('class')}).fetch();
+            var title = Session.get('class');
+            var coordsSortObj = {}
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            
+            thisclass['errorCoords'].forEach(function(ec){
+                console.log(ec);
+                coordsSortObj[ec['name']] = 1;
+            });
+            console.log(coordsSortObj)
+            return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
         }
     });
     Template.error.helpers({
@@ -177,6 +177,7 @@ if (Meteor.isClient) {
                     hintObj['createdAt'] = new Date();
                     hintObj['owner'] = Meteor.userId();
                     hintObj['username'] = Meteor.user().username;
+                    hintObj['class'] = Session.get('class');
                     hintObj['upvotes'] = 0;
                     var insertedHint = Hints.insert(hintObj);
                     event.target[0].value = '';
@@ -186,6 +187,7 @@ if (Meteor.isClient) {
                     logObj['action'] = 'add';
                     logObj['object'] = insertedHint;
                     logObj['createdAt'] = hintObj['createdAt']
+                    logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 } else {
                     alert('This error is not yet in our system. Please sign in so you can add it.');
@@ -206,6 +208,7 @@ if (Meteor.isClient) {
                     logObj['action'] = 'request';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
+                    logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 } else {
                     Errors.update({ _id: this._id },{$inc: {requests: -1}});
@@ -215,6 +218,7 @@ if (Meteor.isClient) {
                     logObj['action'] = 'unrequest';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
+                    logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 }
             } else {
@@ -246,6 +250,7 @@ if (Meteor.isClient) {
                     logObj['action'] = 'upvote';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
+                    logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 } else {
                     Hints.update({ _id: this._id },{$inc: {upvotes: -1}});
@@ -255,6 +260,7 @@ if (Meteor.isClient) {
                     logObj['action'] = 'downvote';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
+                    logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 }
             } else {
@@ -289,6 +295,7 @@ if (Meteor.isClient) {
             if (!registeredError) {
                 console.log('not registered yet!')
                 if (Meteor.userId()) {
+                    candidateError['class'] = Session.get('class');
                     candidateError['requests'] = 0;
                     candidateError['createdAt'] = new Date();
                     candidateError['owner'] = Meteor.userId(); // _id of logged in user

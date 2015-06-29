@@ -92,7 +92,7 @@
 <template name="error">
     <tr>
         <td>
-            <button type="button" class="btn btn-default btn-primary btn-sm request {{#if ifRequested}}requested{{else}}notrequested{{/if}}">
+            <button type="button" class="btn btn-default btn-info btn-sm request {{#if ifRequested}}requested{{else}}notrequested{{/if}}">
           {{#if ifRequested}}Requested{{else}}Request{{/if}} | {{requests}}
             </button>
             <!--button type="button" class="btn btn-default btn-primary request">Request | {{requests}}</button-->
@@ -125,7 +125,7 @@
     <li>
         <div class="clearfix hintText">
         {{hint}}
-        <button type="button" class="btn btn-default btn-primary btn-sm pull-right upvote {{#if ifUpvoted}}upvoted{{else}}notupvoted{{/if}}">
+        <button type="button" class="btn btn-default btn-info btn-sm pull-right upvote {{#if ifUpvoted}}upvoted{{else}}notupvoted{{/if}}">
             {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
         </button>
         </div>
