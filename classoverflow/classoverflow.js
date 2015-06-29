@@ -188,6 +188,35 @@ if (Meteor.isClient) {
                 }
             }
             return false;
+        },
+        "click .request": function (event) {
+            var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length;
+            var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
+            var requested = (requests > unrequests) ? true : false;
+            if (Meteor.userId()) {
+                if (!requested) { //if its not already requested
+                    Errors.update({ _id: this._id },{$inc: {requests: 1}});
+                    logObj = {};
+                    logObj['owner'] = Meteor.userId();
+                    logObj['username'] = Meteor.user().username;
+                    logObj['action'] = 'request';
+                    logObj['object'] = this._id;
+                    logObj['createdAt'] = new Date();
+                    Log.insert(logObj);
+                } else {
+                    Errors.update({ _id: this._id },{$inc: {requests: -1}});
+                    logObj = {};
+                    logObj['owner'] = Meteor.userId();
+                    logObj['username'] = Meteor.user().username;
+                    logObj['action'] = 'unrequest';
+                    logObj['object'] = this._id;
+                    logObj['createdAt'] = new Date();
+                    Log.insert(logObj);
+                }
+            } else {
+                alert('Please sign in so you can request hints for this error.');
+            }
+            return false;
         }
     });
     Template.hint.helpers({

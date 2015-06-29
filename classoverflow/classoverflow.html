@@ -92,7 +92,10 @@
 <template name="error">
     <tr>
         <td>
-            <button type="button" class="btn btn-default btn-primary request">Request | {{requests}}</button>
+            <button type="button" class="btn btn-default request {{#if ifRequested}}requested{{else}}notrequested{{/if}}">
+          {{#if ifRequested}}Requested{{else}}Request{{/if}} | {{requests}}
+            </button>
+            <!--button type="button" class="btn btn-default btn-primary request">Request | {{requests}}</button-->
         </td>
         {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
         <td>
