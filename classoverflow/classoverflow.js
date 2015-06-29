@@ -24,6 +24,12 @@ Log = new Mongo.Collection("log");
     }]
 });*/
 
+/*Accounts.config({sendVerificationEmail: true});
+
+Accounts.ui.config({
+  passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
+});*/
+
 if (Meteor.isServer) {
     Meteor.startup(function () {
         // code to run on server at startup
@@ -174,7 +180,11 @@ if (Meteor.isClient) {
     Template.hint.events({
         "click .upvote": function(){
             //console.log(this)
-            Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
+            if (Meteor.userId()) {
+                Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
+            } else {
+                alert('Please sign in so you can upvote this hint.');
+            }
             //return false;
         }
     });
