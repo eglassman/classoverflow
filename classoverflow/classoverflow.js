@@ -168,7 +168,7 @@ if (Meteor.isClient) {
                     hintObj['owner'] = Meteor.userId();
                     hintObj['username'] = Meteor.user().username;
                     hintObj['upvotes'] = 0;
-                    Hints.insert(hintObj);
+                    var insertedHint = Hints.insert(hintObj);
                     event.target[0].value = '';
                 } else {
                     alert('This error is not yet in our system. Please sign in so you can add it.');
@@ -227,3 +227,26 @@ if (Meteor.isClient) {
         }
     });
 }
+
+
+/* Scraps */
+
+/*var siteUserToUpdate = SiteUsers.find({owner : Meteor.userId()}).fetch();
+if (!siteUserToUpdate) { 
+    var siteUserToUpdate = SiteUsers.insert({
+        owner : Meteor.userId(),
+        username : Meteor.user().username,
+        hintsAdded : []
+    });
+}
+
+console.log(insertedHint, siteUserUpdated);
+SiteUsers.update({
+    owner : Meteor.userId(),
+}, {
+    $addToSet : {
+        'hintsAdded' : insertedHint
+    }
+}, {
+    upsert: true
+});*/
