@@ -152,6 +152,13 @@ if (Meteor.isClient) {
             return false;
         }
     });
+    Template.hint.events({
+        "click .upvote": function(){
+            //console.log(this)
+            Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
+            //return false;
+        }
+    });
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             console.log(event)

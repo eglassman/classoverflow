@@ -92,7 +92,7 @@
 <template name="error">
     <tr>
         <td>
-            <button type="button" class="btn btn-default btn-primary">Request | {{requests}}</button>
+            <button type="button" class="btn btn-default btn-primary request">Request | {{requests}}</button>
         </td>
         {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
         <td>
@@ -120,7 +120,7 @@
 
 <template name="hint">
     <li>
-        <button type="button" class="btn btn-default btn-primary">
+        <button type="button" class="btn btn-default btn-primary upvote">
             Upvote | {{upvotes}}
         </button>
         {{hint}}
