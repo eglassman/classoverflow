@@ -58,7 +58,7 @@ Router.map(function () {
             classtitle: this.params.classtitle
         });
         //console.log(theclass);
-        this.render('navbar', {
+        this.render('classpage', {
             data: theclass
         });
     });
