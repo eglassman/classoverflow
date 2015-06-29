@@ -5,6 +5,25 @@ SiteUsers = new Mongo.Collection("siteusers");
 Feedback = new Mongo.Collection("feedback");
 Log = new Mongo.Collection("log");
 
+/*Accounts.ui.config({
+    requestPermissions: {},
+    extraSignupFields: [{
+        fieldName: 'terms',
+        fieldLabel: 'I accept the terms and conditions',
+        inputType: 'checkbox',
+        visible: true,
+        saveToProfile: false,
+        validate: function(value, errorFunction) {
+            if (value) {
+                return true;
+            } else {
+                errorFunction('You must accept the terms and conditions.');
+                return false;
+            }
+        }
+    }]
+});*/
+
 if (Meteor.isServer) {
     Meteor.startup(function () {
         // code to run on server at startup
