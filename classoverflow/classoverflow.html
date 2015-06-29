@@ -27,9 +27,7 @@
 </template>
 
 <template name="classpage">
-    {{> navbar}}
-    
-    {{> errorTable}}
+    {{> navbar}} {{> errorTable}}
 </template>
 
 <template name="navbar">
@@ -49,17 +47,21 @@
 
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a>Instructions</a></li> <!--TODO: connect to actions-->
-                    <li><a>Submit Feedback</a></li> <!--TODO: connect to actions-->
+                    <li><a>Instructions</a></li>
+                    <!--TODO: connect to actions-->
+                    <li><a>Submit Feedback</a></li>
+                    <!--TODO: connect to actions-->
                     <li><a>{{> loginButtons}}</a></li>
                 </ul>
                 <ul class="nav navbar-nav">
-                    <li><a>
-                        <form class="errorCoords-form form-inline" role="search">
-                            {{#each errorCoords}} {{> errorCoord}} {{/each}}
-                            <button type="submit" class="btn btn-default btn-primary">Find/Add Error</button>
-                        </form>
-                    </a></li>
+                    <li>
+                        <a>
+                            <form class="errorCoords-form form-inline" role="search">
+                                {{#each errorCoords}} {{> errorCoord}} {{/each}}
+                                <button type="submit" class="btn btn-default btn-primary">Find/Add Error</button>
+                            </form>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -82,23 +84,28 @@
                 {{#each errorCoords}} {{> errorCoordTableHeader}} {{/each}}
                 <th>Hints</th>
             </tr>
-            {{#each errors}}
-                {{> error}}
-            {{/each}}
+            {{#each errors}} {{> error}} {{/each}}
         </table>
     </div>
 </template>
 
 <template name="error">
     <tr>
-        <td><button type="button" class="btn btn-default">Request</button></td>
+        <td>
+            <button type="button" class="btn btn-default btn-primary">Request | {{requests}}</button>
+        </td>
         {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
         <td>
-            <form class="new-hint-entry form-inline">
-	  	      <!--textarea class="hintTextarea" rows="1" placeholder="Add a hint!"></textarea-->
-                <input type="text" class="form-control" size="75" placeholder="Resolved this test failure? Add a hint!">
-                <button type="submit" class="btn btn-default btn-primary">Submit Hint</button>
-	  	    </form>
+            <ul>
+                {{#each hintsHelper}} {{> hint}} {{/each}}
+                <li>
+                    <form class="new-hint-entry form-inline">
+                        <!--textarea class="hintTextarea" rows="1" placeholder="Add a hint!"></textarea-->
+                        <input type="text" class="form-control" size="75" placeholder="Resolved this test failure? Add a hint!">
+                        <button type="submit" class="btn btn-default btn-primary">Submit Hint</button>
+                    </form>
+                </li>
+            </ul>
         </td>
     </tr>
 </template>
@@ -109,4 +116,13 @@
 
 <template name="errorCoordTableRow">
     <td>{{val}}</td>
+</template>
+
+<template name="hint">
+    <li>
+        <button type="button" class="btn btn-default btn-primary">
+            Upvote | {{upvotes}}
+        </button>
+        {{hint}}
+    </li>
 </template>

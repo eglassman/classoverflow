@@ -78,7 +78,7 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             //console.log(thisclass);
-            console.log(thisclass['errorCoords']);
+            //console.log(thisclass['errorCoords']);
             return thisclass['errorCoords'];
         } else {
             console.log('no title supplied');
@@ -86,7 +86,7 @@ if (Meteor.isClient) {
     });
     Template.registerHelper('errorCoordsForAnError',function(){
         //console.log(title)
-        console.log(this)
+        //console.log(this)
         var curError = this;
         var title = Session.get('class');
         var coordVals = [];
@@ -94,14 +94,14 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            console.log(thisclass['errorCoords']);
+            //console.log(thisclass['errorCoords']);
             thisclass['errorCoords'].forEach(function(ec){
-                console.log(ec['name'])
+                //console.log(ec['name'])
                 coordVals.push({val: curError[ec['name']]});
                 //coordVals[ec['name']] = curError[ec['name']]
-                console.log(coordVals);
+                //console.log(coordVals);
             });
-            console.log(coordVals);
+            //console.log(coordVals);
                                             
             return coordVals;
         } else {
@@ -119,17 +119,50 @@ if (Meteor.isClient) {
             return Errors.find({class: Session.get('class')}).fetch();
         }
     });
+    Template.error.helpers({
+        hintsHelper: function () {
+            return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
+        }
+    });
+    Template.error.events({
+        "submit .new-hint-entry": function(event) {
+            console.log(event);
+            console.log(this);
+            var hintText = event.target[0].value;
+            var errorId = this._id;
+            
+            if ( $.trim( hintText ) == '' ) { // Check that it's not all whitespace
+                return false;
+            } else {
+                //console.log(hintText,errorId);
+                if (Meteor.userId()) {
+                    var hintObj = {};
+                    hintObj['hint'] = hintText;
+                    hintObj['errorId'] = errorId;
+                    hintObj['createdAt'] = new Date();
+                    hintObj['owner'] = Meteor.userId();
+                    hintObj['username'] = Meteor.user().username;
+                    hintObj['upvotes'] = 0;
+                    Hints.insert(hintObj);
+                    event.target[0].value = '';
+                } else {
+                    alert('This error is not yet in our system. Please sign in so you can add it.');
+                }
+            }
+            return false;
+        }
+    });
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             console.log(event)
             console.log(Session.get('class'));
-            console.log(event.target[0].name)
-            console.log(event.target.length);
+            //console.log(event.target[0].name)
+            //console.log(event.target.length);
             var candidateError = {};
             candidateError['class'] = Session.get('class');
             for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-                console.log(event.target[i].name);
-                console.log(event.target[i].value);
+                //console.log(event.target[i].name);
+                //console.log(event.target[i].value);
                 if (!event.target[i].value) {
                     alert('Please provide a value for all form fields.');
                     break;
@@ -138,13 +171,14 @@ if (Meteor.isClient) {
                     candidateError[event.target[i].name] = coordVal;
                 }
             }
-            console.log(candidateError);
-            console.log('error coords submission attempt by', Meteor.userId());
+            //console.log(candidateError);
+            //console.log('error coords submission attempt by', Meteor.userId());
             
             registeredError = Errors.findOne(candidateError);
             if (!registeredError) {
                 console.log('not registered yet!')
                 if (Meteor.userId()) {
+                    candidateError['requests'] = 0;
                     candidateError['createdAt'] = new Date();
                     candidateError['owner'] = Meteor.userId(); // _id of logged in user
                     candidateError['username'] = Meteor.user().username; // username of logged in user
