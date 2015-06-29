@@ -147,6 +147,12 @@ if (Meteor.isClient) {
     Template.error.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
+        },
+        ifRequested: function () {
+            var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length;
+            var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
+            var requested = (requests > unrequests) ? true : false;
+            return requested
         }
     });
     Template.error.events({
