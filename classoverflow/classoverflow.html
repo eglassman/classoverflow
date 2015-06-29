@@ -120,8 +120,8 @@
 
 <template name="hint">
     <li>
-        <button type="button" class="btn btn-default btn-primary upvote">
-            Upvote | {{upvotes}}
+        <button type="button" class="btn btn-default btn-primary upvote {{#if ifUpvoted}}upvoted{{else}}notupvoted{{/if}}">
+            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
         </button>
         {{hint}}
     </li>

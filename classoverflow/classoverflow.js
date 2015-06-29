@@ -168,8 +168,15 @@ if (Meteor.isClient) {
                     hintObj['owner'] = Meteor.userId();
                     hintObj['username'] = Meteor.user().username;
                     hintObj['upvotes'] = 0;
-                    Hints.insert(hintObj);
+                    var insertedHint = Hints.insert(hintObj);
                     event.target[0].value = '';
+                    logObj = {};
+                    logObj['owner'] = Meteor.userId();
+                    logObj['username'] = Meteor.user().username;
+                    logObj['action'] = 'add';
+                    logObj['object'] = insertedHint;
+                    logObj['createdAt'] = hintObj['createdAt']
+                    Log.insert(logObj);
                 } else {
                     alert('This error is not yet in our system. Please sign in so you can add it.');
                 }
@@ -177,15 +184,44 @@ if (Meteor.isClient) {
             return false;
         }
     });
+    Template.hint.helpers({
+        ifUpvoted: function () {
+            var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
+            var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
+            var upvoted = (upvotes > downvotes) ? true : false;
+            return upvoted
+        }
+    });
     Template.hint.events({
-        "click .upvote": function(){
-            //console.log(this)
+        "click .upvote": function(event){
+            var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
+            var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
+            console.log(upvotes,downvotes);
+            var upvoted = (upvotes > downvotes) ? true : false;
             if (Meteor.userId()) {
-                Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
+                if (!upvoted) { //if its not already upvoted
+                    Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
+                    logObj = {};
+                    logObj['owner'] = Meteor.userId();
+                    logObj['username'] = Meteor.user().username;
+                    logObj['action'] = 'upvote';
+                    logObj['object'] = this._id;
+                    logObj['createdAt'] = new Date();
+                    Log.insert(logObj);
+                } else {
+                    Hints.update({ _id: this._id },{$inc: {upvotes: -1}});
+                    logObj = {};
+                    logObj['owner'] = Meteor.userId();
+                    logObj['username'] = Meteor.user().username;
+                    logObj['action'] = 'downvote';
+                    logObj['object'] = this._id;
+                    logObj['createdAt'] = new Date();
+                    Log.insert(logObj);
+                }
             } else {
                 alert('Please sign in so you can upvote this hint.');
             }
-            //return false;
+            return false;
         }
     });
     Template.navbar.events({
