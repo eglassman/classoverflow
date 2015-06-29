@@ -56,7 +56,7 @@
                 <ul class="nav navbar-nav">
                     <li><a>
                         <form class="errorCoords-form form-inline" role="search">
-                            {{#each errorCoords classtitle }} {{> errorCoord}} {{/each}}
+                            {{#each errorCoords}} {{> errorCoord}} {{/each}}
                             <button type="submit" class="btn btn-default btn-primary">Find/Add Error</button>
                         </form>
                     </a></li>
@@ -73,6 +73,35 @@
     </div>
 </template>
 
+<template name="errorCoordTableHeader">
+    <th>{{placeholder}}</th>
+</template>
+
+<template name="errorCoordTableRow">
+    <td>{{module}} {{placeholder}}</td>
+</template>
+
 <template name="errorTable">
-This is where the table will go!
+    <div class="container">
+        <!--div id="errorTable">This is where the table will go!</div-->
+        <table>
+            <tr>
+                <th>Requests</th>
+                {{#each errorCoords}} {{> errorCoordTableHeader}} {{/each}}
+                <th>Hints</th>
+            </tr>
+            {{#each errors}}
+                {{> error}}
+            {{/each}}
+        </table>
+    </div>
+</template>
+
+<template name="error">
+    <tr>
+        <td><button type="button" class="btn btn-default">Request</button></td>
+        <td>{{module}}</td>
+        <td>{{testNum}}</td>
+        <!--{{#each errorCoords }} {{> errorCoordTableRow}} {{/each}}-->
+    </tr>
 </template>

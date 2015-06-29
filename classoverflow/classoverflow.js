@@ -58,6 +58,7 @@ Router.map(function () {
             classtitle: this.params.classtitle
         });
         //console.log(theclass);
+        Session.set('class', this.params.classtitle);
         this.render('classpage', {
             data: theclass
         });
@@ -69,10 +70,10 @@ if (Meteor.isClient) {
         passwordSignupFields: "USERNAME_ONLY"
     });
     
-    Template.registerHelper('errorCoords',function(title){
+    Template.registerHelper('errorCoords',function(){
         //console.log(title)
+        var title = Session.get('class');
         if (title) {
-            Session.set('class', title);
             var thisclass = Classes.findOne({
                 classtitle: title
             });
@@ -86,6 +87,11 @@ if (Meteor.isClient) {
     Template.classes.helpers({
         classes: function () {
             return Classes.find().fetch();
+        }
+    });
+    Template.errorTable.helpers({
+        errors: function () {
+            return Errors.find({class: Session.get('class')}).fetch();
         }
     });
     Template.navbar.events({
