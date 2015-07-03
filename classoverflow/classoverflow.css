@@ -26,3 +26,6 @@ tr:nth-child(even) {
 td li {
     padding: 5px;
 }
+.highlighted {
+    background-color: lightgoldenrodyellow !important;
+}

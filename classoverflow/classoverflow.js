@@ -190,6 +190,7 @@ if (Meteor.isClient) {
                     hintObj['class'] = Session.get('class');
                     hintObj['upvotes'] = 0;
                     var insertedHint = Hints.insert(hintObj);
+                    
                     event.target[0].value = '';
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
@@ -320,6 +321,7 @@ if (Meteor.isClient) {
     
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
+            //e.preventDefault();
             //console.log(event)
             //console.log(Session.get('class'));
             //console.log(event.target[0].name)
@@ -349,7 +351,19 @@ if (Meteor.isClient) {
                     candidateError['createdAt'] = new Date();
                     candidateError['owner'] = Meteor.userId(); // _id of logged in user
                     candidateError['username'] = Meteor.user().username; // username of logged in user
-                    Errors.insert(candidateError);
+                    
+                    Errors.insert(candidateError,function(error,result){
+                        console.log(error,result);
+                        $('tr').removeClass('highlighted');
+                        $('#'+result).addClass('highlighted');
+                        var offset = $('#'+result).offset();
+                        $('html, body').animate({
+                            scrollTop: offset.top - 100
+                        },1000);
+                    });
+                    //$('#'+insertedError).css("background-color","gray");
+                    //console.log($('#'+insertedError).text())
+                    //console.log($('#'+insertedError).css("background-color"))
                 } else {
                     alert('This error is not yet in our system. Please sign in so you can add it.');
                 }
