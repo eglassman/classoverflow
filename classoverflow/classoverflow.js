@@ -283,30 +283,6 @@ if (Meteor.isClient) {
         }
     });
     
-    /*Template.navbar.onRendered(function () {
-        //console.log('navbar rendered')
-        //console.log(Session);
-        //if (
-        var title = Session.get('class');
-        if (title) {
-            var thisclass = Classes.findOne({
-                classtitle: title
-            });
-            //console.log(thisclass)
-            for (var ec in thisclass['errorCoords']) {
-                //console.log('hihi',ec,thisclass['errorCoords'][ec]['name'])
-                var coordname = thisclass['errorCoords'][ec]['name'];
-                var coordvalue = Session.get(coordname)
-                //console.log('hihi')
-                //console.log('hihi',Session[coordname])
-                if (coordvalue!=undefined) {
-                    console.log('its a match',coordname)
-                }
-            }
-        } else {
-            console.log('no title supplied');
-        }
-    });*/
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             //console.log(event)
