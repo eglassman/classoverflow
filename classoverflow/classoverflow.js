@@ -213,7 +213,7 @@ if (Meteor.isClient) {
                     logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 } else {
-                    alert('This error is not yet in our system. Please sign in so you can add it.');
+                    alert('Please sign in so you can add this hint.');
                 }
             }
             return false;
@@ -354,30 +354,31 @@ if (Meteor.isClient) {
             //console.log(candidateError);
             //console.log('error coords submission attempt by', Meteor.userId());
             
-            registeredError = Errors.findOne(candidateError);
-            console.log(registeredError)
-            if (!registeredError) {
-                //console.log('not registered yet!')
-                if (Meteor.userId()) {
-                    candidateError['class'] = Session.get('class');
-                    candidateError['requests'] = 0;
-                    candidateError['createdAt'] = new Date();
-                    candidateError['owner'] = Meteor.userId(); // _id of logged in user
-                    candidateError['username'] = Meteor.user().username; // username of logged in user
-                    
-                    Errors.insert(candidateError,function(error,result){
-                        console.log(error,result);
-                        myScrollIntoView(result);
-                    });
-                    //$('#'+insertedError).css("background-color","gray");
-                    //console.log($('#'+insertedError).text())
-                    //console.log($('#'+insertedError).css("background-color"))
+            Errors.findOne(candidateError,function(error,registeredError){
+                if (!registeredError) {
+                    //console.log('not registered yet!')
+                    if (Meteor.userId()) {
+                        candidateError['class'] = Session.get('class');
+                        candidateError['requests'] = 0;
+                        candidateError['createdAt'] = new Date();
+                        candidateError['owner'] = Meteor.userId(); // _id of logged in user
+                        candidateError['username'] = Meteor.user().username; // username of logged in user
+
+                        Errors.insert(candidateError,function(error,result){
+                            console.log(error,result);
+                            myScrollIntoView(result);
+                        });
+                        //$('#'+insertedError).css("background-color","gray");
+                        //console.log($('#'+insertedError).text())
+                        //console.log($('#'+insertedError).css("background-color"))
+                    } else {
+                        alert('This error is not yet in our system. Please sign in so you can add it.');
+                    }
                 } else {
-                    alert('This error is not yet in our system. Please sign in so you can add it.');
+                    myScrollIntoView(registeredError._id); 
                 }
-            } else {
-                myScrollIntoView(registeredError._id); 
-            }
+            });
+            
             return false
         }
     });
