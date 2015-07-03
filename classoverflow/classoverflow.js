@@ -99,7 +99,9 @@ Router.map(function () {
         //theclass['query'] = this.params.query;
         for (var q in this.params.query) {
             //console.log(q,this.params.query[q])
-            Session.set(q,this.params.query[q])
+            var formparam = q.split('_param')[0];
+            console.log(formparam)
+            Session.set(formparam,this.params.query[q])
             //theclass[q] = this.params.query[q]
         }
         //console.log(theclass);
@@ -107,6 +109,7 @@ Router.map(function () {
         //console.log(theclass)
         Session.set('numErrorCoords',theclass['errorCoords'].length);
         Session.set('submitQ', false);
+        console.log(Session)
         this.render('classpage', {
             data: theclass
         });
