@@ -83,11 +83,19 @@ Router.map(function () {
     });
     this.route('/class/:classtitle', function () {
         //console.log(this.params.classtitle);
+        //console.log(this.params)
         var theclass = Classes.findOne({
             classtitle: this.params.classtitle
         });
+        //theclass['query'] = this.params.query;
+        for (var q in this.params.query) {
+            //console.log(q,this.params.query[q])
+            Session.set(q,this.params.query[q])
+            //theclass[q] = this.params.query[q]
+        }
         //console.log(theclass);
         Session.set('class', this.params.classtitle);
+        //console.log(theclass)
         this.render('classpage', {
             data: theclass
         });
@@ -105,6 +113,11 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
+            //console.log(thisclass['errorCoords'])
+            for (var ec in thisclass['errorCoords']) {
+                thisclass['errorCoords'][ec]['coordvalue'] = Session.get(thisclass['errorCoords'][ec]['name']);
+            }
+            console.log(thisclass['errorCoords'])
             return thisclass['errorCoords'];
         } else {
             console.log('no title supplied');
@@ -141,10 +154,10 @@ if (Meteor.isClient) {
             });
             
             thisclass['errorCoords'].forEach(function(ec){
-                console.log(ec);
+                //console.log(ec);
                 coordsSortObj[ec['name']] = 1;
             });
-            console.log(coordsSortObj)
+            //console.log(coordsSortObj)
             return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
         }
     });
@@ -161,8 +174,8 @@ if (Meteor.isClient) {
     });
     Template.error.events({
         "submit .new-hint-entry": function(event) {
-            console.log(event);
-            console.log(this);
+            //console.log(event);
+            //console.log(this);
             var hintText = event.target[0].value;
             var errorId = this._id;
             
@@ -239,7 +252,7 @@ if (Meteor.isClient) {
         "click .upvote": function(event){
             var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
             var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
-            console.log(upvotes,downvotes);
+            //console.log(upvotes,downvotes);
             var upvoted = (upvotes > downvotes) ? true : false;
             if (Meteor.userId()) {
                 if (!upvoted) { //if its not already upvoted
@@ -269,10 +282,35 @@ if (Meteor.isClient) {
             return false;
         }
     });
+    
+    /*Template.navbar.onRendered(function () {
+        //console.log('navbar rendered')
+        //console.log(Session);
+        //if (
+        var title = Session.get('class');
+        if (title) {
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            //console.log(thisclass)
+            for (var ec in thisclass['errorCoords']) {
+                //console.log('hihi',ec,thisclass['errorCoords'][ec]['name'])
+                var coordname = thisclass['errorCoords'][ec]['name'];
+                var coordvalue = Session.get(coordname)
+                //console.log('hihi')
+                //console.log('hihi',Session[coordname])
+                if (coordvalue!=undefined) {
+                    console.log('its a match',coordname)
+                }
+            }
+        } else {
+            console.log('no title supplied');
+        }
+    });*/
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
-            console.log(event)
-            console.log(Session.get('class'));
+            //console.log(event)
+            //console.log(Session.get('class'));
             //console.log(event.target[0].name)
             //console.log(event.target.length);
             var candidateError = {};
@@ -293,7 +331,7 @@ if (Meteor.isClient) {
             
             registeredError = Errors.findOne(candidateError);
             if (!registeredError) {
-                console.log('not registered yet!')
+                //console.log('not registered yet!')
                 if (Meteor.userId()) {
                     candidateError['class'] = Session.get('class');
                     candidateError['requests'] = 0;
