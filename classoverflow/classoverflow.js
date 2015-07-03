@@ -96,6 +96,7 @@ Router.map(function () {
         //console.log(theclass);
         Session.set('class', this.params.classtitle);
         //console.log(theclass)
+        Session.set('submitQ', false);
         this.render('classpage', {
             data: theclass
         });
@@ -114,10 +115,17 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             //console.log(thisclass['errorCoords'])
+            var submitQ = true; //just the initialization
             for (var ec in thisclass['errorCoords']) {
-                thisclass['errorCoords'][ec]['coordvalue'] = Session.get(thisclass['errorCoords'][ec]['name']);
+                var coordval = Session.get(thisclass['errorCoords'][ec]['name']);
+                thisclass['errorCoords'][ec]['coordvalue'] = coordval;
+                if (coordval==undefined) {
+                    submitQ = false;
+                }
             }
-            console.log(thisclass['errorCoords'])
+            Session.set('submitQ',submitQ);
+            console.log('finished errorCoords')
+            console.log(Session.get('submitQ'))
             return thisclass['errorCoords'];
         } else {
             console.log('no title supplied');
@@ -283,6 +291,13 @@ if (Meteor.isClient) {
         }
     });
     
+    Template.errorCoord.onRendered(function () {
+        console.log('navbar rendered')
+        if (Session.get('submitQ')) {
+            console.log('submit the sucker!')
+            $('#find-add-error-btn').click();
+        }
+    });
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             //console.log(event)
