@@ -96,6 +96,7 @@ Router.map(function () {
         //console.log(theclass);
         Session.set('class', this.params.classtitle);
         //console.log(theclass)
+        Session.set('numErrorCoords',theclass['errorCoords'].length);
         Session.set('submitQ', false);
         this.render('classpage', {
             data: theclass
@@ -114,18 +115,6 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            //console.log(thisclass['errorCoords'])
-            var submitQ = true; //just the initialization
-            for (var ec in thisclass['errorCoords']) {
-                var coordval = Session.get(thisclass['errorCoords'][ec]['name']);
-                thisclass['errorCoords'][ec]['coordvalue'] = coordval;
-                if (coordval==undefined) {
-                    submitQ = false;
-                }
-            }
-            Session.set('submitQ',submitQ);
-            console.log('finished errorCoords')
-            console.log(Session.get('submitQ'))
             return thisclass['errorCoords'];
         } else {
             console.log('no title supplied');
@@ -292,12 +281,43 @@ if (Meteor.isClient) {
     });
     
     Template.errorCoord.onRendered(function () {
-        console.log('navbar rendered')
-        if (Session.get('submitQ')) {
+        console.log('error rendered')
+        Session.set('errorCoordsRendered',1+Session.get('errorCoordsRendered'));
+        if (Session.get('submitQ') && Session.get('errorCoordsRendered')==Session.get('numErrorCoords')) {
             console.log('submit the sucker!')
             $('#find-add-error-btn').click();
+            Session.set('submitQ',false)
         }
     });
+    Template.navbar.helpers({
+        errorCoords: function() {
+            console.log('navbar errorCoords')
+            var title = Session.get('class');
+            if (title) {
+                var thisclass = Classes.findOne({
+                    classtitle: title
+                });
+                //console.log(thisclass['errorCoords'])
+                var submitQ = true; //just the initialization
+
+                Session.set('errorCoordsRendered',0);
+                for (var ec in thisclass['errorCoords']) {
+                    var coordval = Session.get(thisclass['errorCoords'][ec]['name']);
+                    thisclass['errorCoords'][ec]['coordvalue'] = coordval;
+                    if (coordval==undefined) {
+                        submitQ = false;
+                    }
+                }
+                Session.set('submitQ',submitQ);
+                //console.log('finished errorCoords')
+                //console.log(Session.get('submitQ'))
+                return thisclass['errorCoords'];
+            } else {
+                console.log('no title supplied');
+            }
+        }
+    });
+    
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             //console.log(event)
