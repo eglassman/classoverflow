@@ -30,6 +30,15 @@ Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
 });*/
 
+myScrollIntoView = function(result) {
+    $('tr').removeClass('highlighted');
+    $('#'+result).addClass('highlighted');
+    var offset = $('#'+result).offset();
+    $('html, body').animate({
+        scrollTop: offset.top - 100
+    },1000);    
+}
+
 if (Meteor.isServer) {
     Meteor.startup(function () {
         // code to run on server at startup
@@ -343,6 +352,7 @@ if (Meteor.isClient) {
             //console.log('error coords submission attempt by', Meteor.userId());
             
             registeredError = Errors.findOne(candidateError);
+            console.log(registeredError)
             if (!registeredError) {
                 //console.log('not registered yet!')
                 if (Meteor.userId()) {
@@ -354,12 +364,7 @@ if (Meteor.isClient) {
                     
                     Errors.insert(candidateError,function(error,result){
                         console.log(error,result);
-                        $('tr').removeClass('highlighted');
-                        $('#'+result).addClass('highlighted');
-                        var offset = $('#'+result).offset();
-                        $('html, body').animate({
-                            scrollTop: offset.top - 100
-                        },1000);
+                        myScrollIntoView(result);
                     });
                     //$('#'+insertedError).css("background-color","gray");
                     //console.log($('#'+insertedError).text())
@@ -367,6 +372,8 @@ if (Meteor.isClient) {
                 } else {
                     alert('This error is not yet in our system. Please sign in so you can add it.');
                 }
+            } else {
+                myScrollIntoView(registeredError._id); 
             }
             return false
         }
