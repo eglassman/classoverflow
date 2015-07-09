@@ -183,6 +183,8 @@ if (Meteor.isClient) {
     });
     Template.error.events({
         "submit .new-hint-entry": function(event) {
+            console.log(event)
+            event.preventDefault();
             //console.log(event);
             //console.log(this);
             var hintText = event.target[0].value;
@@ -333,8 +335,9 @@ if (Meteor.isClient) {
     
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
+            console.log(event)
+            event.preventDefault();
             //e.preventDefault();
-            //console.log(event)
             //console.log(Session.get('class'));
             //console.log(event.target[0].name)
             //console.log(event.target.length);
