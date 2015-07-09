@@ -184,11 +184,10 @@ if (Meteor.isClient) {
     Template.error.events({
         "submit .new-hint-entry": function(event) {
             console.log(event)
-            event.preventDefault();
-            //console.log(event);
-            //console.log(this);
             var hintText = event.target[0].value;
             var errorId = this._id;
+            
+            event.preventDefault();
             
             if ( $.trim( hintText ) == '' ) { // Check that it's not all whitespace
                 return false;
@@ -344,45 +343,46 @@ if (Meteor.isClient) {
             var candidateError = {};
             candidateError['class'] = Session.get('class');
             for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-                //console.log(event.target[i].name);
-                //console.log(event.target[i].value);
+                console.log(event.target[i].name);
+                console.log(event.target[i].value);
                 if (!event.target[i].value) {
                     alert('Please provide a value for all form fields.');
                     break;
                 } else {
                     var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
                     candidateError[event.target[i].name] = coordVal;
+                    //console.log(coordVal)
                 }
             }
-            //console.log(candidateError);
+            console.log(candidateError);
             //console.log('error coords submission attempt by', Meteor.userId());
             
-            Errors.findOne(candidateError,function(error,registeredError){
-                if (!registeredError) {
-                    //console.log('not registered yet!')
-                    if (Meteor.userId()) {
-                        candidateError['class'] = Session.get('class');
-                        candidateError['requests'] = 0;
-                        candidateError['createdAt'] = new Date();
-                        candidateError['owner'] = Meteor.userId(); // _id of logged in user
-                        candidateError['username'] = Meteor.user().username; // username of logged in user
-
-                        Errors.insert(candidateError,function(error,result){
-                            console.log(error,result);
-                            myScrollIntoView(result);
-                        });
-                        //$('#'+insertedError).css("background-color","gray");
-                        //console.log($('#'+insertedError).text())
-                        //console.log($('#'+insertedError).css("background-color"))
-                    } else {
-                        alert('This error is not yet in our system. Please sign in so you can add it.');
-                    }
+            registeredError = Errors.findOne(candidateError);
+            console.log(registeredError)
+            if (!registeredError) {
+                //console.log('not registered yet!')
+                if (Meteor.userId()) {
+                    candidateError['class'] = Session.get('class');
+                    candidateError['requests'] = 0;
+                    candidateError['createdAt'] = new Date();
+                    candidateError['owner'] = Meteor.userId(); // _id of logged in user
+                    candidateError['username'] = Meteor.user().username; // username of logged in user
+                    
+                    Errors.insert(candidateError,function(error,result){
+                        console.log(error,result);
+                        myScrollIntoView(result);
+                    });
+                    //$('#'+insertedError).css("background-color","gray");
+                    //console.log($('#'+insertedError).text())
+                    //console.log($('#'+insertedError).css("background-color"))
                 } else {
-                    myScrollIntoView(registeredError._id); 
+                    alert('This error is not yet in our system. Please sign in so you can add it.');
                 }
-            });
+            } else {
+                myScrollIntoView(registeredError._id); 
+            }
             
-            return false
+            return false;
         }
     });
 }
