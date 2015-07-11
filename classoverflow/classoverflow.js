@@ -67,12 +67,16 @@ if (Meteor.isServer) {
                 classtitle: '6.005',
                 errorCoords: [
                     {
-                        name: "package",
-                        placeholder: 'Package'
+                        name: "problemSet",
+                        placeholder: "Problem Set" 
                     },
                     {
                         name: "testName",
                         placeholder: 'Test Name'
+                    },
+                    {
+                        name: "lineNum",
+                        placeholder: 'Line Number'
                     }
     ],
                 route: '/class/6.005'
