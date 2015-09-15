@@ -67,15 +67,15 @@ if (Meteor.isServer) {
                 classtitle: '6.005',
                 errorCoords: [
                     {
-                        name: "problemSet",
+                        name: "ps",
                         placeholder: "Problem Set" 
                     },
                     {
-                        name: "testName",
-                        placeholder: 'Test Name'
+                        name: "file",
+                        placeholder: 'File Name'
                     },
                     {
-                        name: "lineNum",
+                        name: "line",
                         placeholder: 'Line Number'
                     }
     ],
