@@ -218,7 +218,7 @@ if (Meteor.isClient) {
                     logObj['class'] = Session.get('class');
                     Log.insert(logObj);
                 } else {
-                    alert('Please sign in so you can add this hint.');
+                    alert('Please sign in so you can add this hint.'); //todo: make this a different kind of alert so page can load too.
                 }
             }
             return false;
