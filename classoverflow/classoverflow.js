@@ -122,7 +122,8 @@ Router.map(function () {
 
 if (Meteor.isClient) {
     Accounts.ui.config({
-        passwordSignupFields: "USERNAME_ONLY"
+        passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
+        forceEmailLowercase: true
     });
     
     Template.registerHelper('errorCoords',function(){
@@ -203,7 +204,7 @@ if (Meteor.isClient) {
                     hintObj['errorId'] = errorId;
                     hintObj['createdAt'] = new Date();
                     hintObj['owner'] = Meteor.userId();
-                    hintObj['username'] = Meteor.user().username;
+                    //hintObj['username'] = Meteor.user().username;
                     hintObj['class'] = Session.get('class');
                     hintObj['upvotes'] = 0;
                     var insertedHint = Hints.insert(hintObj);
@@ -211,7 +212,7 @@ if (Meteor.isClient) {
                     event.target[0].value = '';
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
-                    logObj['username'] = Meteor.user().username;
+                    //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'add';
                     logObj['object'] = insertedHint;
                     logObj['createdAt'] = hintObj['createdAt']
@@ -232,7 +233,7 @@ if (Meteor.isClient) {
                     Errors.update({ _id: this._id },{$inc: {requests: 1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
-                    logObj['username'] = Meteor.user().username;
+                    //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'request';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
@@ -242,7 +243,7 @@ if (Meteor.isClient) {
                     Errors.update({ _id: this._id },{$inc: {requests: -1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
-                    logObj['username'] = Meteor.user().username;
+                    //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'unrequest';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
@@ -274,7 +275,7 @@ if (Meteor.isClient) {
                     Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
-                    logObj['username'] = Meteor.user().username;
+                    //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'upvote';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
@@ -284,7 +285,7 @@ if (Meteor.isClient) {
                     Hints.update({ _id: this._id },{$inc: {upvotes: -1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
-                    logObj['username'] = Meteor.user().username;
+                    //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'downvote';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
@@ -364,13 +365,13 @@ if (Meteor.isClient) {
             registeredError = Errors.findOne(candidateError);
             console.log(registeredError)
             if (!registeredError) {
-                //console.log('not registered yet!')
+                console.log(Meteor.user())
                 if (Meteor.userId()) {
                     candidateError['class'] = Session.get('class');
                     candidateError['requests'] = 0;
                     candidateError['createdAt'] = new Date();
                     candidateError['owner'] = Meteor.userId(); // _id of logged in user
-                    candidateError['username'] = Meteor.user().username; // username of logged in user
+                    //candidateError['username'] = Meteor.user().username; // username of logged in user
                     
                     Errors.insert(candidateError,function(error,result){
                         console.log(error,result);
