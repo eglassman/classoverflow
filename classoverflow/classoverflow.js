@@ -387,6 +387,12 @@ if (Meteor.isClient) {
             }
             
             return false;
+        },
+        "click .feedback": function (event) {
+            console.log('feedback clicked')
+        },
+        "click .instructions": function (event) {
+            console.log('instructions clicked')
         }
     });
 }
