@@ -1,7 +1,7 @@
 Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
-SiteUsers = new Mongo.Collection("siteusers");
+//SiteUsers = new Mongo.Collection("siteusers");
 Feedback = new Mongo.Collection("feedback");
 Log = new Mongo.Collection("log");
 
@@ -128,7 +128,9 @@ if (Meteor.isClient) {
 
     Accounts.onLogin(function(){
         //console.log(Meteor.userId())
-        SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
+        console.log('logged in')
+        Log.insert({'userId': Meteor.userId(), 'loggedInAt': new Date()})
+        //SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
     });
 
     Accounts.onLoginFailure(function(){
