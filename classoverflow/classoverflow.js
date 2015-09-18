@@ -125,6 +125,11 @@ if (Meteor.isClient) {
         passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
         forceEmailLowercase: true
     });
+
+    Accounts.onLogin(function(){
+        //console.log(Meteor.userId())
+        SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
+    });
     
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
