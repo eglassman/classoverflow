@@ -262,7 +262,8 @@ if (Meteor.isClient) {
                     Log.insert(logObj);
                 }
             } else {
-                alert('Please sign in so you can request hints for this error.');
+                //alert('Please sign in so you can request hints for this error.');
+                $('#mySignInModal').modal('show');
             }
             return false;
         }
@@ -304,7 +305,8 @@ if (Meteor.isClient) {
                     Log.insert(logObj);
                 }
             } else {
-                alert('Please sign in so you can upvote this hint.');
+                //alert('Please sign in so you can upvote this hint.');
+                $('#mySignInModal').modal('show');
             }
             return false;
         }
@@ -392,7 +394,8 @@ if (Meteor.isClient) {
                     //console.log($('#'+insertedError).text())
                     //console.log($('#'+insertedError).css("background-color"))
                 } else {
-                    alert('This error is not yet in our system. Please sign in so you can add it.');
+                    //alert('This error is not yet in our system. Please sign in so you can add it.');
+                    $('#mySignInModal').modal('show');
                 }
             } else {
                 myScrollIntoView(registeredError._id); 
