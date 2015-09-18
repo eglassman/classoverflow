@@ -130,6 +130,11 @@ if (Meteor.isClient) {
         //console.log(Meteor.userId())
         SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
     });
+
+    Accounts.onLoginFailure(function(){
+        //console.log(Meteor.userId())
+        Log.insert({'loggedInFailedAt': new Date()})
+    });
     
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
