@@ -5,12 +5,17 @@ Hints = new Mongo.Collection("hints");
 //SiteUsers = new Mongo.Collection("siteusers");
 Feedback = new Mongo.Collection("feedback");
 
+requested = function(theclass,errorId,userId) {
+	console.log('this is a placeholder'); //#todo--make this actually check
+	return true
+};
+
 Meteor.methods({
 
 	addHint: function (theclass,errorId,hintText) {
 
 		if (! Meteor.userId() ) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
 		}
 		var hintObj = {};
         hintObj['hint'] = hintText;
@@ -32,6 +37,34 @@ Meteor.methods({
         logObj['createdAt'] = hintObj['createdAt']
         logObj['class'] = hintObj['class'];
         Log.insert(logObj);
+
+	},
+	toggleRequest: function (theclass,errorId) {
+
+		if (! Meteor.userId() ) {
+			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
+		}
+		else {
+
+			var delta = 0;
+			logObj = {};
+
+			if (requested(theclass,errorId,Meteor.userId())) {
+				delta = 1;
+				logObj['action'] = 'request';
+			} else {
+				delta = -1;
+				logObj['action'] = 'unrequest';
+			}
+			Errors.update({ _id: errorId },{$inc: {requests: delta}});
+
+	        logObj['owner'] = Meteor.userId();
+	        //logObj['username'] = Meteor.user().username;
+	        logObj['object'] = errorId;
+	        logObj['createdAt'] = new Date();
+	        logObj['class'] = theclass;
+	        Log.insert(logObj);
+    	}
 
 	}
 

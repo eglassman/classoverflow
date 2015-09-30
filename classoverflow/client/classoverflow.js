@@ -192,21 +192,27 @@ if (Meteor.isClient) {
             return false;
         },
         "click .request": function (event) {
-            var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length; //#todo--redesign so that a list of upvoters is maintained in the hint, not reconstructed from logs
-            var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
-            var requested = (requests > unrequests) ? true : false;
+            //var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length; //#todo--redesign so that a list of upvoters is maintained in the hint, not reconstructed from logs
+            //var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
+            //var requested = (requests > unrequests) ? true : false;
+            //var requested = true; //#todo--change this to be dependent on whether the person already requested it
             if (Meteor.userId()) {
-                if (!requested) { //if its not already requested
-                    Errors.update({ _id: this._id },{$inc: {requests: 1}});
-                    logObj = {};
+                //if (!requested) { //if its not already requested
+
+                    Meteor.call('toggleRequest', Session.get('class'), this._id);
+
+                    //Errors.update({ _id: this._id },{$inc: {requests: 1}});
+                    /*logObj = {};
                     logObj['owner'] = Meteor.userId();
                     //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'request';
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
                     logObj['class'] = Session.get('class');
-                    Log.insert(logObj);
-                } else {
+                    Log.insert(logObj);*/
+                //} else {
+                    //Meteor.call('removeRequest', Session.get('class'), this._id);
+                    /*
                     Errors.update({ _id: this._id },{$inc: {requests: -1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
@@ -215,8 +221,8 @@ if (Meteor.isClient) {
                     logObj['object'] = this._id;
                     logObj['createdAt'] = new Date();
                     logObj['class'] = Session.get('class');
-                    Log.insert(logObj);
-                }
+                    Log.insert(logObj);*/
+                //}
             } else {
                 //alert('Please sign in so you can request hints for this error.');
                 $('#mySignInModal').modal('show');
