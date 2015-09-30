@@ -21,7 +21,7 @@ Meteor.publish("hints", function () {
 
 requested = function(errorId) {
     //console.log('this is a placeholder'); //#todo--make this actually check
-    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
     if (siteUser['requestedErrors'].indexOf(errorId) >= 0) {
         return true;
     } else {
@@ -32,7 +32,7 @@ requested = function(errorId) {
 upvoted = function(hintId) {
     //console.log('this is a placeholder'); //#todo--make this actually check
     //console.log(Hints.findOne({ _id: hintId }));
-    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
     if (siteUser['upvotedHints'].indexOf(hintId) >= 0) {
         return true;
     } else {
@@ -98,7 +98,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
 
             logObj = {};
 
@@ -130,7 +130,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
             
 
             logObj = {};
