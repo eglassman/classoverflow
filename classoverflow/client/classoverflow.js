@@ -233,8 +233,8 @@ if (Meteor.isClient) {
             }
 
             
-            registeredError = Errors.findOne(candidateError);
-            console.log(registeredError)
+            registeredError = Errors.findOne(candidateErrorCoords);
+            console.log('registeredError',registeredError)
             if (!registeredError) {
                 console.log(Meteor.user())
                 if (Meteor.userId()) {
