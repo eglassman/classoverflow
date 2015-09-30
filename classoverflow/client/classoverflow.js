@@ -15,6 +15,11 @@ myScrollIntoView = function(result) {
     },1000);    
 }
 
+Meteor.subscribe("classes");
+Meteor.subscribe("errors");
+Meteor.subscribe("hints");
+Meteor.subscribe("feedback");
+
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'

@@ -14,6 +14,19 @@ upvoted = function(theclass,hintId,userId) {
 	return true
 };
 
+Meteor.publish("classes", function () {
+    return Classes.find();
+});
+Meteor.publish("errors", function () {
+    return Errors.find();
+});
+Meteor.publish("hints", function () {
+    return Hints.find();
+});
+Meteor.publish("feedback", function () {
+    return Feedback.find();
+});
+
 Meteor.methods({
 
 	addError: function(theclass,errorCoords) {
