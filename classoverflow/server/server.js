@@ -16,6 +16,17 @@ upvoted = function(theclass,hintId,userId) {
 
 Meteor.methods({
 
+	addError: function(theclass,errorCoords) {
+
+		var candidateError = errorCoords; //{};
+
+		candidateError['class'] = theclass;
+        candidateError['requests'] = 0;
+        candidateError['createdAt'] = new Date();
+        candidateError['owner'] = Meteor.userId(); // _id of logged in user
+
+        Errors.insert(candidateError);
+	},
 	addHint: function (theclass,errorId,hintText) {
 
 		if (! Meteor.userId() ) {

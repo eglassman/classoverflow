@@ -213,27 +213,28 @@ if (Meteor.isClient) {
     
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
-            console.log(event)
+            //console.log(event)
             event.preventDefault();
             //e.preventDefault();
             //console.log(Session.get('class'));
             //console.log(event.target[0].name)
             //console.log(event.target.length);
-            var candidateError = {};
-            candidateError['class'] = Session.get('class');
+            //var candidateError = {};
+            //candidateError['class'] = Session.get('class');
+            var candidateErrorCoords = {};
             for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-                console.log(event.target[i].name);
-                console.log(event.target[i].value);
+                //console.log(event.target[i].name);
+                //console.log(event.target[i].value);
                 if (!event.target[i].value) {
                     alert('Please provide a value for all form fields.');
                     break;
                 } else {
                     var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
-                    candidateError[event.target[i].name] = coordVal;
+                    candidateErrorCoords[event.target[i].name] = coordVal;
                     //console.log(coordVal)
                 }
             }
-            console.log(candidateError);
+            //console.log(candidateError);
             //console.log('error coords submission attempt by', Meteor.userId());
             
             registeredError = Errors.findOne(candidateError);
@@ -241,13 +242,13 @@ if (Meteor.isClient) {
             if (!registeredError) {
                 console.log(Meteor.user())
                 if (Meteor.userId()) {
-                    candidateError['class'] = Session.get('class');
-                    candidateError['requests'] = 0;
-                    candidateError['createdAt'] = new Date();
-                    candidateError['owner'] = Meteor.userId(); // _id of logged in user
+                    //candidateError['class'] = Session.get('class');
+                    //candidateError['requests'] = 0;
+                    //candidateError['createdAt'] = new Date();
+                    //candidateError['owner'] = Meteor.userId(); // _id of logged in user
                     //candidateError['username'] = Meteor.user().username; // username of logged in user
                     
-                    Errors.insert(candidateError,function(error,result){
+                    Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
                         console.log(error,result);
                         myScrollIntoView(result);
                     });
