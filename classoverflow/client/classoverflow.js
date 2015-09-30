@@ -3,7 +3,7 @@ Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 //SiteUsers = new Mongo.Collection("siteusers");
 Feedback = new Mongo.Collection("feedback");
-Log = new Mongo.Collection("log");
+//Log = new Mongo.Collection("log");
 
 /*Accounts.ui.config({
     requestPermissions: {},
@@ -39,55 +39,6 @@ myScrollIntoView = function(result) {
     },1000);    
 }
 
-if (Meteor.isServer) {
-    Meteor.startup(function () {
-        // code to run on server at startup
-        //if (! Classes.findOne()){
-        Classes.remove({});
-        var classes = [
-            {
-                classtitle: '6.004',
-                errorCoords: [
-                    {
-                        name: "lab",
-                        placeholder: 'Lab Number'
-                    },
-                    {
-                        name: "module",
-                        placeholder: 'Module'
-                    },
-                    {
-                        name: "testNum",
-                        placeholder: 'Test Number'
-                    }
-    ],
-                route: '/class/6.004'
-            },
-            {
-                classtitle: '6.005',
-                errorCoords: [
-                    {
-                        name: "ps",
-                        placeholder: "Problem Set" 
-                    },
-                    {
-                        name: "file",
-                        placeholder: 'File Name'
-                    },
-                    {
-                        name: "line",
-                        placeholder: 'Line Number'
-                    }
-    ],
-                route: '/class/6.005'
-            }
-           ];
-        classes.forEach(function (c) {
-                Classes.insert(c);
-            })
-            //}
-    });
-}
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
@@ -126,7 +77,7 @@ if (Meteor.isClient) {
         forceEmailLowercase: true
     });
 
-    Accounts.onLogin(function(){
+    /*Accounts.onLogin(function(){
         //console.log(Meteor.userId())
         console.log('logged in')
         Log.insert({'userId': Meteor.userId(), 'loggedInAt': new Date()})
@@ -136,7 +87,7 @@ if (Meteor.isClient) {
     Accounts.onLoginFailure(function(){
         //console.log(Meteor.userId())
         Log.insert({'loggedInFailedAt': new Date()})
-    });
+    });*/
     
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
@@ -211,25 +162,28 @@ if (Meteor.isClient) {
             } else {
                 //console.log(hintText,errorId);
                 if (Meteor.userId()) {
-                    var hintObj = {};
+                    /*var hintObj = {};
                     hintObj['hint'] = hintText;
                     hintObj['errorId'] = errorId;
                     hintObj['createdAt'] = new Date();
                     hintObj['owner'] = Meteor.userId();
                     //hintObj['username'] = Meteor.user().username;
                     hintObj['class'] = Session.get('class');
-                    hintObj['upvotes'] = 0;
-                    var insertedHint = Hints.insert(hintObj);
+                    hintObj['upvotes'] = 0;*/
                     
-                    event.target[0].value = '';
-                    logObj = {};
+
+                    Meteor.call('addHint',Session.get('class'),errorId,hintText);
+                    //var insertedHint = Hints.insert(hintObj);
+                    
+                    event.target[0].value = ''; //should be dependent on success #todo
+                    /*logObj = {};
                     logObj['owner'] = Meteor.userId();
                     //logObj['username'] = Meteor.user().username;
                     logObj['action'] = 'add';
                     logObj['object'] = insertedHint;
                     logObj['createdAt'] = hintObj['createdAt']
                     logObj['class'] = Session.get('class');
-                    Log.insert(logObj);
+                    Log.insert(logObj);*/
                 } else {
                     //alert('Please sign in so you can add this hint.'); //todo: make this a different kind of alert so page can load too.
                     $('#mySignInModal').modal('show');
@@ -238,7 +192,7 @@ if (Meteor.isClient) {
             return false;
         },
         "click .request": function (event) {
-            var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length;
+            var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length; //#todo--redesign so that a list of upvoters is maintained in the hint, not reconstructed from logs
             var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
             var requested = (requests > unrequests) ? true : false;
             if (Meteor.userId()) {
