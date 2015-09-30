@@ -195,12 +195,16 @@ if (Meteor.isClient) {
     });
     Template.hint.events({
         "click .upvote": function(event){
-            var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
-            var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
+            //var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
+            //var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
             //console.log(upvotes,downvotes);
-            var upvoted = (upvotes > downvotes) ? true : false;
+            //var upvoted = (upvotes > downvotes) ? true : false;
             if (Meteor.userId()) {
-                if (!upvoted) { //if its not already upvoted
+
+                var hintId = this._id;
+                Meteor.call('toggleUpvote',Session.get('class'),hintId);
+
+                /*if (!upvoted) { //if its not already upvoted
                     Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
                     logObj = {};
                     logObj['owner'] = Meteor.userId();
@@ -220,7 +224,7 @@ if (Meteor.isClient) {
                     logObj['createdAt'] = new Date();
                     logObj['class'] = Session.get('class');
                     Log.insert(logObj);
-                }
+                }*/
             } else {
                 //alert('Please sign in so you can upvote this hint.');
                 $('#mySignInModal').modal('show');

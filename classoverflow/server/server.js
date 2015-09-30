@@ -9,6 +9,10 @@ requested = function(theclass,errorId,userId) {
 	console.log('this is a placeholder'); //#todo--make this actually check
 	return true
 };
+upvoted = function(theclass,hintId,userId) {
+	console.log('this is a placeholder'); //#todo--make this actually check
+	return true
+};
 
 Meteor.methods({
 
@@ -61,6 +65,34 @@ Meteor.methods({
 	        logObj['owner'] = Meteor.userId();
 	        //logObj['username'] = Meteor.user().username;
 	        logObj['object'] = errorId;
+	        logObj['createdAt'] = new Date();
+	        logObj['class'] = theclass;
+	        Log.insert(logObj);
+    	}
+
+	},
+	toggleUpvote: function (theclass,hintId) {
+
+		if (! Meteor.userId() ) {
+			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
+		}
+		else {
+
+			var delta = 0;
+			logObj = {};
+
+			if (requested(theclass,hintId,Meteor.userId())) {
+				delta = 1;
+				logObj['action'] = 'upvote';
+			} else {
+				delta = -1;
+				logObj['action'] = 'downvote';
+			}
+			Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
+
+	        logObj['owner'] = Meteor.userId();
+	        //logObj['username'] = Meteor.user().username;
+	        logObj['object'] = hintId;
 	        logObj['createdAt'] = new Date();
 	        logObj['class'] = theclass;
 	        Log.insert(logObj);
