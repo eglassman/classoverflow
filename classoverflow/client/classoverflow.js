@@ -160,30 +160,13 @@ if (Meteor.isClient) {
             if ( $.trim( hintText ) == '' ) { // Check that it's not all whitespace
                 return false;
             } else {
-                //console.log(hintText,errorId);
+
                 if (Meteor.userId()) {
-                    /*var hintObj = {};
-                    hintObj['hint'] = hintText;
-                    hintObj['errorId'] = errorId;
-                    hintObj['createdAt'] = new Date();
-                    hintObj['owner'] = Meteor.userId();
-                    //hintObj['username'] = Meteor.user().username;
-                    hintObj['class'] = Session.get('class');
-                    hintObj['upvotes'] = 0;*/
-                    
 
                     Meteor.call('addHint',Session.get('class'),errorId,hintText);
-                    //var insertedHint = Hints.insert(hintObj);
                     
                     event.target[0].value = ''; //should be dependent on success #todo
-                    /*logObj = {};
-                    logObj['owner'] = Meteor.userId();
-                    //logObj['username'] = Meteor.user().username;
-                    logObj['action'] = 'add';
-                    logObj['object'] = insertedHint;
-                    logObj['createdAt'] = hintObj['createdAt']
-                    logObj['class'] = Session.get('class');
-                    Log.insert(logObj);*/
+
                 } else {
                     //alert('Please sign in so you can add this hint.'); //todo: make this a different kind of alert so page can load too.
                     $('#mySignInModal').modal('show');
@@ -192,37 +175,9 @@ if (Meteor.isClient) {
             return false;
         },
         "click .request": function (event) {
-            //var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length; //#todo--redesign so that a list of upvoters is maintained in the hint, not reconstructed from logs
-            //var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
-            //var requested = (requests > unrequests) ? true : false;
-            //var requested = true; //#todo--change this to be dependent on whether the person already requested it
+
             if (Meteor.userId()) {
-                //if (!requested) { //if its not already requested
-
-                    Meteor.call('toggleRequest', Session.get('class'), this._id);
-
-                    //Errors.update({ _id: this._id },{$inc: {requests: 1}});
-                    /*logObj = {};
-                    logObj['owner'] = Meteor.userId();
-                    //logObj['username'] = Meteor.user().username;
-                    logObj['action'] = 'request';
-                    logObj['object'] = this._id;
-                    logObj['createdAt'] = new Date();
-                    logObj['class'] = Session.get('class');
-                    Log.insert(logObj);*/
-                //} else {
-                    //Meteor.call('removeRequest', Session.get('class'), this._id);
-                    /*
-                    Errors.update({ _id: this._id },{$inc: {requests: -1}});
-                    logObj = {};
-                    logObj['owner'] = Meteor.userId();
-                    //logObj['username'] = Meteor.user().username;
-                    logObj['action'] = 'unrequest';
-                    logObj['object'] = this._id;
-                    logObj['createdAt'] = new Date();
-                    logObj['class'] = Session.get('class');
-                    Log.insert(logObj);*/
-                //}
+                Meteor.call('toggleRequest', Session.get('class'), this._id);
             } else {
                 //alert('Please sign in so you can request hints for this error.');
                 $('#mySignInModal').modal('show');
