@@ -1,19 +1,13 @@
+//PRIVATE COLLECTIONS ONLY ON SERVER
 Log = new Mongo.Collection("log");
+SiteUsers = new Mongo.Collection("siteusers");
+
+//COLLECTIONS TO BE PUBLISHED TO CLIENT
 Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
-//SiteUsers = new Mongo.Collection("siteusers");
-Feedback = new Mongo.Collection("feedback");
 
-requested = function(theclass,errorId,userId) {
-	console.log('this is a placeholder'); //#todo--make this actually check
-	return true
-};
-upvoted = function(theclass,hintId,userId) {
-	console.log('this is a placeholder'); //#todo--make this actually check
-	return true
-};
-
+//COLLECTIONS actually published to client
 Meteor.publish("classes", function () {
     return Classes.find();
 });
@@ -23,29 +17,57 @@ Meteor.publish("errors", function () {
 Meteor.publish("hints", function () {
     return Hints.find();
 });
-Meteor.publish("feedback", function () {
-    return Feedback.find();
-});
+
+
+requested = function(errorId) {
+    //console.log('this is a placeholder'); //#todo--make this actually check
+    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+    if (siteUser['requestedErrors'].indexOf(errorId) >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+    
+};
+upvoted = function(hintId) {
+    //console.log('this is a placeholder'); //#todo--make this actually check
+    //console.log(Hints.findOne({ _id: hintId }));
+    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+    if (siteUser['upvotedHints'].indexOf(hintId) >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+    
+};
+
+
+
 
 Meteor.methods({
 
-	addError: function(theclass,errorCoords) {
+    addError: function(theclass,errorCoords) {
 
-		var candidateError = errorCoords; //{};
+        if (! Meteor.userId() ) {
+            throw new Meteor.Error('not-authorized'); 
+        }
 
-		candidateError['class'] = theclass;
+        var candidateError = errorCoords; //{};
+
+        candidateError['class'] = theclass;
         candidateError['requests'] = 0;
         candidateError['createdAt'] = new Date();
         candidateError['owner'] = Meteor.userId(); // _id of logged in user
+        //candidateError['requesters'] = [];
 
         Errors.insert(candidateError);
-	},
-	addHint: function (theclass,errorId,hintText) {
+    },
+    addHint: function (theclass,errorId,hintText) {
 
-		if (! Meteor.userId() ) {
-			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
-		}
-		var hintObj = {};
+        if (! Meteor.userId() ) {
+            throw new Meteor.Error('not-authorized'); 
+        }
+        var hintObj = {};
         hintObj['hint'] = hintText;
         hintObj['errorId'] = errorId;
         hintObj['createdAt'] = new Date();
@@ -53,11 +75,12 @@ Meteor.methods({
         //hintObj['username'] = Meteor.user().username;
         hintObj['class'] = theclass;
         hintObj['upvotes'] = 0;
+        //hintObj['upvoters'] = [];
 
 
-		var insertedHint = Hints.insert(hintObj);
+        var insertedHint = Hints.insert(hintObj);
 
-		logObj = {};
+        logObj = {};
         logObj['owner'] = hintObj['owner'];
         //logObj['username'] = Meteor.user().username;
         logObj['action'] = 'add';
@@ -66,63 +89,73 @@ Meteor.methods({
         logObj['class'] = hintObj['class'];
         Log.insert(logObj);
 
-	},
-	toggleRequest: function (theclass,errorId) {
+    },
+    toggleRequest: function (theclass,errorId) {
 
-		if (! Meteor.userId() ) {
-			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
-		}
-		else {
+        if (! Meteor.userId() ) {
+            throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
+        }
+        else {
 
-			var delta = 0;
-			logObj = {};
+            var delta = 0;
+            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
 
-			if (requested(theclass,errorId,Meteor.userId())) {
-				delta = 1;
-				logObj['action'] = 'request';
-			} else {
-				delta = -1;
-				logObj['action'] = 'unrequest';
-			}
-			Errors.update({ _id: errorId },{$inc: {requests: delta}});
+            logObj = {};
 
-	        logObj['owner'] = Meteor.userId();
-	        //logObj['username'] = Meteor.user().username;
-	        logObj['object'] = errorId;
-	        logObj['createdAt'] = new Date();
-	        logObj['class'] = theclass;
-	        Log.insert(logObj);
-    	}
+            if (!requested(errorId)) {
+                delta = 1;
+                logObj['action'] = 'request';
+                siteUser['requestedErrors'].push(errorId);
+            } else {
+                delta = -1;
+                logObj['action'] = 'unrequest';
+                siteUser['requestedErrors'] = _.without(siteUser['requestedErrors'],errorId);
+            }
+            Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
-	},
-	toggleUpvote: function (theclass,hintId) {
+            logObj['owner'] = Meteor.userId();
+            //logObj['username'] = Meteor.user().username;
+            logObj['object'] = errorId;
+            logObj['createdAt'] = new Date();
+            logObj['class'] = theclass;
+            Log.insert(logObj);
+        }
 
-		if (! Meteor.userId() ) {
-			throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
-		}
-		else {
+    },
+    toggleUpvote: function (theclass,hintId) {
 
-			var delta = 0;
-			logObj = {};
+        if (! Meteor.userId() ) {
+            throw new Meteor.Error('not-authorized'); 
+        }
+        else {
 
-			if (requested(theclass,hintId,Meteor.userId())) {
-				delta = 1;
-				logObj['action'] = 'upvote';
-			} else {
-				delta = -1;
-				logObj['action'] = 'downvote';
-			}
-			Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
+            var delta = 0;
+            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() }));
+            
 
-	        logObj['owner'] = Meteor.userId();
-	        //logObj['username'] = Meteor.user().username;
-	        logObj['object'] = hintId;
-	        logObj['createdAt'] = new Date();
-	        logObj['class'] = theclass;
-	        Log.insert(logObj);
-    	}
+            logObj = {};
 
-	}
+            if (!upvoted(hintId)) {
+                delta = 1;
+                logObj['action'] = 'upvote';
+                siteUser['upvotedHints'].push(hintId);
+            } else {
+                delta = -1;
+                logObj['action'] = 'downvote';
+                siteUser['upvotedHints'] = _.without(siteUser['upvotedHints'],hintId);
+            }
+            Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
+
+
+            logObj['owner'] = Meteor.userId();
+            //logObj['username'] = Meteor.user().username;
+            logObj['object'] = hintId;
+            logObj['createdAt'] = new Date();
+            logObj['class'] = theclass;
+            Log.insert(logObj);
+        }
+
+    }
 
 });
 
@@ -130,7 +163,13 @@ Accounts.onLogin(function(user){
     //console.log(Meteor.userId())
     console.log('logged in',user.user._id )
     Log.insert({'userId': user.user._id, 'loggedInAt': new Date()})
-    //SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
+    SiteUsers.insert({
+        'email': Meteor.user().emails[0], 
+        'userId': Meteor.userId(), 
+        'loggedInAt': new Date(),
+        'upvotedHints': [],
+        'requestedErrors': [],
+    })
 });
 
 Accounts.onLoginFailure(function(){
