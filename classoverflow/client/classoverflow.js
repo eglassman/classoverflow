@@ -1,8 +1,10 @@
 Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
-//SiteUsers = new Mongo.Collection("siteusers");
-//Log = new Mongo.Collection("log");
+
+Meteor.subscribe("classes");
+Meteor.subscribe("errors");
+Meteor.subscribe("hints");
 
 
 myScrollIntoView = function(result) {
@@ -13,10 +15,6 @@ myScrollIntoView = function(result) {
 		scrollTop: offset.top - 100
 	},1000);    
 }
-
-Meteor.subscribe("classes");
-Meteor.subscribe("errors");
-Meteor.subscribe("hints");
 
 
 Router.map(function () {
