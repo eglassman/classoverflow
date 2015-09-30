@@ -5,30 +5,6 @@ Hints = new Mongo.Collection("hints");
 Feedback = new Mongo.Collection("feedback");
 //Log = new Mongo.Collection("log");
 
-/*Accounts.ui.config({
-    requestPermissions: {},
-    extraSignupFields: [{
-        fieldName: 'terms',
-        fieldLabel: 'I accept the terms and conditions',
-        inputType: 'checkbox',
-        visible: true,
-        saveToProfile: false,
-        validate: function(value, errorFunction) {
-            if (value) {
-                return true;
-            } else {
-                errorFunction('You must accept the terms and conditions.');
-                return false;
-            }
-        }
-    }]
-});*/
-
-/*Accounts.config({sendVerificationEmail: true});
-
-Accounts.ui.config({
-  passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
-});*/
 
 myScrollIntoView = function(result) {
     $('tr').removeClass('highlighted');
@@ -76,18 +52,6 @@ if (Meteor.isClient) {
         passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
         forceEmailLowercase: true
     });
-
-    /*Accounts.onLogin(function(){
-        //console.log(Meteor.userId())
-        console.log('logged in')
-        Log.insert({'userId': Meteor.userId(), 'loggedInAt': new Date()})
-        //SiteUsers.insert({'email': Meteor.user().emails[0], 'userId': Meteor.userId(), 'loggedInAt': new Date()})
-    });
-
-    Accounts.onLoginFailure(function(){
-        //console.log(Meteor.userId())
-        Log.insert({'loggedInFailedAt': new Date()})
-    });*/
     
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
@@ -195,36 +159,12 @@ if (Meteor.isClient) {
     });
     Template.hint.events({
         "click .upvote": function(event){
-            //var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
-            //var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
-            //console.log(upvotes,downvotes);
-            //var upvoted = (upvotes > downvotes) ? true : false;
+
             if (Meteor.userId()) {
 
                 var hintId = this._id;
                 Meteor.call('toggleUpvote',Session.get('class'),hintId);
 
-                /*if (!upvoted) { //if its not already upvoted
-                    Hints.update({ _id: this._id },{$inc: {upvotes: 1}});
-                    logObj = {};
-                    logObj['owner'] = Meteor.userId();
-                    //logObj['username'] = Meteor.user().username;
-                    logObj['action'] = 'upvote';
-                    logObj['object'] = this._id;
-                    logObj['createdAt'] = new Date();
-                    logObj['class'] = Session.get('class');
-                    Log.insert(logObj);
-                } else {
-                    Hints.update({ _id: this._id },{$inc: {upvotes: -1}});
-                    logObj = {};
-                    logObj['owner'] = Meteor.userId();
-                    //logObj['username'] = Meteor.user().username;
-                    logObj['action'] = 'downvote';
-                    logObj['object'] = this._id;
-                    logObj['createdAt'] = new Date();
-                    logObj['class'] = Session.get('class');
-                    Log.insert(logObj);
-                }*/
             } else {
                 //alert('Please sign in so you can upvote this hint.');
                 $('#mySignInModal').modal('show');
