@@ -2,7 +2,6 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 //SiteUsers = new Mongo.Collection("siteusers");
-Feedback = new Mongo.Collection("feedback");
 //Log = new Mongo.Collection("log");
 
 
@@ -18,7 +17,6 @@ myScrollIntoView = function(result) {
 Meteor.subscribe("classes");
 Meteor.subscribe("errors");
 Meteor.subscribe("hints");
-Meteor.subscribe("feedback");
 
 
 Router.map(function () {
