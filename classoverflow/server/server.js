@@ -92,7 +92,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            //var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
+            var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
 
             logObj = {};
 
@@ -124,7 +124,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            //var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
+            var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
             
 
             logObj = {};
