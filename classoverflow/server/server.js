@@ -1,6 +1,6 @@
 //PRIVATE COLLECTIONS ONLY ON SERVER
 Log = new Mongo.Collection("log");
-SiteUsers = new Mongo.Collection("siteusers");
+//SiteUsers = new Mongo.Collection("siteusers");
 
 //COLLECTIONS TO BE PUBLISHED TO CLIENT
 Classes = new Meteor.Collection('classes');
@@ -18,11 +18,8 @@ Meteor.publish("hints", function () {
     return Hints.find();
 });
 
-
 requested = function(errorId) {
-    //console.log('this is a placeholder'); //#todo--make this actually check
-    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
-    if (siteUser['requestedErrors'].indexOf(errorId) >= 0) {
+    if (user.user.requestedErrors.indexOf(errorId) >= 0) {
         return true;
     } else {
         return false;
@@ -30,10 +27,7 @@ requested = function(errorId) {
     
 };
 upvoted = function(hintId) {
-    //console.log('this is a placeholder'); //#todo--make this actually check
-    //console.log(Hints.findOne({ _id: hintId }));
-    var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
-    if (siteUser['upvotedHints'].indexOf(hintId) >= 0) {
+    if (user.user.upvotedHints.indexOf(hintId) >= 0) {
         return true;
     } else {
         return false;
@@ -98,7 +92,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
+            //var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
 
             logObj = {};
 
@@ -130,7 +124,7 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
+            //var siteUser = SiteUsers.findOne({ userId: Meteor.userId() });
             
 
             logObj = {};
@@ -160,24 +154,28 @@ Meteor.methods({
 });
 
 Accounts.onLogin(function(user){
-    //console.log(Meteor.userId())
     console.log('logged in',user.user._id )
     Log.insert({'userId': user.user._id, 'loggedInAt': new Date()})
-    SiteUsers.insert({
-        'email': Meteor.user().emails[0], 
-        'userId': Meteor.userId(), 
-        'loggedInAt': new Date(),
-        'upvotedHints': [],
-        'requestedErrors': [],
-    })
 });
 
-Accounts.onLoginFailure(function(){
+/*Accounts.onLoginFailure(function(){
     //console.log(Meteor.userId())
     Log.insert({'loggedInFailedAt': new Date()})
+});*/
+
+Accounts.onCreateUser(function(options, user) {
+    console.log('creating user')
+    
+    user.upvotedHints = []; 
+    user.requestedErrors = [];
+
+    console.log('user',user);
+
+    return user;
 });
 
 Meteor.startup(function () {
+        console.log(Meteor.users.find({}).fetch())
         // code to run on server at startup
         //if (! Classes.findOne()){
         Classes.remove({});
