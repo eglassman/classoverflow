@@ -19,7 +19,8 @@ Meteor.publish("hints", function () {
 });
 
 requested = function(errorId) {
-    if (user.user.requestedErrors.indexOf(errorId) >= 0) {
+    var requestedErrors = Meteor.user().profile['requestedErrors'];
+    if (requestedErrors.indexOf(errorId) >= 0) {
         return true;
     } else {
         return false;
@@ -27,7 +28,8 @@ requested = function(errorId) {
     
 };
 upvoted = function(hintId) {
-    if (user.user.upvotedHints.indexOf(hintId) >= 0) {
+    var upvotedHints = Meteor.user().profile['upvotedHints'];
+    if (upvotedHints.indexOf(hintId) >= 0) {
         return true;
     } else {
         return false;
@@ -92,18 +94,19 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
+            //var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
+            var requestedErrors = Meteor.user().profile['requestedErrors'];
 
             logObj = {};
 
             if (!requested(errorId)) {
                 delta = 1;
                 logObj['action'] = 'request';
-                siteUser['requestedErrors'].push(errorId);
+                requestedErrors.push(errorId);
             } else {
                 delta = -1;
                 logObj['action'] = 'unrequest';
-                siteUser['requestedErrors'] = _.without(siteUser['requestedErrors'],errorId);
+                requestedErrors = _.without(requestedErrors,errorId);
             }
             Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
@@ -124,7 +127,9 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
+            var upvotedHints = Meteor.user().profile['upvotedHints'];
+            //console.log('Meteor.user()',Meteor.user());
+            //var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
             
 
             logObj = {};
@@ -132,11 +137,11 @@ Meteor.methods({
             if (!upvoted(hintId)) {
                 delta = 1;
                 logObj['action'] = 'upvote';
-                siteUser['upvotedHints'].push(hintId);
+                upvotedHints.push(hintId);
             } else {
                 delta = -1;
                 logObj['action'] = 'downvote';
-                siteUser['upvotedHints'] = _.without(siteUser['upvotedHints'],hintId);
+                upvotedHints = _.without(upvotedHints,hintId);
             }
             Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
 
@@ -148,9 +153,7 @@ Meteor.methods({
             logObj['class'] = theclass;
             Log.insert(logObj);
         }
-
     }
-
 });
 
 Accounts.onLogin(function(user){
@@ -166,8 +169,14 @@ Accounts.onLogin(function(user){
 Accounts.onCreateUser(function(options, user) {
     console.log('creating user')
     
-    user.upvotedHints = []; 
-    user.requestedErrors = [];
+    if (options.profile) {
+        user.profile = options.profile;
+    } else {
+        user.profile = {};
+    }
+
+    user.profile.upvotedHints = []; 
+    user.profile.requestedErrors = [];
 
     console.log('user',user);
 
