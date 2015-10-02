@@ -20,6 +20,8 @@ Meteor.publish("hints", function () {
 
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
+    console.log('requestedErrors',requestedErrors)
+    console.log('errorId',errorId)
     if (requestedErrors.indexOf(errorId) >= 0) {
         return true;
     } else {
@@ -29,6 +31,8 @@ requested = function(errorId) {
 };
 upvoted = function(hintId) {
     var upvotedHints = Meteor.user().profile['upvotedHints'];
+    console.log('upvotedHints',upvotedHints)
+    console.log('hintId',hintId)
     if (upvotedHints.indexOf(hintId) >= 0) {
         return true;
     } else {
@@ -100,13 +104,21 @@ Meteor.methods({
             logObj = {};
 
             if (!requested(errorId)) {
+                console.log('request this error:',errorId)
                 delta = 1;
                 logObj['action'] = 'request';
-                Meteor.user().profile['requestedErrors'].push(errorId);
+                //Meteor.user().profile['requestedErrors'].push(errorId);
+                var updated_requestedErrors = requestedErrors.concat(errorId);
+                //console.log()
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": updated_requestedErrors }} );
+                console.log('new user profile',Meteor.user().profile)
             } else {
+                console.log('unrequest this error:',errorId)
                 delta = -1;
                 logObj['action'] = 'unrequest';
-                Meteor.user().profile['requestedErrors'] = _.without(requestedErrors,errorId);
+                //Meteor.user().profile['requestedErrors'] = _.without(requestedErrors,errorId);
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": _.without(requestedErrors,errorId) }} );
+                console.log('new user profile',Meteor.user().profile)
             }
             Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
@@ -128,6 +140,7 @@ Meteor.methods({
 
             var delta = 0;
             var upvotedHints = Meteor.user().profile['upvotedHints'];
+            console.log('upvotedHints', upvotedHints)
             //console.log('Meteor.user()',Meteor.user());
             //var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
             
@@ -135,13 +148,22 @@ Meteor.methods({
             logObj = {};
 
             if (!upvoted(hintId)) {
+                console.log('upvote this hint:',hintId)
                 delta = 1;
                 logObj['action'] = 'upvote';
-                Meteor.user().profile['upvotedHints'].push(hintId);
+                //Meteor.user().profile['upvotedHints'].push(hintId);
+                var updated_upvotedHints = upvotedHints.concat(hintId);
+                console.log('upvotedHints update', updated_upvotedHints)
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.upvotedHints": updated_upvotedHints }} );
+                console.log('new user profile',Meteor.user().profile)
             } else {
+                console.log('downvote this hint:',hintId)
                 delta = -1;
                 logObj['action'] = 'downvote';
-                Meteor.user().profile['upvotedHints'] = _.without(upvotedHints,hintId);
+                //Meteor.user().profile['upvotedHints'] = _.without(upvotedHints,hintId);
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.upvotedHints": _.without(upvotedHints,hintId) }} );
+                
+                console.log('new user profile',Meteor.user().profile)
             }
             Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
 
