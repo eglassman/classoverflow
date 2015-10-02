@@ -102,11 +102,11 @@ Meteor.methods({
             if (!requested(errorId)) {
                 delta = 1;
                 logObj['action'] = 'request';
-                requestedErrors.push(errorId);
+                Meteor.user().profile['requestedErrors'].push(errorId);
             } else {
                 delta = -1;
                 logObj['action'] = 'unrequest';
-                requestedErrors = _.without(requestedErrors,errorId);
+                Meteor.user().profile['requestedErrors'] = _.without(requestedErrors,errorId);
             }
             Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
@@ -137,11 +137,11 @@ Meteor.methods({
             if (!upvoted(hintId)) {
                 delta = 1;
                 logObj['action'] = 'upvote';
-                upvotedHints.push(hintId);
+                Meteor.user().profile['upvotedHints'].push(hintId);
             } else {
                 delta = -1;
                 logObj['action'] = 'downvote';
-                upvotedHints = _.without(upvotedHints,hintId);
+                Meteor.user().profile['upvotedHints'] = _.without(upvotedHints,hintId);
             }
             Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
 
