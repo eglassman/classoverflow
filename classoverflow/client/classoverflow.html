@@ -166,7 +166,7 @@
     <tr id="{{_id}}">
         <td>
             <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
-          {{#if ifRequested}}Requested{{else}}Request{{/if}} | {{requests}}
+          {{#if ifRequested}}I'm requesting more hints.{{else}}I want more hints!{{/if}}
             </button>
         </td>
         {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
