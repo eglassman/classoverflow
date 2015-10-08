@@ -8,13 +8,28 @@ Meteor.subscribe("hints");
 
 
 myScrollIntoView = function(result) {
+    console.log(result)
+    //var errorToUnhighlight = $('.highlighted').attr('id');
+    //Meteor.call('setErrorHighlight', errorToUnhighlight , false);
     $('tr').removeClass('highlighted');
     $('#'+result).addClass('highlighted');
+    //Meteor.call('setErrorHighlight',result, true);
     var offset = $('#'+result).offset();
     $('html, body').animate({
         scrollTop: offset.top - 100
     },1000);    
-}
+};
+
+//Copy from server; returns true if the current user has requested an error
+requested = function(errorId) {
+    var requestedErrors = Meteor.user().profile['requestedErrors'];
+    if (requestedErrors.indexOf(errorId) >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+    
+};
 
 
 Router.map(function () {
@@ -100,7 +115,9 @@ if (Meteor.isClient) {
                 coordsSortObj[ec['name']] = 1;
             });
             //console.log(coordsSortObj)
-            return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
+
+            //return Errors.find({class: Session.get('class') },{sort: coordsSortObj}).fetch();
+            return Errors.find({class: Session.get('class'), $where: function() { return requested(this._id) || (Hints.find({errorId:this._id}).count() > 0) || this.requests > 0; } },{sort: coordsSortObj}).fetch();
         }
     });
     Template.error.helpers({
