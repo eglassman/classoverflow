@@ -22,30 +22,43 @@ Router.map(function () {
     this.route('/', function () {
         this.render('classes');
     });
-    this.route('/class/:classtitle', function () {
-        //console.log(this.params.classtitle);
-        //console.log(this.params)
-        var theclass = Classes.findOne({
-            classtitle: this.params.classtitle
+    this.route('/class/:classtitle', { 
+
+        subscriptions: function() {
+
+            return Meteor.subscribe('errors');
+        },
+
+        action: function () {
+
+                //console.log(this.params.classtitle);
+                //console.log(this.params)
+                var theclass = Classes.findOne({
+                    classtitle: this.params.classtitle
+                });
+                //theclass['query'] = this.params.query;
+                for (var q in this.params.query) {
+                    //console.log(q,this.params.query[q])
+                    var formparam = q.split('_param')[0];
+                    console.log(formparam)
+                    Session.set(formparam,this.params.query[q])
+                    //theclass[q] = this.params.query[q]
+                }
+                //console.log(theclass);
+                Session.set('class', this.params.classtitle);
+                //console.log(theclass)
+                Session.set('numErrorCoords',theclass['errorCoords'].length);
+                Session.set('submitQ', false);
+                console.log(Session)
+
+                if (this.ready()) {
+                    this.render('classpage', {
+                        data: theclass
+                    }); 
+                }
+            }
         });
-        //theclass['query'] = this.params.query;
-        for (var q in this.params.query) {
-            //console.log(q,this.params.query[q])
-            var formparam = q.split('_param')[0];
-            console.log(formparam)
-            Session.set(formparam,this.params.query[q])
-            //theclass[q] = this.params.query[q]
-        }
-        //console.log(theclass);
-        Session.set('class', this.params.classtitle);
-        //console.log(theclass)
-        Session.set('numErrorCoords',theclass['errorCoords'].length);
-        Session.set('submitQ', false);
-        console.log(Session)
-        this.render('classpage', {
-            data: theclass
-        });
-    });
+        
 });
 
 if (Meteor.isClient) {
@@ -244,7 +257,7 @@ if (Meteor.isClient) {
                 }
             }
 
-            
+            console.log('candidateErrorCoords',candidateErrorCoords);
             registeredError = Errors.findOne(candidateErrorCoords);
             console.log('registeredError',registeredError)
             if (!registeredError) {
