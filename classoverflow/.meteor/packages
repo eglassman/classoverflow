@@ -4,11 +4,24 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-platform
 accounts-password
-bootstrap-3
 jquery
 ian:accounts-ui-bootstrap-3
 iron:router
 houston:admin
-fast-render
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
+mrt:bootstrap-3
+meteorhacks:fast-render
+rcm:certauth

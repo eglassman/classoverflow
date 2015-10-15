@@ -61,6 +61,10 @@ Router.map(function () {
         
 });
 
+Meteor.startup(function () {
+  CertAuth.login();
+}); 
+
 if (Meteor.isClient) {
     Accounts.ui.config({
         passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
