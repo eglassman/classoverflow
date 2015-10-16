@@ -124,16 +124,8 @@ if (Meteor.isClient) {
     Template.error.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
-            /*var errorId = this._id;
-            console.log('errorId',errorId)
-            return Meteor.call('fetchHintsForError',errorId);*/
         },
         ifRequested: function () {
-            //var requests = Log.find({owner:Meteor.userId(), action: 'request',object: this._id}).fetch().length;
-            //var unrequests = Log.find({owner:Meteor.userId(), action: 'unrequest',object: this._id}).fetch().length;
-            //var requested = (requests > unrequests) ? true : false;
-            //return requested
-            //return false //todo: fill with actual logic
             var errorId = this._id;
             if (Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
                 return true
@@ -180,10 +172,6 @@ if (Meteor.isClient) {
     });
     Template.hint.helpers({
         ifUpvoted: function () {
-            //var upvotes = Log.find({owner:Meteor.userId(), action: 'upvote',object: this._id}).fetch().length;
-            //var downvotes = Log.find({owner:Meteor.userId(), action: 'downvote',object: this._id}).fetch().length;
-            //var upvoted = (upvotes > downvotes) ? true : false;
-            //return upvoted
             var hintId = this._id;
             if (Meteor.user().profile['upvotedHints'].indexOf(hintId) >= 0) {
                 return true
