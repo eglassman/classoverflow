@@ -18,6 +18,8 @@ Meteor.publish("hints", function () {
     return Hints.find();
 });
 
+var edxpass = '071a0f58e44494a90dbc5844c480586c';
+
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
     console.log('requestedErrors',requestedErrors)
@@ -53,6 +55,18 @@ Meteor.methods({
         }
 
         //todo: check if values are right type, within range, appropriate size #sanitization
+
+        //console.log('errorCoords',errorCoords)
+        $.each(errorCoords, function(key, value) {
+            console.log(key, value);
+            if($.type(value) === "string" && value.length > 1000) {
+               //it's a string
+               throw new Meteor.Error('string-too-long'); 
+            }
+            else {
+               //it's something else
+            }
+        });
 
         var candidateError = errorCoords; //{};
 
@@ -181,6 +195,16 @@ Meteor.methods({
             logObj['class'] = theclass;
             Log.insert(logObj);
         }
+    },
+    'loginAsEdxStudent': function(edxstudentID) {
+        var edxUserName = 'edx'+edxstudentID;
+        var user = Accounts.findUserByUsername(edxUserName);
+        if (!user) {
+            Accounts.createUser({username: edxUserName,password:edxpass,profile:{
+                'isEdxUser':true
+            }});
+        }
+        return {username: edxUserName, password:edxpass}
     }
 });
 

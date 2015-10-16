@@ -16,6 +16,21 @@ myScrollIntoView = function(result) {
     },1000);    
 }
 
+loginAsEdxStudent = function(edxstudentID) {
+    Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
+        if (error) {
+            console.log('error on login as edx student',error);
+        } else {
+            Meteor.loginWithPassword(result.username,result.password,function(error){
+                if (error) {
+                    console.log('error logging in with password',error);
+                }
+            });
+        }
+
+    });
+}
+
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
@@ -32,7 +47,7 @@ Router.map(function () {
         action: function () {
 
                 //console.log(this.params.classtitle);
-                //console.log(this.params)
+                console.log('this.params',this.params)
                 var theclass = Classes.findOne({
                     classtitle: this.params.classtitle
                 });
@@ -48,7 +63,11 @@ Router.map(function () {
                 Session.set('class', this.params.classtitle);
                 //console.log(theclass)
                 Session.set('numErrorCoords',theclass['errorCoords'].length);
-                Session.set('student_id', this.params.student_id)
+                //Session.set('student_id', this.params.student_id)
+                //find or login with student id
+                if (!Meteor.user() && this.params.query.student_id) {
+                    loginAsEdxStudent(this.params.query.student_id);
+                }
                 Session.set('submitQ', false);
                 console.log(Session)
 
@@ -63,7 +82,12 @@ Router.map(function () {
 });
 
 Meteor.startup(function () {
-  CertAuth.login();
+
+    //Deploy edX version without settings.json
+    if (Meteor.settings.public.CertAuthURL) {
+        CertAuth.login();
+    }
+  
 }); 
 
 if (Meteor.isClient) {

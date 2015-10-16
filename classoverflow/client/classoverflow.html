@@ -124,7 +124,12 @@
                     <!--li><a><button type="button" class="btn btn-default btn-xs feedback">Feedback</button></a></li-->
                     <li><a><button type="button" class="btn btn-info btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button></a></li>
                     <!--TODO: connect to actions-->
-                    <li><a>{{> loginButtons}}</a></li>
+                    {{#if currentUser.profile.isEdxUser}} 
+                    {{else}}
+                      <li><a>
+                         {{> loginButtons}}
+                      </a></li>
+                    {{/if}}
                 </ul>
                 <ul class="nav navbar-nav">
                     <li>
