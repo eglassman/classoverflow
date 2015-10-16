@@ -48,7 +48,7 @@ Router.map(function () {
                 Session.set('class', this.params.classtitle);
                 //console.log(theclass)
                 Session.set('numErrorCoords',theclass['errorCoords'].length);
-                //todo: save student id #login
+                Session.set('student_id', this.params.student_id)
                 Session.set('submitQ', false);
                 console.log(Session)
 
@@ -153,7 +153,7 @@ if (Meteor.isClient) {
                     event.target[0].value = ''; //should be dependent on success #todo
 
                 } else {
-                    //alert('Please sign in so you can add this hint.'); //todo: make this a different kind of alert so page can load too.
+                    //alert('Please sign in so you can add this hint.'); 
                     $('#mySignInModal').modal('show');
                 }
             }
