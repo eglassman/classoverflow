@@ -52,6 +52,8 @@ Meteor.methods({
             throw new Meteor.Error('not-authorized'); 
         }
 
+        //todo: check if values are right type, within range, appropriate size #sanitization
+
         var candidateError = errorCoords; //{};
 
         candidateError['class'] = theclass;
@@ -67,6 +69,10 @@ Meteor.methods({
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
         }
+
+        //todo: check if text is right type, appropriate size #sanitization
+
+
         var hintObj = {};
         hintObj['hint'] = hintText;
         hintObj['errorId'] = errorId;

@@ -48,6 +48,7 @@ Router.map(function () {
                 Session.set('class', this.params.classtitle);
                 //console.log(theclass)
                 Session.set('numErrorCoords',theclass['errorCoords'].length);
+                //todo: save student id #login
                 Session.set('submitQ', false);
                 console.log(Session)
 
