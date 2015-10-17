@@ -57,8 +57,9 @@ Meteor.methods({
         //todo: check if values are right type, within range, appropriate size #sanitization
 
         //console.log('errorCoords',errorCoords)
-        $.each(errorCoords, function(key, value) {
+        Object.keys(errorCoords).forEach(function(key, index) {
             console.log(key, value);
+            var value = errorCoords[key];
 
             //todo: check if its supposed to be an int or a string!
 
