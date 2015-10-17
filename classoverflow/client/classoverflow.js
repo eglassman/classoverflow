@@ -172,9 +172,14 @@ if (Meteor.isClient) {
 
                 if (Meteor.userId()) {
 
-                    Meteor.call('addHint',Session.get('class'),errorId,hintText);
-                    
-                    event.target[0].value = ''; //should be dependent on success #todo
+                    Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error,result){
+                        if (error) {
+                            console.log('error in Meteor.addHint call',error) //log failure to add hint
+                        } else {
+                            event.target[0].value = ''; //clear the hint field on success
+                        }
+                        
+                    });
 
                 } else {
                     //alert('Please sign in so you can add this hint.'); 
