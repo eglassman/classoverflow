@@ -29,3 +29,9 @@ td li {
 .highlighted {
     background-color: lightgoldenrodyellow !important;
 }
+.inputText_string {
+    width: 150px !important;
+}
+.inputText_int {
+    width: 60px !important;
+}
