@@ -60,11 +60,9 @@ Meteor.methods({
         $.each(errorCoords, function(key, value) {
             console.log(key, value);
             if($.type(value) === "string" && value.length > 1000) {
-               //it's a string
+               //it's a string but its too long
                throw new Meteor.Error('string-too-long'); 
-            }
-            else {
-               //it's something else
+               //todo: tell the user why its not getting added
             }
         });
 
@@ -246,15 +244,18 @@ Meteor.startup(function () {
                 errorCoords: [
                     {
                         name: "lab",
-                        placeholder: 'Lab Number'
+                        placeholder: 'Lab Number',
+                        inputType: 'int'
                     },
                     {
                         name: "module",
-                        placeholder: 'Module'
+                        placeholder: 'Module',
+                        inputType: 'string'
                     },
                     {
                         name: "testNum",
-                        placeholder: 'Test Number'
+                        placeholder: 'Test Number',
+                        inputType: 'int'
                     }
     ],
                 route: '/class/6.004'
@@ -264,15 +265,18 @@ Meteor.startup(function () {
                 errorCoords: [
                     {
                         name: "ps",
-                        placeholder: "Problem Set" 
+                        placeholder: "Problem Set",
+                        inputType: 'int'
                     },
                     {
                         name: "file",
-                        placeholder: 'File Name'
+                        placeholder: 'File Name',
+                        inputType: 'string'
                     },
                     {
                         name: "line",
-                        placeholder: 'Line Number'
+                        placeholder: 'Line Number',
+                        inputType: 'int'
                     }
     ],
                 route: '/class/6.005'
