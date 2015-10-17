@@ -123,13 +123,20 @@
                     <li><a><button type="button" class="btn btn-info btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button></a></li>
                     <!--li><a><button type="button" class="btn btn-default btn-xs feedback">Feedback</button></a></li-->
                     <li><a><button type="button" class="btn btn-info btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button></a></li>
-                    <!--TODO: connect to actions-->
+
+                    {{#if certAuthEnabled }}
+                      {{#if currentUser }}
+                      {{else}}
+                        <li><a class="certLogin" onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">Sign in with certificates</a></li>
+                      {{/if}}
+                    {{/if}}
                     {{#if currentUser.profile.isEdxUser}} 
                     {{else}}
                       <li><a>
                          {{> loginButtons}}
                       </a></li>
                     {{/if}}
+                    
                 </ul>
                 <ul class="nav navbar-nav">
                     <li>

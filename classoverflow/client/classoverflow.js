@@ -63,7 +63,7 @@ Router.map(function () {
                 Session.set('class', this.params.classtitle);
                 //console.log(theclass)
                 Session.set('numErrorCoords',theclass['errorCoords'].length);
-                //Session.set('student_id', this.params.student_id)
+
                 //find or login with student id
                 if (!Meteor.user() && this.params.query.student_id) {
                     loginAsEdxStudent(this.params.query.student_id);
@@ -86,6 +86,7 @@ Meteor.startup(function () {
     //Deploy edX version without settings.json
     if (Meteor.settings.public.CertAuthURL) {
         CertAuth.login();
+        Session.set('certAuthEnabled',true);
     }
   
 }); 
@@ -122,6 +123,9 @@ if (Meteor.isClient) {
         } else {
             console.log('no title supplied');
         }
+    });
+    Template.registerHelper('certAuthEnabled',function(){
+        return Session.get('certAuthEnabled');
     });
     
     Template.classes.helpers({

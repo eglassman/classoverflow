@@ -35,3 +35,10 @@ td li {
 .inputText_int {
     width: 60px !important;
 }
+.certLogin {
+    color: #428bca !important;
+    cursor: pointer;
+}
+.certLogin:hover {
+    text-decoration: underline !important;
+}
