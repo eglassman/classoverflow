@@ -59,9 +59,17 @@ Meteor.methods({
         //console.log('errorCoords',errorCoords)
         $.each(errorCoords, function(key, value) {
             console.log(key, value);
-            if($.type(value) === "string" && value.length > 1000) {
+
+            //todo: check if its supposed to be an int or a string!
+
+            if(typeof value === "string" && value.length > 50) {
                //it's a string but its too long
                throw new Meteor.Error('string-too-long'); 
+               //todo: tell the user why its not getting added
+            }
+            if(typeof value === "int" && value.length > 4) {
+               //it's a number but its too large or too many decimal places
+               throw new Meteor.Error('int-too-big'); 
                //todo: tell the user why its not getting added
             }
         });
@@ -83,7 +91,13 @@ Meteor.methods({
         }
 
         //todo: check if text is right type, appropriate size #sanitization
-
+        if (typeof hintText !== 'string') {
+            throw new Meteor.Error('hint-is-no-string')
+        }
+        if (typeof hintText === 'string' && hintText.length > 1000) {
+            throw new Meteor.Error('string-too-long'); 
+               //todo: tell the user why its not getting added
+        }
 
         var hintObj = {};
         hintObj['hint'] = hintText;
