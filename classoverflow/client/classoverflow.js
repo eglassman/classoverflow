@@ -291,8 +291,12 @@ if (Meteor.isClient) {
                 if (Meteor.userId()) {
                     
                     Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
-                        console.log(error,result);
-                        myScrollIntoView(result);
+                        //console.log(error,result);
+                        if (error) {
+                            console.log('error during addError', error)
+                        } else {
+                            myScrollIntoView(result);
+                        }
                     });
                     //$('#'+insertedError).css("background-color","gray");
                     //console.log($('#'+insertedError).text())
