@@ -86,6 +86,16 @@ Meteor.methods({
         //candidateError['requesters'] = [];
 
         Errors.insert(candidateError);
+
+
+        logObj = {};
+        logObj['owner'] = candidateError['owner'];
+        //logObj['username'] = Meteor.user().username;
+        logObj['action'] = 'addError';
+        logObj['object'] = candidateError;
+        logObj['createdAt'] = candidateError['createdAt']
+        logObj['class'] = candidateError['class'];
+        Log.insert(logObj);
     },
     addHint: function (theclass,errorId,hintText) {
 
@@ -118,7 +128,7 @@ Meteor.methods({
         logObj = {};
         logObj['owner'] = hintObj['owner'];
         //logObj['username'] = Meteor.user().username;
-        logObj['action'] = 'add';
+        logObj['action'] = 'addHint';
         logObj['object'] = insertedHint;
         logObj['createdAt'] = hintObj['createdAt']
         logObj['class'] = hintObj['class'];
