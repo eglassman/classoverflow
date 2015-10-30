@@ -37,6 +37,26 @@ Router.map(function () {
     this.route('/', function () {
         this.render('classes');
     });
+    this.route('/class/:classtitle/labno=:labno', {
+        // layoutTemplate: 'lab3only',
+        // ^ I feel like this might be a more efficient way to
+        //   process templates, but fix later
+        data: function() {
+            return this.params;
+        },
+        action: function() {
+            console.log('this.params',this.params);
+            var theclass = Classes.findOne({
+                classtitle: this.params.classtitle
+            });
+            Session.set('class', this.params.classtitle);
+            if (this.ready()) {
+                this.render('classpage', {
+                    data: this.params
+                }); 
+            }
+        }
+    });
     this.route('/class/:classtitle', { 
 
         subscriptions: function() {
@@ -45,39 +65,38 @@ Router.map(function () {
         },
 
         action: function () {
-
-                //console.log(this.params.classtitle);
-                console.log('this.params',this.params)
-                var theclass = Classes.findOne({
-                    classtitle: this.params.classtitle
-                });
-                //theclass['query'] = this.params.query;
-                for (var q in this.params.query) {
-                    //console.log(q,this.params.query[q])
-                    var formparam = q.split('_param')[0];
-                    console.log(formparam)
-                    Session.set(formparam,this.params.query[q])
-                    //theclass[q] = this.params.query[q]
-                }
-                //console.log(theclass);
-                Session.set('class', this.params.classtitle);
-                //console.log(theclass)
-                Session.set('numErrorCoords',theclass['errorCoords'].length);
-
-                //find or login with student id
-                if (!Meteor.user() && this.params.query.student_id) {
-                    loginAsEdxStudent(this.params.query.student_id);
-                }
-                Session.set('submitQ', false);
-                console.log(Session)
-
-                if (this.ready()) {
-                    this.render('classpage', {
-                        data: theclass
-                    }); 
-                }
+            //console.log(this.params.classtitle);
+            console.log('this.params',this.params)
+            var theclass = Classes.findOne({
+                classtitle: this.params.classtitle
+            });
+            //theclass['query'] = this.params.query;
+            for (var q in this.params.query) {
+                //console.log(q,this.params.query[q])
+                var formparam = q.split('_param')[0];
+                console.log(formparam)
+                Session.set(formparam,this.params.query[q])
+                //theclass[q] = this.params.query[q]
             }
-        });
+            //console.log(theclass);
+            Session.set('class', this.params.classtitle);
+            //console.log(theclass)
+            Session.set('numErrorCoords',theclass['errorCoords'].length);
+
+            //find or login with student id
+            if (!Meteor.user() && this.params.query.student_id) {
+                loginAsEdxStudent(this.params.query.student_id);
+            }
+            Session.set('submitQ', false);
+            console.log(Session)
+
+            if (this.ready()) {
+                this.render('classpage', {
+                    data: theclass
+                }); 
+            }
+        }
+    });
         
 });
 
@@ -146,7 +165,30 @@ if (Meteor.isClient) {
                 coordsSortObj[ec['name']] = 1;
             });
             //console.log(coordsSortObj)
-            return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
+            if (typeof(this.labno)==='undefined') {
+                var search_query = {class: Session.get('class')};
+            }
+            else {
+                var search_query = {class: Session.get('class'), lab: parseInt(this.labno)};
+            }
+            return Errors.find(search_query,{sort: coordsSortObj}).fetch();
+        }
+    });
+    Template.lab3only.helpers({
+        errors: function () {
+            var title = Session.get('class');
+            var coordsSortObj = {}
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            
+            thisclass['errorCoords'].forEach(function(ec){
+                //console.log(ec);
+                coordsSortObj[ec['name']] = 1;
+            });
+            //console.log(coordsSortObj)
+            console.log(typeof(this.labno), this.labno, this.labno==3);
+            return Errors.find({class: Session.get('class'), lab: parseInt(this.labno)},{sort: coordsSortObj}).fetch();
         }
     });
     Template.error.helpers({
