@@ -214,18 +214,3 @@
         </div>
     </li>
 </template>
-
-<template name="lab3only">
-  Inside template lab3only.
-    <div class="container">
-        <!--div id="errorTable">This is where the table will go!</div-->
-        <table>
-            <tr>
-                <th>Requests</th>
-                {{#each errorCoords}} {{> errorCoordTableHeader}} {{/each}}
-                <th>Hints</th>
-            </tr>
-            {{#each errors}} {{> error}} {{/each}}
-        </table>
-    </div>
-</template>

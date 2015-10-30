@@ -174,23 +174,6 @@ if (Meteor.isClient) {
             return Errors.find(search_query,{sort: coordsSortObj}).fetch();
         }
     });
-    Template.lab3only.helpers({
-        errors: function () {
-            var title = Session.get('class');
-            var coordsSortObj = {}
-            var thisclass = Classes.findOne({
-                classtitle: title
-            });
-            
-            thisclass['errorCoords'].forEach(function(ec){
-                //console.log(ec);
-                coordsSortObj[ec['name']] = 1;
-            });
-            //console.log(coordsSortObj)
-            console.log(typeof(this.labno), this.labno, this.labno==3);
-            return Errors.find({class: Session.get('class'), lab: parseInt(this.labno)},{sort: coordsSortObj}).fetch();
-        }
-    });
     Template.error.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
