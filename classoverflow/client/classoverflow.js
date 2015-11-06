@@ -37,12 +37,13 @@ Router.map(function () {
     this.route('/', function () {
         this.render('classes');
     });
-    this.route('/class/:classtitle/labno=:labno', {
+    this.route('/class/:classtitle/:extraparams', { // labno=:labno
         // layoutTemplate: 'lab3only',
         // ^ I feel like this might be a more efficient way to
         //   process templates, but fix later
         data: function() {
-            return this.params;
+            //return this.params;
+            // ^ apparently this isn't necessary
         },
         action: function() {
             console.log('this.params',this.params);
@@ -165,12 +166,30 @@ if (Meteor.isClient) {
                 coordsSortObj[ec['name']] = 1;
             });
             //console.log(coordsSortObj)
-            if (typeof(this.labno)==='undefined') {
-                var search_query = {class: Session.get('class')};
+            var default_search_query = {class: Session.get('class')};
+            var search_query = {class: Session.get('class')};
+            if (typeof(this.extraparams)!=='undefined') {
+                var invalid = false;
+                parameters = this.extraparams.split("&");
+                console.log("first split:", parameters)
+                for(var i=0; i<parameters.length; i++) {
+                    param = parameters[i].split("=");
+                    if (param.length != 2 || param[0]=="class") {
+                        invalid = true;
+                        break;
+                    }
+                    if (!isNaN(param[1])) {
+                        param[1] = parseInt(param[1]);
+                    }
+                    search_query[param[0]] = param[1];
+                    console.log("loop:", search_query)
+                }
+                if(invalid) {
+                    search_query = default_search_query;
+                }
+                // Check for security bugs! This lets user check things on the server
             }
-            else {
-                var search_query = {class: Session.get('class'), lab: parseInt(this.labno)};
-            }
+            console.log("final:", search_query);
             return Errors.find(search_query,{sort: coordsSortObj}).fetch();
         }
     });
