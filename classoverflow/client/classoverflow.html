@@ -156,7 +156,9 @@
 
 <template name="errorCoord">
     <div class="form-group">
-        {{placeholder}} <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{coordvalue}}" /> <!--placeholder="{{placeholder}}"-->
+        {{placeholder}} 
+        <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{getCurrentErrorCoord}}" />
+        <!--value="{{coordvalue}}"--> 
     </div>
 </template>
 

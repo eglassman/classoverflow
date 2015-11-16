@@ -6,6 +6,11 @@ Meteor.subscribe("classes");
 Meteor.subscribe("errors");
 Meteor.subscribe("hints");
 
+// todo: These session variables may be misplaced!
+// todo: this is hardcoded!
+Session.set('defaultSearch', {lab: "", module: "", testNum: ""});
+Session.set('currentSearch', Session.get('defaultSearch'));
+
 
 myScrollIntoView = function(result) {
     $('tr').removeClass('highlighted');
@@ -102,7 +107,6 @@ Router.map(function () {
 });
 
 Meteor.startup(function () {
-
     //Deploy edX version without settings.json
     if (Meteor.settings.public.CertAuthURL) {
         CertAuth.login();
@@ -166,7 +170,8 @@ if (Meteor.isClient) {
                 coordsSortObj[ec['name']] = 1;
             });
             //console.log(coordsSortObj)
-            var default_search_query = {class: Session.get('class')};
+            var sort_obj = {sort: coordsSortObj};
+            /*var default_search_query = {class: Session.get('class')};
             var search_query = {class: Session.get('class')};
             if (typeof(this.extraparams)!=='undefined') {
                 var invalid = false;
@@ -190,7 +195,21 @@ if (Meteor.isClient) {
                 // Check for security bugs! This lets user check things on the server
             }
             console.log("final:", search_query);
-            return Errors.find(search_query,{sort: coordsSortObj}).fetch();
+            return Errors.find(search_query, sort_obj).fetch();*/
+
+            currentSearch = Session.get("currentSearch");
+            search_query = {};
+            for (var inputfield in currentSearch) {
+                if (currentSearch.hasOwnProperty(inputfield)) {
+                    inputvalue = currentSearch[inputfield];
+                    if (inputvalue) {
+                        search_query[inputfield] = inputvalue;
+                    }
+                }
+            }
+            console.log("currentSearch", currentSearch);
+            search_query["class"] = Session.get('class');
+            return Errors.find(search_query, sort_obj)
         }
     });
     Template.error.helpers({
@@ -282,6 +301,34 @@ if (Meteor.isClient) {
             Session.set('submitQ',false)
         }
     });
+
+    Template.errorCoord.helpers({
+        getCurrentErrorCoord: function() {
+            currentSearch = Session.get("currentSearch");
+            currentValue = currentSearch[this.name];
+            return currentValue;
+        }
+    });
+
+    Template.errorCoord.events({
+        // todo: this may be the wrong selector to use:
+        "keyup .form-control": _.throttle(function(e) {
+            var inputname = e.target.name;
+            var inputval = e.target.value;
+            currentSearch = Session.get('currentSearch');
+            if (!inputval) {
+                //delete currentSearch[inputname];
+                currentSearch[inputname] = inputval;
+            }
+            else {
+                // Don't need to check for whether inputname is an existing key?
+                currentSearch[inputname] = parseInt(inputval);
+                // TODO: parseInt is hardcoded!
+            }
+            Session.set('currentSearch',currentSearch);
+        }, 200)
+    });
+
     Template.navbar.helpers({
         errorCoords: function() {
             console.log('navbar errorCoords')

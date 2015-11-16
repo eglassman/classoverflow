@@ -20,6 +20,12 @@ Meteor.publish("hints", function () {
 
 var edxpass = '071a0f58e44494a90dbc5844c480586c';
 
+function buildRegExp(searchText) {
+  // this is a dumb implementation
+  var parts = searchText.trim().split(/[ \-\:]+/);
+  return new RegExp("(" + parts.join('|') + ")", "ig");
+}
+
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
     console.log('requestedErrors',requestedErrors)
