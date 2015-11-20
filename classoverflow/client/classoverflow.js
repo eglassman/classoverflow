@@ -92,24 +92,24 @@ Router.map(function () {
                     coord_dtypes[coords["name"]] = coords["inputType"];
                 }
 
-                var queryparams = this.params.query;
-                for (var q in queryparams) {
-                    if (!queryparams.hasOwnProperty(q)) {
-                        delete queryparams['q'];
-                    }
-                    else if (typeof(coord_dtypes[q])=="undefined") {
-                        delete queryparams['q'];
+                var queryparams = {};
+                for (var q in this.params.query) {
+                    if (this.params.query.hasOwnProperty(q)) {
+                        if (typeof(coord_dtypes[q])!="undefined") {
+                            val = this.params.query[q];
+                            dtype = coord_dtypes[q];
+                            queryparams[q] = convert_to_dtype(val,dtype)
+                        }
                     }
                 }
                 Session.set('class', this.params.classtitle);
                 Session.set('coord_dtypes', coord_dtypes);
                 Session.set('currentSearch', queryparams);
 
-
                 Session.set('numErrorCoords',theclass['errorCoords'].length);
                 // todo: These session variables may be misplaced!
-                // todo: this is hardcoded!
-                // todo: move this into router action method
+
+                // todo: redirect to main URL
 
                 //find or login with student id
                 if (!Meteor.user() && this.params.query.student_id) {
@@ -117,11 +117,9 @@ Router.map(function () {
                 }
                 // todo: what does submitQ do?
                 Session.set('submitQ', false);
-                console.log(Session)
-
 
                 this.render('classpage', {
-                    data: theclass
+                    data: this
                 }); 
             }
             else {
@@ -348,8 +346,12 @@ if (Meteor.isClient) {
             }
             else {
                 // Don't need to check for whether inputname is an existing key?
-                currentSearch[inputname] = parseInt(inputval);
+                dtype = Session.get("coord_dtypes")[inputname];
+                console.log("type", dtype);
+                currentSearch[inputname] = convert_to_dtype(inputval, dtype);
                 // TODO: parseInt is hardcoded!
+                // todo: is this even the right place to be converting datatypes?
+                // todo: make this more elegant
             }
             Session.set('currentSearch',currentSearch);
         }, 200)
