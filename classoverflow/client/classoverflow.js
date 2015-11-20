@@ -6,12 +6,6 @@ Meteor.subscribe("classes");
 Meteor.subscribe("errors");
 Meteor.subscribe("hints");
 
-// todo: These session variables may be misplaced!
-// todo: this is hardcoded!
-Session.set('defaultSearch', {lab: "", module: "", testNum: ""});
-Session.set('currentSearch', Session.get('defaultSearch'));
-
-
 myScrollIntoView = function(result) {
     $('tr').removeClass('highlighted');
     $('#'+result).addClass('highlighted');
@@ -36,13 +30,26 @@ loginAsEdxStudent = function(edxstudentID) {
     });
 }
 
+function convert_to_dtype(val, dtype) {
+    if (dtype=="int") {
+        return parseInt(val);
+    }
+    else if (dtype=="string") {
+        return String(val);
+    }
+    else {
+        console.log("No data type change.");
+        return val;
+    }
+}
+
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
     this.route('/', function () {
         this.render('classes');
     });
-    this.route('/class/:classtitle/:extraparams', { // labno=:labno
+    /*this.route('/class/:classtitle/:extraparams', { // labno=:labno
         // layoutTemplate: 'lab3only',
         // ^ I feel like this might be a more efficient way to
         //   process templates, but fix later
@@ -62,44 +69,63 @@ Router.map(function () {
                 }); 
             }
         }
-    });
+    });*/
     this.route('/class/:classtitle', { 
-
-        subscriptions: function() {
-
-            return Meteor.subscribe('errors');
+        subscriptions: function() {            
+            return [Meteor.subscribe('classes'), 
+                    Meteor.subscribe('errors')];
         },
-
         action: function () {
-            //console.log(this.params.classtitle);
-            console.log('this.params',this.params)
-            var theclass = Classes.findOne({
-                classtitle: this.params.classtitle
-            });
-            //theclass['query'] = this.params.query;
-            for (var q in this.params.query) {
-                //console.log(q,this.params.query[q])
-                var formparam = q.split('_param')[0];
-                console.log(formparam)
-                Session.set(formparam,this.params.query[q])
-                //theclass[q] = this.params.query[q]
-            }
-            //console.log(theclass);
-            Session.set('class', this.params.classtitle);
-            //console.log(theclass)
-            Session.set('numErrorCoords',theclass['errorCoords'].length);
-
-            //find or login with student id
-            if (!Meteor.user() && this.params.query.student_id) {
-                loginAsEdxStudent(this.params.query.student_id);
-            }
-            Session.set('submitQ', false);
-            console.log(Session)
-
             if (this.ready()) {
+                console.log("ready!");
+
+                var theclass = Classes.findOne({
+                    classtitle: this.params.classtitle
+                })
+                // todo: the async nature of this is a bug!
+
+
+                console.log(theclass);
+                var coord_dtypes = {};
+                for (var i=0; i<theclass.errorCoords.length; i=i+1) {
+                    coords = theclass.errorCoords[i];
+                    coord_dtypes[coords["name"]] = coords["inputType"];
+                }
+
+                var queryparams = this.params.query;
+                for (var q in queryparams) {
+                    if (!queryparams.hasOwnProperty(q)) {
+                        delete queryparams['q'];
+                    }
+                    else if (typeof(coord_dtypes[q])=="undefined") {
+                        delete queryparams['q'];
+                    }
+                }
+                Session.set('class', this.params.classtitle);
+                Session.set('coord_dtypes', coord_dtypes);
+                Session.set('currentSearch', queryparams);
+
+
+                Session.set('numErrorCoords',theclass['errorCoords'].length);
+                // todo: These session variables may be misplaced!
+                // todo: this is hardcoded!
+                // todo: move this into router action method
+
+                //find or login with student id
+                if (!Meteor.user() && this.params.query.student_id) {
+                    loginAsEdxStudent(this.params.query.student_id);
+                }
+                // todo: what does submitQ do?
+                Session.set('submitQ', false);
+                console.log(Session)
+
+
                 this.render('classpage', {
                     data: theclass
                 }); 
+            }
+            else {
+                console.log("loading");
             }
         }
     });
@@ -311,7 +337,7 @@ if (Meteor.isClient) {
     });
 
     Template.errorCoord.events({
-        // todo: this may be the wrong selector to use:
+        // todo: this is the wrong selector to use; form-control is a bootstrap thing
         "keyup .form-control": _.throttle(function(e) {
             var inputname = e.target.name;
             var inputval = e.target.value;
