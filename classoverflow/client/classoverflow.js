@@ -49,27 +49,6 @@ Router.map(function () {
     this.route('/', function () {
         this.render('classes');
     });
-    /*this.route('/class/:classtitle/:extraparams', { // labno=:labno
-        // layoutTemplate: 'lab3only',
-        // ^ I feel like this might be a more efficient way to
-        //   process templates, but fix later
-        data: function() {
-            //return this.params;
-            // ^ apparently this isn't necessary
-        },
-        action: function() {
-            console.log('this.params',this.params);
-            var theclass = Classes.findOne({
-                classtitle: this.params.classtitle
-            });
-            Session.set('class', this.params.classtitle);
-            if (this.ready()) {
-                this.render('classpage', {
-                    data: this.params
-                }); 
-            }
-        }
-    });*/
     this.route('/class/:classtitle', { 
         subscriptions: function() {            
             return [Meteor.subscribe('classes'), 
@@ -79,43 +58,51 @@ Router.map(function () {
             if (this.ready()) {
                 console.log("ready!");
 
+
                 var theclass = Classes.findOne({
                     classtitle: this.params.classtitle
                 })
-
-
-                console.log(theclass);
                 var coord_dtypes = {};
                 for (var i=0; i<theclass.errorCoords.length; i=i+1) {
                     coords = theclass.errorCoords[i];
                     coord_dtypes[coords["name"]] = coords["inputType"];
                 }
+                Session.set('coord_dtypes', coord_dtypes);
+                Session.set('class', this.params.classtitle);
 
-                var queryparams = {};
-                for (var q in this.params.query) {
-                    if (this.params.query.hasOwnProperty(q)) {
-                        if (typeof(coord_dtypes[q])!="undefined") {
-                            val = this.params.query[q];
-                            dtype = coord_dtypes[q];
-                            queryparams[q] = convert_to_dtype(val,"string")
+
+
+                if (_.isEmpty(this.params.query)) {
+                    if (typeof(Session.get("currentSearch"))=="undefined") {
+                        Session.set("currentSearch",{});
+                    }
+                    console.log("in here");
+                }
+                else {
+                    var queryparams = {};
+                    for (var q in this.params.query) {
+                        if (this.params.query.hasOwnProperty(q)) {
+                            if (typeof(coord_dtypes[q])!="undefined") {
+                                val = this.params.query[q];
+                                dtype = coord_dtypes[q];
+                                queryparams[q] = convert_to_dtype(val,"string")
+                            }
                         }
                     }
+                    Session.set('currentSearch', queryparams);
+
+                    Session.set('numErrorCoords',theclass['errorCoords'].length);
+                    
+                    // todo: redirect to main URL
+
+                    //find or login with student id
+                    if (!Meteor.user() && this.params.query.student_id) {
+                        loginAsEdxStudent(this.params.query.student_id);
+                    }
+                    // todo: what does submitQ do?
+                    Session.set('submitQ', false);
+                    Router.go('/class/'+this.params.classtitle);
                 }
-                Session.set('class', this.params.classtitle);
-                Session.set('coord_dtypes', coord_dtypes);
-                Session.set('currentSearch', queryparams);
-
-                Session.set('numErrorCoords',theclass['errorCoords'].length);
-                // todo: These session variables may be misplaced!
-
-                // todo: redirect to main URL
-
-                //find or login with student id
-                if (!Meteor.user() && this.params.query.student_id) {
-                    loginAsEdxStudent(this.params.query.student_id);
-                }
-                // todo: what does submitQ do?
-                Session.set('submitQ', false);
 
                 this.render('classpage', {
                     data: this
