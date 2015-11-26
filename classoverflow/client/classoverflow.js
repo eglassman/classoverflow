@@ -82,7 +82,6 @@ Router.map(function () {
                 var theclass = Classes.findOne({
                     classtitle: this.params.classtitle
                 })
-                // todo: the async nature of this is a bug!
 
 
                 console.log(theclass);
@@ -98,7 +97,7 @@ Router.map(function () {
                         if (typeof(coord_dtypes[q])!="undefined") {
                             val = this.params.query[q];
                             dtype = coord_dtypes[q];
-                            queryparams[q] = convert_to_dtype(val,dtype)
+                            queryparams[q] = convert_to_dtype(val,"string")
                         }
                     }
                 }
@@ -195,39 +194,14 @@ if (Meteor.isClient) {
             });
             //console.log(coordsSortObj)
             var sort_obj = {sort: coordsSortObj};
-            /*var default_search_query = {class: Session.get('class')};
-            var search_query = {class: Session.get('class')};
-            if (typeof(this.extraparams)!=='undefined') {
-                var invalid = false;
-                parameters = this.extraparams.split("&");
-                console.log("first split:", parameters)
-                for(var i=0; i<parameters.length; i++) {
-                    param = parameters[i].split("=");
-                    if (param.length != 2 || param[0]=="class") {
-                        invalid = true;
-                        break;
-                    }
-                    if (!isNaN(param[1])) {
-                        param[1] = parseInt(param[1]);
-                    }
-                    search_query[param[0]] = param[1];
-                    console.log("loop:", search_query)
-                }
-                if(invalid) {
-                    search_query = default_search_query;
-                }
-                // Check for security bugs! This lets user check things on the server
-            }
-            console.log("final:", search_query);
-            return Errors.find(search_query, sort_obj).fetch();*/
-
             currentSearch = Session.get("currentSearch");
             search_query = {};
             for (var inputfield in currentSearch) {
                 if (currentSearch.hasOwnProperty(inputfield)) {
                     inputvalue = currentSearch[inputfield];
                     if (inputvalue) {
-                        search_query[inputfield] = inputvalue;
+                        dtype = Session.get('coord_dtypes')[inputfield];
+                        search_query[inputfield] = convert_to_dtype(inputvalue, dtype);
                     }
                 }
             }
@@ -317,7 +291,7 @@ if (Meteor.isClient) {
     });
     
     Template.errorCoord.onRendered(function () {
-        console.log('error rendered')
+        console.log('error rendered (what does this mean?)')
         Session.set('errorCoordsRendered',1+Session.get('errorCoordsRendered'));
         if (Session.get('submitQ') && Session.get('errorCoordsRendered')==Session.get('numErrorCoords')) {
             console.log('submit the sucker!')
@@ -346,9 +320,8 @@ if (Meteor.isClient) {
             }
             else {
                 // Don't need to check for whether inputname is an existing key?
-                dtype = Session.get("coord_dtypes")[inputname];
-                console.log("type", dtype);
-                currentSearch[inputname] = convert_to_dtype(inputval, dtype);
+                // dtype = Session.get("coord_dtypes")[inputname];
+                currentSearch[inputname] = convert_to_dtype(inputval, "string");
                 // TODO: parseInt is hardcoded!
                 // todo: is this even the right place to be converting datatypes?
                 // todo: make this more elegant
