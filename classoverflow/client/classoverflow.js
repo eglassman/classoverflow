@@ -32,7 +32,13 @@ loginAsEdxStudent = function(edxstudentID) {
 
 function convert_to_dtype(val, dtype) {
     if (dtype=="int") {
-        return parseInt(val);
+        integer = parseInt(val);
+        string = String(integer);
+        if (string!=val) {
+            return NaN;
+        }
+        return integer;
+        // This may not be a comprehensive check
     }
     else if (dtype=="string") {
         return String(val);
@@ -69,14 +75,13 @@ Router.map(function () {
                 }
                 Session.set('coord_dtypes', coord_dtypes);
                 Session.set('class', this.params.classtitle);
-
+                Session.set('errorMessage',"");
 
 
                 if (_.isEmpty(this.params.query)) {
                     if (typeof(Session.get("currentSearch"))=="undefined") {
                         Session.set("currentSearch",{});
                     }
-                    console.log("in here");
                 }
                 else {
                     var queryparams = {};
@@ -90,20 +95,12 @@ Router.map(function () {
                         }
                     }
                     Session.set('currentSearch', queryparams);
-
-                    Session.set('numErrorCoords',theclass['errorCoords'].length);
-                    
-                    // todo: redirect to main URL
-
-                    //find or login with student id
-                    if (!Meteor.user() && this.params.query.student_id) {
-                        loginAsEdxStudent(this.params.query.student_id);
-                    }
-                    // todo: what does submitQ do?
-                    Session.set('submitQ', false);
                     Router.go('/class/'+this.params.classtitle);
                 }
 
+                if (!Meteor.user() && this.params.query.student_id) {
+                    loginAsEdxStudent(this.params.query.student_id);
+                }
                 this.render('classpage', {
                     data: this
                 }); 
@@ -151,8 +148,28 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             thisclass['errorCoords'].forEach(function(ec){
-                coordVals.push({val: curError[ec['name']]});
-            });                
+                errorcoord = ec['name'];
+                coordvalue = curError[errorcoord];
+                // ec stands for errorcoord?
+                // ec['name'] is 'module', coordvalue is 'excalibur'
+                currentsearchvalue = Session.get("currentSearch")[errorcoord];
+                // Use the next line when you enforce some columns to be specific dtypes
+                //if (Session.get("coord_dtypes")[errorcoord]=="string") {
+                if (typeof(coordvalue)=="string") {
+                    if (currentsearchvalue) {
+                        searchregex = new RegExp("("+currentsearchvalue+")", "i");
+                        modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
+                        console.log(modified_val);
+                    }
+                    else {
+                        modified_val = coordvalue;
+                    }  
+                } 
+                else {
+                    modified_val = coordvalue;
+                }
+                coordVals.push({val: modified_val});
+            });              
             return coordVals;
         } else {
             console.log('no title supplied');
@@ -188,13 +205,28 @@ if (Meteor.isClient) {
                     inputvalue = currentSearch[inputfield];
                     if (inputvalue) {
                         dtype = Session.get('coord_dtypes')[inputfield];
-                        search_query[inputfield] = convert_to_dtype(inputvalue, dtype);
+                        inputvalue = convert_to_dtype(inputvalue, dtype)
+                        if (dtype=="string") {
+                            var newregex = new RegExp(inputvalue,"i")
+                            search_obj = {"$regex": newregex};
+                        }
+                        else {
+                            search_obj = inputvalue;
+                        }
+                        search_query[inputfield] = search_obj;
                     }
                 }
             }
-            console.log("currentSearch", currentSearch);
+            console.log("search_query", search_query);
             search_query["class"] = Session.get('class');
-            return Errors.find(search_query, sort_obj)
+            search_results = Errors.find(search_query, sort_obj);
+            if (search_results.count()==0) {
+                Session.set("errorMessage", "No results found; displaying all results");
+                return Errors.find({"class": Session.get('class')}, sort_obj);
+            }
+            else {
+                return search_results;
+            }
         }
     });
     Template.error.helpers({
@@ -277,7 +309,7 @@ if (Meteor.isClient) {
         }
     });
     
-    Template.errorCoord.onRendered(function () {
+    /*Template.errorCoord.onRendered(function () {
         console.log('error rendered (what does this mean?)')
         Session.set('errorCoordsRendered',1+Session.get('errorCoordsRendered'));
         if (Session.get('submitQ') && Session.get('errorCoordsRendered')==Session.get('numErrorCoords')) {
@@ -285,7 +317,7 @@ if (Meteor.isClient) {
             $('#find-add-error-btn').click();
             Session.set('submitQ',false)
         }
-    });
+    });*/
 
     Template.errorCoord.helpers({
         getCurrentErrorCoord: function() {
@@ -302,16 +334,10 @@ if (Meteor.isClient) {
             var inputval = e.target.value;
             currentSearch = Session.get('currentSearch');
             if (!inputval) {
-                //delete currentSearch[inputname];
                 currentSearch[inputname] = inputval;
             }
             else {
-                // Don't need to check for whether inputname is an existing key?
-                // dtype = Session.get("coord_dtypes")[inputname];
                 currentSearch[inputname] = convert_to_dtype(inputval, "string");
-                // TODO: parseInt is hardcoded!
-                // todo: is this even the right place to be converting datatypes?
-                // todo: make this more elegant
             }
             Session.set('currentSearch',currentSearch);
         }, 200)
@@ -319,25 +345,11 @@ if (Meteor.isClient) {
 
     Template.navbar.helpers({
         errorCoords: function() {
-            console.log('navbar errorCoords')
             var title = Session.get('class');
             if (title) {
                 var thisclass = Classes.findOne({
                     classtitle: title
                 });
-                var submitQ = true; //just the initialization
-
-                Session.set('errorCoordsRendered',0);
-                for (var ec in thisclass['errorCoords']) {
-                    var coordval = Session.get(thisclass['errorCoords'][ec]['name']);
-                    thisclass['errorCoords'][ec]['coordvalue'] = coordval;
-                    if (coordval==undefined) {
-                        submitQ = false;
-                    }
-                }
-                Session.set('submitQ',submitQ);
-                //console.log('finished errorCoords')
-                //console.log(Session.get('submitQ'))
                 return thisclass['errorCoords'];
             } else {
                 console.log('no title supplied');
@@ -395,6 +407,16 @@ if (Meteor.isClient) {
         },
         "click .instructions": function (event) {
             console.log('instructions clicked')
+        }
+    });
+    
+    Template.errorMessageBar.helpers({
+        getErrorMessage: function() {
+            message = Session.get("errorMessage");
+            if (typeof(message)=="undefined") {
+                return "Not defined";
+            }
+            return message;
         }
     });
 }
