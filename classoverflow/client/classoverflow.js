@@ -52,8 +52,11 @@ function convert_to_dtype(val, dtype) {
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
-    this.route('/', function () {
-        this.render('classes');
+    this.route('/', {
+        name: 'route.home',
+        action: function () {
+            this.render('classes');
+        }
     });
     this.route('/class/:classtitle', { 
         subscriptions: function() {            
@@ -84,18 +87,23 @@ Router.map(function () {
                     }
                 }
                 else {
-                    var queryparams = {};
+                    var currentSearch = {};
                     for (var q in this.params.query) {
                         if (this.params.query.hasOwnProperty(q)) {
                             if (typeof(coord_dtypes[q])!="undefined") {
-                                val = this.params.query[q];
-                                dtype = coord_dtypes[q];
-                                queryparams[q] = convert_to_dtype(val,"string")
+                                val = convert_to_dtype(this.params.query[q], "string");
+                                if (val) {
+                                    currentSearch[q] = val;   
+                                }
                             }
                         }
                     }
-                    Session.set('currentSearch', queryparams);
-                    Router.go('/class/'+this.params.classtitle);
+                    Session.set('currentSearch', currentSearch);
+                    Router.go(
+                        'route.currentclass',
+                        {"classtitle":Session.get('class')},
+                        {query: currentSearch, replaceState: true}
+                    );
                 }
 
                 if (!Meteor.user() && this.params.query.student_id) {
@@ -108,9 +116,9 @@ Router.map(function () {
             else {
                 console.log("loading");
             }
-        }
-    });
-        
+        }, 
+        name: "route.currentclass"
+    });        
 });
 
 Meteor.startup(function () {
@@ -159,7 +167,7 @@ if (Meteor.isClient) {
                     if (currentsearchvalue) {
                         searchregex = new RegExp("("+currentsearchvalue+")", "i");
                         modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
-                        console.log(modified_val);
+                        console.log("modified_val:",modified_val);
                     }
                     else {
                         modified_val = coordvalue;
@@ -179,6 +187,7 @@ if (Meteor.isClient) {
         return Session.get('certAuthEnabled');
     });
     
+    // classes!
     Template.classes.helpers({
         classes: function () {
             return Classes.find().fetch();
@@ -207,7 +216,8 @@ if (Meteor.isClient) {
                         dtype = Session.get('coord_dtypes')[inputfield];
                         inputvalue = convert_to_dtype(inputvalue, dtype)
                         if (dtype=="string") {
-                            var newregex = new RegExp(inputvalue,"i")
+                            var newregex = new RegExp(inputvalue,"i");
+                            // Search string for inputvalue, case insensitive
                             search_obj = {"$regex": newregex};
                         }
                         else {
@@ -217,7 +227,6 @@ if (Meteor.isClient) {
                     }
                 }
             }
-            console.log("search_query", search_query);
             search_query["class"] = Session.get('class');
             search_results = Errors.find(search_query, sort_obj);
             if (search_results.count()==0) {
@@ -333,13 +342,23 @@ if (Meteor.isClient) {
             var inputname = e.target.name;
             var inputval = e.target.value;
             currentSearch = Session.get('currentSearch');
+            inputval = convert_to_dtype(inputval, "string");
             if (!inputval) {
-                currentSearch[inputname] = inputval;
+                // currentSearch[inputname] = inputval;
+                delete currentSearch[inputname];
+                // check to make sure that it's not 0
             }
             else {
-                currentSearch[inputname] = convert_to_dtype(inputval, "string");
+                currentSearch[inputname] = inputval;
             }
+
             Session.set('currentSearch',currentSearch);
+            Router.go(
+                'route.currentclass',
+                {"classtitle":Session.get('class')},
+                {query: currentSearch, replaceState: true}
+            );
+            //return false;
         }, 200)
     });
 
@@ -389,9 +408,6 @@ if (Meteor.isClient) {
                             myScrollIntoView(result);
                         }
                     });
-                    //$('#'+insertedError).css("background-color","gray");
-                    //console.log($('#'+insertedError).text())
-                    //console.log($('#'+insertedError).css("background-color"))
                 } else {
                     //alert('This error is not yet in our system. Please sign in so you can add it.');
                     $('#mySignInModal').modal('show');
