@@ -49,6 +49,26 @@ function convert_to_dtype(val, dtype) {
     }
 }
 
+function sanitizeCurrentSearch(currentSearch) {
+    coord_dtypes = Session.get("coord_dtypes");
+    for (var q in currentSearch) {
+        if (currentSearch.hasOwnProperty(q)) {
+            val = convert_to_dtype(currentSearch[q], "string");
+            if (typeof(coord_dtypes[q])=="undefined" || !val) {
+                delete currentSearch[q];
+            }
+            else {
+                currentSearch[q] = val;
+            }
+        }
+    }
+    Session.set('currentSearch',currentSearch);
+    Router.go(
+        'route.currentclass',
+        {"classtitle": Session.get('class')},
+        {query: currentSearch, replaceState: true}
+    );
+}
 
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
@@ -87,23 +107,7 @@ Router.map(function () {
                     }
                 }
                 else {
-                    var currentSearch = {};
-                    for (var q in this.params.query) {
-                        if (this.params.query.hasOwnProperty(q)) {
-                            if (typeof(coord_dtypes[q])!="undefined") {
-                                val = convert_to_dtype(this.params.query[q], "string");
-                                if (val) {
-                                    currentSearch[q] = val;   
-                                }
-                            }
-                        }
-                    }
-                    Session.set('currentSearch', currentSearch);
-                    Router.go(
-                        'route.currentclass',
-                        {"classtitle":Session.get('class')},
-                        {query: currentSearch, replaceState: true}
-                    );
+                    sanitizeCurrentSearch(this.params.query);
                 }
 
                 if (!Meteor.user() && this.params.query.student_id) {
@@ -342,23 +346,9 @@ if (Meteor.isClient) {
             var inputname = e.target.name;
             var inputval = e.target.value;
             currentSearch = Session.get('currentSearch');
-            inputval = convert_to_dtype(inputval, "string");
-            if (!inputval) {
-                // currentSearch[inputname] = inputval;
-                delete currentSearch[inputname];
-                // check to make sure that it's not 0
-            }
-            else {
-                currentSearch[inputname] = inputval;
-            }
+            currentSearch[inputname] = convert_to_dtype(inputval, "string");
 
-            Session.set('currentSearch',currentSearch);
-            Router.go(
-                'route.currentclass',
-                {"classtitle":Session.get('class')},
-                {query: currentSearch, replaceState: true}
-            );
-            //return false;
+            sanitizeCurrentSearch(currentSearch);
         }, 200)
     });
 
