@@ -1,13 +1,12 @@
 //PRIVATE COLLECTIONS ONLY ON SERVER
 Log = new Mongo.Collection("log");
-//SiteUsers = new Mongo.Collection("siteusers");
 
 //COLLECTIONS TO BE PUBLISHED TO CLIENT
 Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-//COLLECTIONS actually published to client
+//COLLECTIONS being published to client
 Meteor.publish("classes", function () {
     return Classes.find();
 });
@@ -18,29 +17,57 @@ Meteor.publish("hints", function () {
     return Hints.find();
 });
 
+
+//PASSWORD FOR STUDENT ID AUTHENTICATED USERS
 var edxpass = '071a0f58e44494a90dbc5844c480586c';
 
+
+//CLASS-SPECIFIC INFO
+var classDict = {}
+
+classDict['6.004'] = {}
+classDict['6.004']['lab'] = {'label':'Lab Number','type':'int'}
+classDict['6.004']['module'] = {'label':'Module','type':'string'}
+classDict['6.004']['testNum'] = {'label':'Test Number','type':'int'}
+
+classDict['6.005'] = {}
+classDict['6.005']['ps'] = {'label':'Problem Set','type':'int'}
+classDict['6.005']['file'] = {'label':'File Name','type':'string'}
+classDict['6.005']['line'] = {'label':'Line Number','type':'int'}
+
+classDict['61b'] = {}
+classDict['61b']['branch'] = {'label':'Branch','type':'int'}
+classDict['61b']['testGroup'] = {'label':'Test Group Name','type':'string'}
+classDict['61b']['testNum'] = {'label':'Test Number','type':'int'}
+
+
+//LOGGING FUNCTIONS
+function logThis(classtitle,user,action,receivingObject,createdAt){
+    var logObj = {}; //initialize
+
+    logObj['classtitle'] = classtitle;
+    logObj['user'] = user;
+    logObj['action'] = action;
+    logObj['receivingObject'] = receivingObject;
+    logObj['createdAt'] = createdAt;
+
+    Log.insert(logObj,function (err, result) {
+        //assert.equal(err, null);
+        console.log("log insertion:",err,result);
+    });
+}
+
+
+//BOOLEAN FUNCTIONS ABOUT USER'S PAST ACTIONS
+//did the user request this error?
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
-    console.log('requestedErrors',requestedErrors)
-    console.log('errorId',errorId)
-    if (requestedErrors.indexOf(errorId) >= 0) {
-        return true;
-    } else {
-        return false;
-    }
-    
+    if (requestedErrors.indexOf(errorId) >= 0) {return true;} else {return false;}
 };
+//did the user upvote this hint?
 upvoted = function(hintId) {
     var upvotedHints = Meteor.user().profile['upvotedHints'];
-    console.log('upvotedHints',upvotedHints)
-    console.log('hintId',hintId)
-    if (upvotedHints.indexOf(hintId) >= 0) {
-        return true;
-    } else {
-        return false;
-    }
-    
+    if (upvotedHints.indexOf(hintId) >= 0) { return true;} else {return false;}
 };
 
 
@@ -48,54 +75,25 @@ upvoted = function(hintId) {
 
 Meteor.methods({
 
-    addError: function(theclass,errorCoords) {
+    addError: function(classtitle,errorCoords) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
         }
 
-        //todo: check if values are right type, within range, appropriate size #sanitization
+        var candidateError = errorCoords; 
 
-        console.log('errorCoords',errorCoords)
-        
-        //commenting out checking of values within coordinates
-        /*Object.keys(errorCoords).forEach(function(key, index) {
-            console.log(key, value);
-            var value = errorCoords[key];
-
-            //todo: check if its supposed to be an int or a string!
-
-            if(typeof value === "string" && value.length > 50) {
-               //it's a string but its too long
-               throw new Meteor.Error('string-too-long'); 
-               //todo: tell the user why its not getting added
-            }
-            if(typeof value === "int" && value.length > 4) {
-               //it's a number but its too large or too many decimal places
-               throw new Meteor.Error('int-too-big'); 
-               //todo: tell the user why its not getting added
-            }
-        });*/
-
-        var candidateError = errorCoords; //{};
-
-        candidateError['class'] = theclass;
+        candidateError['class'] = classtitle;
         candidateError['requests'] = 0;
         candidateError['createdAt'] = new Date();
-        candidateError['owner'] = Meteor.userId(); // _id of logged in user
-        //candidateError['requesters'] = [];
+        candidateError['owner'] = Meteor.userId(); 
 
-        Errors.insert(candidateError);
+        Errors.insert(candidateError,function (err, result) {
+            //assert.equal(err, null);
+            console.log("error insertion: ",err,result);
+            logThis(classtitle,Meteor.userId(),'addError',result,new Date());
+        });
 
-
-        logObj = {};
-        logObj['owner'] = candidateError['owner'];
-        //logObj['username'] = Meteor.user().username;
-        logObj['action'] = 'addError';
-        logObj['object'] = candidateError;
-        logObj['createdAt'] = candidateError['createdAt']
-        logObj['class'] = candidateError['class'];
-        Log.insert(logObj);
     },
     addHint: function (theclass,errorId,hintText) {
 
@@ -117,17 +115,13 @@ Meteor.methods({
         hintObj['errorId'] = errorId;
         hintObj['createdAt'] = new Date();
         hintObj['owner'] = Meteor.userId();
-        //hintObj['username'] = Meteor.user().username;
         hintObj['class'] = theclass;
         hintObj['upvotes'] = 0;
-        //hintObj['upvoters'] = [];
-
 
         var insertedHint = Hints.insert(hintObj);
 
         logObj = {};
         logObj['owner'] = hintObj['owner'];
-        //logObj['username'] = Meteor.user().username;
         logObj['action'] = 'addHint';
         logObj['object'] = insertedHint;
         logObj['createdAt'] = hintObj['createdAt']
@@ -143,7 +137,6 @@ Meteor.methods({
         else {
 
             var delta = 0;
-            //var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
             var requestedErrors = Meteor.user().profile['requestedErrors'];
 
             logObj = {};
@@ -152,23 +145,19 @@ Meteor.methods({
                 console.log('request this error:',errorId)
                 delta = 1;
                 logObj['action'] = 'request';
-                //Meteor.user().profile['requestedErrors'].push(errorId);
                 var updated_requestedErrors = requestedErrors.concat(errorId);
-                //console.log()
                 Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": updated_requestedErrors }} );
                 console.log('new user profile',Meteor.user().profile)
             } else {
                 console.log('unrequest this error:',errorId)
                 delta = -1;
                 logObj['action'] = 'unrequest';
-                //Meteor.user().profile['requestedErrors'] = _.without(requestedErrors,errorId);
                 Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": _.without(requestedErrors,errorId) }} );
                 console.log('new user profile',Meteor.user().profile)
             }
             Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
             logObj['owner'] = Meteor.userId();
-            //logObj['username'] = Meteor.user().username;
             logObj['object'] = errorId;
             logObj['createdAt'] = new Date();
             logObj['class'] = theclass;
@@ -186,9 +175,6 @@ Meteor.methods({
             var delta = 0;
             var upvotedHints = Meteor.user().profile['upvotedHints'];
             console.log('upvotedHints', upvotedHints)
-            //console.log('Meteor.user()',Meteor.user());
-            //var siteUser = user.user; //SiteUsers.findOne({ userId: Meteor.userId() });
-            
 
             logObj = {};
 
@@ -214,7 +200,6 @@ Meteor.methods({
 
 
             logObj['owner'] = Meteor.userId();
-            //logObj['username'] = Meteor.user().username;
             logObj['object'] = hintId;
             logObj['createdAt'] = new Date();
             logObj['class'] = theclass;
@@ -238,14 +223,8 @@ Accounts.onLogin(function(user){
     Log.insert({'userId': user.user._id, 'loggedInAt': new Date()})
 });
 
-/*Accounts.onLoginFailure(function(){
-    //console.log(Meteor.userId())
-    Log.insert({'loggedInFailedAt': new Date()})
-});*/
 
 Accounts.onCreateUser(function(options, user) {
-    console.log('creating user')
-    
     if (options.profile) {
         user.profile = options.profile;
     } else {
@@ -255,62 +234,32 @@ Accounts.onCreateUser(function(options, user) {
     user.profile.upvotedHints = []; 
     user.profile.requestedErrors = [];
 
-    console.log('user',user);
-
     return user;
 });
 
 Meteor.startup(function () {
-        console.log(Meteor.users.find({}).fetch())
-        // code to run on server at startup
-        //if (! Classes.findOne()){
-        Classes.remove({});
-        var classes = [
-            {
-                classtitle: '6.004',
-                errorCoords: [
-                    {
-                        name: "lab",
-                        placeholder: 'Lab Number',
-                        inputType: 'int'
-                    },
-                    {
-                        name: "module",
-                        placeholder: 'Module',
-                        inputType: 'string'
-                    },
-                    {
-                        name: "testNum",
-                        placeholder: 'Test Number',
-                        inputType: 'int'
-                    }
-    ],
-                route: '/class/6.004'
-            },
-            {
-                classtitle: '6.005',
-                errorCoords: [
-                    {
-                        name: "ps",
-                        placeholder: "Problem Set",
-                        inputType: 'int'
-                    },
-                    {
-                        name: "file",
-                        placeholder: 'File Name',
-                        inputType: 'string'
-                    },
-                    {
-                        name: "line",
-                        placeholder: 'Line Number',
-                        inputType: 'int'
-                    }
-    ],
-                route: '/class/6.005'
-            }
-           ];
-        classes.forEach(function (c) {
-                Classes.insert(c);
+    Classes.remove({});
+
+    for (var classtitle in classDict) {
+
+        errorCoords = []
+
+        for (var errorCoord in classDict[classtitle]) {
+            errorCoords.push({
+                'name': errorCoord,
+                'label': classDict[classtitle][errorCoord]['label'],
+                'type': classDict[classtitle][errorCoord]['type']
             })
-            //}
-    });
+        }
+
+        Classes.insert({
+            'classtitle': classtitle,
+            'route': '/class/'+classtitle,
+            'errorCoords': errorCoords
+        },function (err, result) {
+            //assert.equal(err, null);
+            console.log("class insertion: ",err,result);
+        })
+    }
+        
+});
