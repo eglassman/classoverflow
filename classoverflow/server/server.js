@@ -54,7 +54,7 @@ function logThis(classtitle,action,receivingObject){
     Log.insert(logObj,function (err, result) {
         //assert.equal(err, null);
         //console.log("log insertion:",err,result);
-        if (err ==null) {console.log('problem adding hints')} 
+        if (err) {console.log('problem adding hints')} 
         else {'log entry added',result}
     });
 }
@@ -103,7 +103,7 @@ Meteor.methods({
 
         Errors.insert(userErrorCoords,function (err, result) {
             //assert.equal(err, null);
-            if (err ==null) {console.log('problem adding errors')} 
+            if (err) {console.log('problem adding errors')} 
             else {logThis(classtitle,'addError',result);}
         });
 
@@ -133,7 +133,7 @@ Meteor.methods({
         Hints.insert(hintObj,function (err, result) {
             //assert.equal(err, null);
             //console.log("hint insertion: ",err,result);
-            if (err ==null) {console.log('problem adding hints')} 
+            if (err) {console.log('problem adding hints')} 
             else {logThis(classtitle,'addHint',result);}
         });
 
@@ -161,7 +161,7 @@ Meteor.methods({
             }
 
             Errors.update({ _id: errorId },{$inc: {follows: delta}},function(err){
-                if (err ==null) {console.log('problem updating error follows')} 
+                if (err) {console.log('problem updating error follows')} 
                 else {logThis(classtitle,action,errorId)}
             });
         }
@@ -190,7 +190,7 @@ Meteor.methods({
             }
 
             Hints.update({ _id: hintId },{$inc: {upvotes: delta}},function(err){
-                if (err ==null) {console.log('problem updating hint upvotes')} 
+                if (err) {console.log('problem updating hint upvotes')} 
                 else {logThis(classtitle,action,hintId)}
             });
         }
@@ -247,7 +247,7 @@ Meteor.startup(function () {
             'errorCoords': errorCoords
         },function (err, result) {
             //assert.equal(err, null);
-            if (err ==null) {console.log('problem adding classes')} 
+            if (err) {console.log('problem adding classes')} 
             else {console.log("class insertion: ",result);}
         })
     }
