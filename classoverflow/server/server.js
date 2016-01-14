@@ -26,19 +26,19 @@ var edxpass = '071a0f58e44494a90dbc5844c480586c';
 var classDict = {}
 
 classDict['6.004'] = {}
-classDict['6.004']['lab'] = {'label':'Lab Number','type':'int'}
+classDict['6.004']['lab'] = {'label':'Lab Number','type':'number'}
 classDict['6.004']['module'] = {'label':'Module','type':'string'}
-classDict['6.004']['testNum'] = {'label':'Test Number','type':'int'}
+classDict['6.004']['testNum'] = {'label':'Test Number','type':'number'}
 
 classDict['6.005'] = {}
-classDict['6.005']['ps'] = {'label':'Problem Set','type':'int'}
+classDict['6.005']['ps'] = {'label':'Problem Set','type':'number'}
 classDict['6.005']['file'] = {'label':'File Name','type':'string'}
-classDict['6.005']['line'] = {'label':'Line Number','type':'int'}
+classDict['6.005']['line'] = {'label':'Line Number','type':'number'}
 
 classDict['61b'] = {}
-classDict['61b']['branch'] = {'label':'Branch','type':'int'}
+classDict['61b']['branch'] = {'label':'Branch','type':'number'}
 classDict['61b']['testGroup'] = {'label':'Test Group Name','type':'string'}
-classDict['61b']['testNum'] = {'label':'Test Number','type':'int'}
+classDict['61b']['testNum'] = {'label':'Test Number','type':'number'}
 
 
 //LOGGING FUNCTIONS
@@ -58,7 +58,7 @@ function logThis(classtitle,user,action,receivingObject,createdAt){
 }
 
 
-//BOOLEAN FUNCTIONS ABOUT USER'S PAST ACTIONS
+//BOOLEAN TEMPLATE HELPER FUNCTIONS ABOUT USER'S PAST ACTIONS
 //did the user request this error?
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
@@ -75,58 +75,64 @@ upvoted = function(hintId) {
 
 Meteor.methods({
 
-    addError: function(classtitle,errorCoords) {
+    addError: function(classtitle,userErrorCoords) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
         }
 
-        var candidateError = errorCoords; 
+        //checking input type and size
+        for (var errorCoord in classDict[classtitle]) {
+            if (typeof userErrorCoords[errorCoord] !== classDict[classtitle][errorCoord]['type']){
+                throw new Meteor.Error('not-the-right-type');
+            }
+            if (typeof userErrorCoords[errorCoord] === 'string' && userErrorCoords[errorCoord].length > 50) {
+                throw new Meteor.Error('string-is-too-long'); 
+            }
+            if (typeof userErrorCoords[errorCoord] === 'number' && (userErrorCoords[errorCoord] > 10000 || userErrorCoords[errorCoord] < 0)) {
+                throw new Meteor.Error('number-is-too-large-or-small'); 
+            }
+        }
 
-        candidateError['class'] = classtitle;
-        candidateError['requests'] = 0;
-        candidateError['createdAt'] = new Date();
-        candidateError['owner'] = Meteor.userId(); 
+        userErrorCoords['classtitle'] = classtitle;
+        userErrorCoords['requests'] = 1;
+        userErrorCoords['createdAt'] = new Date();
+        userErrorCoords['first_requester'] = Meteor.userId();
 
-        Errors.insert(candidateError,function (err, result) {
+        Errors.insert(userErrorCoords,function (err, result) {
             //assert.equal(err, null);
             console.log("error insertion: ",err,result);
             logThis(classtitle,Meteor.userId(),'addError',result,new Date());
         });
 
     },
-    addHint: function (theclass,errorId,hintText) {
+    addHint: function (classtitle,errorId,hintText) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
         }
 
-        //todo: check if text is right type, appropriate size #sanitization
         if (typeof hintText !== 'string') {
-            throw new Meteor.Error('hint-is-no-string')
-        }
-        if (typeof hintText === 'string' && hintText.length > 1000) {
-            throw new Meteor.Error('string-too-long'); 
-               //todo: tell the user why its not getting added
+            throw new Meteor.Error('hint-is-not-a-string')
+        } else {
+            if (hintText.length > 1000) {
+                throw new Meteor.Error('string-is-too-long'); 
+            }
         }
 
         var hintObj = {};
         hintObj['hint'] = hintText;
         hintObj['errorId'] = errorId;
         hintObj['createdAt'] = new Date();
-        hintObj['owner'] = Meteor.userId();
-        hintObj['class'] = theclass;
+        hintObj['creator'] = Meteor.userId();
+        hintObj['class'] = classtitle;
         hintObj['upvotes'] = 0;
 
-        var insertedHint = Hints.insert(hintObj);
-
-        logObj = {};
-        logObj['owner'] = hintObj['owner'];
-        logObj['action'] = 'addHint';
-        logObj['object'] = insertedHint;
-        logObj['createdAt'] = hintObj['createdAt']
-        logObj['class'] = hintObj['class'];
-        Log.insert(logObj);
+        Hints.insert(hintObj,function (err, result) {
+            //assert.equal(err, null);
+            console.log("hint insertion: ",err,result);
+            logThis(classtitle,Meteor.userId(),'addHint',result,new Date());
+        });
 
     },
     toggleRequest: function (theclass,errorId) {
