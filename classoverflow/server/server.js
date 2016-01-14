@@ -42,27 +42,29 @@ classDict['61b']['testNum'] = {'label':'Test Number','type':'number'}
 
 
 //LOGGING FUNCTIONS
-function logThis(classtitle,user,action,receivingObject,createdAt){
+function logThis(classtitle,action,receivingObject){
     var logObj = {}; //initialize
 
     logObj['classtitle'] = classtitle;
-    logObj['user'] = user;
+    logObj['user'] = Meteor.userId();
     logObj['action'] = action;
     logObj['receivingObject'] = receivingObject;
-    logObj['createdAt'] = createdAt;
+    logObj['createdAt'] = new Date();
 
     Log.insert(logObj,function (err, result) {
         //assert.equal(err, null);
-        console.log("log insertion:",err,result);
+        //console.log("log insertion:",err,result);
+        if (err ==null) {console.log('problem adding hints')} 
+        else {'log entry added',result}
     });
 }
 
 
 //BOOLEAN TEMPLATE HELPER FUNCTIONS ABOUT USER'S PAST ACTIONS
-//did the user request this error?
-requested = function(errorId) {
-    var requestedErrors = Meteor.user().profile['requestedErrors'];
-    if (requestedErrors.indexOf(errorId) >= 0) {return true;} else {return false;}
+//did the user follow this error?
+followed = function(errorId) {
+    var followedErrors = Meteor.user().profile['followedErrors'];
+    if (followedErrors.indexOf(errorId) >= 0) {return true;} else {return false;}
 };
 //did the user upvote this hint?
 upvoted = function(hintId) {
@@ -95,14 +97,14 @@ Meteor.methods({
         }
 
         userErrorCoords['classtitle'] = classtitle;
-        userErrorCoords['requests'] = 1;
+        userErrorCoords['follows'] = 1;
         userErrorCoords['createdAt'] = new Date();
-        userErrorCoords['first_requester'] = Meteor.userId();
+        userErrorCoords['first_follower'] = Meteor.userId();
 
         Errors.insert(userErrorCoords,function (err, result) {
             //assert.equal(err, null);
-            console.log("error insertion: ",err,result);
-            logThis(classtitle,Meteor.userId(),'addError',result,new Date());
+            if (err ==null) {console.log('problem adding errors')} 
+            else {logThis(classtitle,'addError',result);}
         });
 
     },
@@ -124,92 +126,73 @@ Meteor.methods({
         hintObj['hint'] = hintText;
         hintObj['errorId'] = errorId;
         hintObj['createdAt'] = new Date();
-        hintObj['creator'] = Meteor.userId();
-        hintObj['class'] = classtitle;
+        hintObj['user'] = Meteor.userId();
+        hintObj['classtitle'] = classtitle;
         hintObj['upvotes'] = 0;
 
         Hints.insert(hintObj,function (err, result) {
             //assert.equal(err, null);
-            console.log("hint insertion: ",err,result);
-            logThis(classtitle,Meteor.userId(),'addHint',result,new Date());
+            //console.log("hint insertion: ",err,result);
+            if (err ==null) {console.log('problem adding hints')} 
+            else {logThis(classtitle,'addHint',result);}
         });
 
     },
-    toggleRequest: function (theclass,errorId) {
+    toggleFollow: function (classtitle,errorId) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); //I think this is already handled on the client side? redundant there? or here?
-        }
-        else {
+        } else {
+
+            var followedErrors = Meteor.user().profile['followedErrors'];
 
             var delta = 0;
-            var requestedErrors = Meteor.user().profile['requestedErrors'];
+            var action = '';
 
-            logObj = {};
-
-            if (!requested(errorId)) {
-                console.log('request this error:',errorId)
+            if (!followed(errorId)) {
                 delta = 1;
-                logObj['action'] = 'request';
-                var updated_requestedErrors = requestedErrors.concat(errorId);
-                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": updated_requestedErrors }} );
-                console.log('new user profile',Meteor.user().profile)
+                action = 'follow';
+                var updated_followedErrors = followedErrors.concat(errorId);
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.followedErrors": updated_followedErrors }} );
             } else {
-                console.log('unrequest this error:',errorId)
                 delta = -1;
-                logObj['action'] = 'unrequest';
-                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": _.without(requestedErrors,errorId) }} );
-                console.log('new user profile',Meteor.user().profile)
+                action = 'unfollow';
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.followedErrors": _.without(followedErrors,errorId) }} );
             }
-            Errors.update({ _id: errorId },{$inc: {requests: delta}});
 
-            logObj['owner'] = Meteor.userId();
-            logObj['object'] = errorId;
-            logObj['createdAt'] = new Date();
-            logObj['class'] = theclass;
-            Log.insert(logObj);
+            Errors.update({ _id: errorId },{$inc: {follows: delta}},function(err){
+                if (err ==null) {console.log('problem updating error follows')} 
+                else {logThis(classtitle,action,errorId)}
+            });
         }
 
     },
-    toggleUpvote: function (theclass,hintId) {
+    toggleUpvote: function (classtitle,hintId) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
-        }
-        else {
+        } else {
 
-            var delta = 0;
             var upvotedHints = Meteor.user().profile['upvotedHints'];
-            console.log('upvotedHints', upvotedHints)
-
-            logObj = {};
+            
+            var delta = 0;
+            var action = '';
 
             if (!upvoted(hintId)) {
-                console.log('upvote this hint:',hintId)
                 delta = 1;
-                logObj['action'] = 'upvote';
-                //Meteor.user().profile['upvotedHints'].push(hintId);
+                action = 'upvote';
                 var updated_upvotedHints = upvotedHints.concat(hintId);
-                console.log('upvotedHints update', updated_upvotedHints)
                 Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.upvotedHints": updated_upvotedHints }} );
-                console.log('new user profile',Meteor.user().profile)
             } else {
-                console.log('downvote this hint:',hintId)
                 delta = -1;
-                logObj['action'] = 'downvote';
-                //Meteor.user().profile['upvotedHints'] = _.without(upvotedHints,hintId);
+                action = 'downvote';
                 Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.upvotedHints": _.without(upvotedHints,hintId) }} );
-                
-                console.log('new user profile',Meteor.user().profile)
             }
-            Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
 
-
-            logObj['owner'] = Meteor.userId();
-            logObj['object'] = hintId;
-            logObj['createdAt'] = new Date();
-            logObj['class'] = theclass;
-            Log.insert(logObj);
+            Hints.update({ _id: hintId },{$inc: {upvotes: delta}},function(err){
+                if (err ==null) {console.log('problem updating hint upvotes')} 
+                else {logThis(classtitle,action,hintId)}
+            });
         }
     },
     'loginAsEdxStudent': function(edxstudentID) {
@@ -238,7 +221,7 @@ Accounts.onCreateUser(function(options, user) {
     }
 
     user.profile.upvotedHints = []; 
-    user.profile.requestedErrors = [];
+    user.profile.followedErrors = [];
 
     return user;
 });
@@ -264,7 +247,8 @@ Meteor.startup(function () {
             'errorCoords': errorCoords
         },function (err, result) {
             //assert.equal(err, null);
-            console.log("class insertion: ",err,result);
+            if (err ==null) {console.log('problem adding classes')} 
+            else {console.log("class insertion: ",result);}
         })
     }
         
