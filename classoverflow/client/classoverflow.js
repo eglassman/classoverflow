@@ -1,21 +1,13 @@
-Classes = new Meteor.Collection('classes');
+//SUBSCRIBING TO COLLECTIONS SHARED BY SERVER
+Classes = new Meteor.Collection("classes");
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-Meteor.subscribe("classes");
-Meteor.subscribe("errors");
-Meteor.subscribe("hints");
+//Meteor.subscribe("classes");
+// Meteor.subscribe("errors");
+// Meteor.subscribe("hints");
 
-
-myScrollIntoView = function(result) {
-    $('tr').removeClass('highlighted');
-    $('#'+result).addClass('highlighted');
-    var offset = $('#'+result).offset();
-    $('html, body').animate({
-        scrollTop: offset.top - 100
-    },1000);    
-}
-
+//LOGIN HELPER
 loginAsEdxStudent = function(edxstudentID) {
     Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
         if (error) {
@@ -27,69 +19,82 @@ loginAsEdxStudent = function(edxstudentID) {
                 }
             });
         }
-
     });
 }
 
-
-Router.map(function () {
-    this.route('about'); // By default, path = '/about', template = 'about'
-    this.route('/', function () {
-        this.render('classes');
-    });
-    this.route('/class/:classtitle', { 
-
-        subscriptions: function() {
-
-            return Meteor.subscribe('errors');
-        },
-
-        action: function () {
-
-                //console.log(this.params.classtitle);
-                console.log('this.params',this.params)
-                var theclass = Classes.findOne({
-                    classtitle: this.params.classtitle
-                });
-                //theclass['query'] = this.params.query;
-                for (var q in this.params.query) {
-                    //console.log(q,this.params.query[q])
-                    var formparam = q.split('_param')[0];
-                    console.log(formparam)
-                    Session.set(formparam,this.params.query[q])
-                    //theclass[q] = this.params.query[q]
-                }
-                //console.log(theclass);
-                Session.set('class', this.params.classtitle);
-                //console.log(theclass)
-                Session.set('numErrorCoords',theclass['errorCoords'].length);
-
-                //find or login with student id
-                if (!Meteor.user() && this.params.query.student_id) {
-                    loginAsEdxStudent(this.params.query.student_id);
-                }
-                Session.set('submitQ', false);
-                console.log(Session)
-
-                if (this.ready()) {
-                    this.render('classpage', {
-                        data: theclass
-                    }); 
-                }
-            }
-        });
-        
-});
-
 Meteor.startup(function () {
-
     //Deploy edX version without settings.json
     if (Meteor.settings.public.CertAuthURL) {
         CertAuth.login();
         Session.set('certAuthEnabled',true);
     }
-  
 }); 
+
+
+
+
+//ROUTER, obviously
+// Router.route('/',function(){
+//     subscriptions: function() {
+//         //this.subscribe('items');
+//         // add the subscription to the waitlist
+//         this.subscribe('classes').wait();
+//     },
+//     action: function () {
+//         // render all templates and regions for this route
+//         this.render('classes');
+//     }
+// });
+
+Router.map(function(){
+    this.route('/', function(){
+        subscriptions: function() {
+            //this.subscribe('items');
+            // add the subscription to the waitlist
+            this.subscribe('classes').wait();
+        },
+        action: function(){
+            this.render('classes');
+        }
+    });
+});
+
+// Router.map(function () {
+//     //this.route('about'); // By default, path = '/about', template = 'about'
+//     // this.route('/', function () {
+//     //     this.render('classes');
+//     // });
+//     this.route('/class/:classtitle', function(){
+//         this.render('classpage');
+//     });
+//     this.route('/class/:classtitle/assignment/:assignment_name', function () {
+//         var classtitle = this.params.classtitle; 
+//         var assignment_name = this.params.assignment_name; 
+//         this.render('classpage', {
+//             data: function () {
+//               return Posts.findOne({_id: this.params._id});
+//             }
+//         });
+// });
+    // this.route('/class/:classtitle', {
+    //     template: 'classpage',
+    //     waitOn: function(){
+    //         var classtitle = this.params.classtitle;
+    //         return [Meteor.subscribe('classes'),
+    //                 Meteor.subscribe('errors',classtitle),
+    //                 Meteor.subscribe('hints',classtitle)];
+    //     },
+    //     data: function () {
+    //         //find or login with student id
+    //         if (!Meteor.user() && this.params.query.student_id) {
+    //             loginAsEdxStudent(this.params.query.student_id);
+    //         }
+    //         return this.params
+    //     }
+    // });
+//});
+
+
 
 if (Meteor.isClient) {
     Accounts.ui.config({
@@ -155,7 +160,7 @@ if (Meteor.isClient) {
         },
         ifRequested: function () {
             var errorId = this._id;
-            if (Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
+            if (Meteor.user().profile['followedErrors'].indexOf(errorId) >= 0) {
                 return true
             } else {
                 return false
@@ -192,12 +197,11 @@ if (Meteor.isClient) {
             }
             return false;
         },
-        "click .request": function (event) {
+        "click .follow": function (event) {
 
             if (Meteor.userId()) {
-                Meteor.call('toggleRequest', Session.get('class'), this._id);
+                Meteor.call('toggleFollow', Session.get('class'), this._id);
             } else {
-                //alert('Please sign in so you can request hints for this error.');
                 $('#mySignInModal').modal('show');
             }
             return false;
