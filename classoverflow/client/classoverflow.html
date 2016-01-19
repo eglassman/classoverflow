@@ -81,15 +81,15 @@
 </head>
 
 <template name="classes">
-    <div class="container">
-        <header>
-            <h1>Classes registered with ClassOverflow</h1>
-        </header>
+  <div class="container">
+      <header>
+          <h1>Classes registered with ClassOverflow</h1>
+      </header>
 
-        <ul>
-            {{#each classes}} {{> class}} {{/each}}
-        </ul>
-    </div>
+      <ul>
+          {{#each classes}} {{> class}} {{/each}}
+      </ul>
+  </div>
 </template>
 
 <template name="class">
@@ -97,7 +97,8 @@
 </template>
 
 <template name="classpage">
-    {{> navbar}} {{> errorTable}}
+  {{> submission_modal}}
+  {{> navbar}} {{> errorTable}}
 </template>
 
 <template name="navbar">
@@ -142,7 +143,9 @@
                     <li>
                         <a>
                             <form class="errorCoords-form form-inline" role="search">
-                                {{#each errorCoords}} {{> errorCoord}} {{/each}}
+                                {{#each errorCoords}} 
+                                  {{> errorCoord}} 
+                                {{/each}}
                                 <button type="submit" class="btn btn-default btn-primary" id='find-add-error-btn'>Find/Add Error</button>
                             </form>
                         </a>
@@ -174,10 +177,14 @@
         <table>
             <tr>
                 <th>Requests</th>
-                {{#each errorCoords}} {{> errorCoordTableHeader}} {{/each}}
+                {{#each errorCoords}} 
+                  {{> errorCoordTableHeader}} 
+                {{/each}}
                 <th>Hints</th>
             </tr>
-            {{#each errors}} {{> error}} {{/each}}
+            {{#each errors}} 
+              {{> error}} 
+            {{/each}}
         </table>
     </div>
 </template>
@@ -186,13 +193,21 @@
     <tr id="{{_id}}">
         <td>
           <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
-          {{#if ifRequested}}I'm requesting more hints.{{else}}I want more hints!{{/if}}
-            </button>
+            {{#if ifRequested}}
+              I'm requesting more hints.
+            {{else}}
+              I want more hints!
+            {{/if}}
+          </button>
         </td>
-        {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
+        {{#each errorCoordsForAnError }} 
+          {{> errorCoordTableRow}} 
+        {{/each}}
         <td>
             <ul>
-                {{#each hintsHelper}} {{> hint}} {{/each}}
+                {{#each hintsHelper}} 
+                  {{> hint}} 
+                {{/each}}
                 <li>
                     <form class="new-hint-entry form-inline">
                         <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
@@ -209,7 +224,9 @@
 </template>
 
 <template name="errorCoordTableRow">
-    <td>{{val}}</td>
+    <td>{{{val}}}</td>
+    <!-- Triple curly braces indicates unescaped HTML 
+    to process the bold tags of regex matches -->
 </template>
 
 <template name="hint">
@@ -222,3 +239,48 @@
         </div>
     </li>
 </template>
+
+<template name="submission_modal">
+  <!--Submission Confirmation Modal -->
+  <div class="modal fade" id="mySubmissionModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Register Error</h4>
+        </div>
+        <div class="modal-body">
+          {{#if ifErrorsExist}}
+            <div id="error_with_submission">
+              {{ifErrorsExist}}
+            </div>
+          {{else}}
+            <div id="confirm_submission">
+              Would you like to post these error coordinates?
+              <table>
+                <thead>
+                  {{#each errorCoords}}
+                    <th>{{placeholder}}</th>
+                  {{/each}}
+                </thead>
+                <tr>
+                  {{#each errorCoords}}
+                    <td>{{getCurrentSearch name}}</td>
+                  {{/each}}
+                </tr>
+
+                <button type="button" class="btn btn-danger" id="addErrorButton">Post</button>
+
+                <button type="button" class="btn btn-default" id="addErrorCancel">Cancel</button>
+              </table>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+

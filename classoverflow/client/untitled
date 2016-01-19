@@ -1,85 +1,11 @@
-Classes = new Meteor.Collection('classes');
-Errors = new Mongo.Collection("errors");
-Hints = new Mongo.Collection("hints");
-
-Meteor.subscribe("classes");
-Meteor.subscribe("errors");
-Meteor.subscribe("hints");
-
-
-myScrollIntoView = function(result) {
-    $('tr').removeClass('highlighted');
-    $('#'+result).addClass('highlighted');
-    var offset = $('#'+result).offset();
-    $('html, body').animate({
-        scrollTop: offset.top - 100
-    },1000);    
-}
-
-loginAsEdxStudent = function(edxstudentID) {
-    Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
-        if (error) {
-            console.log('error on login as edx student',error);
-        } else {
-            Meteor.loginWithPassword(result.username,result.password,function(error){
-                if (error) {
-                    console.log('error logging in with password',error);
-                }
-            });
-        }
-
-    });
-}
-
-function convert_to_dtype(val, dtype) {
-    if (dtype=="int") {
-        integer = parseInt(val);
-        string = String(integer);
-        if (string!=val) {
-            return NaN;
-        }
-        return integer;
-        // This may not be a comprehensive check
-    }
-    else if (dtype=="string") {
-        return String(val);
-    }
-    else {
-        console.log("No data type change.");
-        return val;
-    }
-}
-
-function sanitizeCurrentSearch(currentSearch) {
-    coord_dtypes = Session.get("coord_dtypes");
-    for (var q in currentSearch) {
-        if (currentSearch.hasOwnProperty(q)) {
-            val = convert_to_dtype(currentSearch[q], "string");
-            val = val.replace(/[^a-zA-Z0-9._ -]+/g, "");
-            if (typeof(coord_dtypes[q])=="undefined" || !val) {
-                delete currentSearch[q];
-            }
-            else {
-                currentSearch[q] = val;
-            }
-        }
-    }
-    Session.set('currentSearch',currentSearch);
-    Router.go(
-        'route.currentclass',
-        {"classtitle": Session.get('class')},
-        {query: currentSearch, replaceState: true}
-    );
-}
-
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
     this.route('/', {
         name: 'route.home',
-        action: function () {
-            delete Session.keys['class'];
+        template: 'classes'
+        /*action: function () {
             this.render('classes');
-        }
+        }*/
     });
     this.route('/class/:classtitle', { 
         subscriptions: function() {            
@@ -146,15 +72,12 @@ if (Meteor.isClient) {
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
         if (title) {
-            var thisclass = Classes.findOne({classtitle: title})['errorCoords'];
-            // for (i=0; i<thisclass.length; i++) {
-            //     name = thisclass[i]["name"];
-            //     thisclass[i]["currentVal"]=Session.get("currentSearch")[name];
-            // }
-            // Not a very Meteor-ic way to do things
-            return thisclass;
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            return thisclass['errorCoords'];
         } else {
-            console.log('No title supplied');
+            console.log('no title supplied');
         }
     });
     Template.registerHelper('errorCoordsForAnError',function(){
@@ -177,6 +100,7 @@ if (Meteor.isClient) {
                     if (currentsearchvalue) {
                         searchregex = new RegExp("("+currentsearchvalue+")", "i");
                         modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
+                        console.log("modified_val:",modified_val);
                     }
                     else {
                         modified_val = coordvalue;
@@ -253,7 +177,7 @@ if (Meteor.isClient) {
         },
         ifRequested: function () {
             var errorId = this._id;
-            if (Meteor.user() && Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
+            if (Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
                 return true
             } else {
                 return false
@@ -304,7 +228,7 @@ if (Meteor.isClient) {
     Template.hint.helpers({
         ifUpvoted: function () {
             var hintId = this._id;
-            if (Meteor.user() && Meteor.user().profile['upvotedHints'].indexOf(hintId) >= 0) {
+            if (Meteor.user().profile['upvotedHints'].indexOf(hintId) >= 0) {
                 return true
             } else {
                 return false
@@ -345,19 +269,16 @@ if (Meteor.isClient) {
         }
     });
 
-
-    // BUGBUGBUG
     Template.errorCoord.events({
         // todo: this is the wrong selector to use; form-control is a bootstrap thing
-        // todo: function below should be _.throttle'd
-        "keyup .form-control": function(e) {
+        "keyup .form-control": _.throttle(function(e) {
             var inputname = e.target.name;
             var inputval = e.target.value;
             currentSearch = Session.get('currentSearch');
             currentSearch[inputname] = convert_to_dtype(inputval, "string");
 
             sanitizeCurrentSearch(currentSearch);
-        }
+        }, 200);
     });
 
     Template.navbar.helpers({
@@ -378,14 +299,42 @@ if (Meteor.isClient) {
         "submit .errorCoords-form": function (event) {
             event.preventDefault();
 
+            var candidateErrorCoords = {};
+            for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
 
+                if (!event.target[i].value) {
+                    alert('Please provide a value for all form fields.');
+                    break;
+                } else {
+                    var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
+                    candidateErrorCoords[event.target[i].name] = coordVal;
 
-
-            if (!Meteor.userId()) {
-                $('#mySignInModal').modal('show');
-            } else {
-                $("#mySubmissionModal").modal("show");
+                }
             }
+
+            console.log('candidateErrorCoords',candidateErrorCoords);
+            registeredError = Errors.findOne(candidateErrorCoords);
+            console.log('registeredError',registeredError)
+            if (!registeredError) {
+                console.log(Meteor.user())
+                if (Meteor.userId()) {
+                    
+                    Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
+                        //console.log(error,result);
+                        if (error) {
+                            console.log('error during addError', error)
+                        } else {
+                            myScrollIntoView(result);
+                        }
+                    });
+                } else {
+                    //alert('This error is not yet in our system. Please sign in so you can add it.');
+                    $('#mySignInModal').modal('show');
+                }
+            } else {
+                myScrollIntoView(registeredError._id); 
+            }
+            
             return false;
         },
         "click .feedback": function (event) {
@@ -396,27 +345,6 @@ if (Meteor.isClient) {
         }
     });
     
-    Template.submission_modal.events({
-        "click #addErrorButton": function(event) {
-            // Assumes that user isn't changing Session(currentSearch)
-            Meteor.call('addError',
-                Session.get("class"),
-                Session.get("currentSearch"),
-                function(error,result){
-                    if (error) {
-                        console.log('error during addError', error)
-                    } else {
-                        //myScrollIntoView(result);
-                        sanitizeCurrentSearch(Session.get("currentSearch"));
-                    }
-            });
-            $("#mySubmissionModal").modal("hide");
-        },
-        "click #addErrorCancel": function(event) {
-            $("#mySubmissionModal").modal("hide");
-        }
-    });
-
     Template.errorMessageBar.helpers({
         getErrorMessage: function() {
             message = Session.get("errorMessage");
@@ -424,23 +352,6 @@ if (Meteor.isClient) {
                 return "Not defined";
             }
             return message;
-        }
-    });
-
-    Template.submission_modal.helpers({
-        getCurrentSearch: function(errorCoord) {
-            return Session.get("currentSearch")[errorCoord];
-        },
-        ifErrorsExist: function() {
-            coord_dtypes = Session.get("coord_dtypes");
-            currentSearch = Session.get("currentSearch");
-            if (_.size(currentSearch) != _.size(coord_dtypes)) {
-                return "Please provide a value for all form values";
-            }
-            else if (Errors.find(currentSearch).count()!=0) {
-                return "The error already exists.";
-            }
-            return false;
         }
     });
 }
