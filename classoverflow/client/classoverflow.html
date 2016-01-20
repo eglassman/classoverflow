@@ -89,7 +89,8 @@
 
         {{#if is6005 classtitle}}
         <tr>
-            <th>Problem Set</th>
+            <!-- <th>Problem Set</th> -->
+            <th></th>
             <th>Test Filename</th>
             <th>Line Number</th>
         </tr>
@@ -119,10 +120,30 @@
 </template>
 
 <template name="error_row">
-<tr>
+{{#if coord1_notfirst}}
+    <tr>
+        {{> error_row_tds}}
+    </tr>
+{{else}}
+    <tr class="nextassignment">
+        {{> error_row_tds}}
+    </tr>
+{{/if}}
+</template>
+
+<template name="error_row_tds">
     {{#if is6005 class}}
-    <td class="number" {{#if notfirst}}display='none'{{/if}>{{ps}}</td>
-    <td>{{file}}</td>
+        {{#if coord1_notfirst}}
+            <td></td>
+        {{else}}
+            <td class="number">Problem Set {{ps}}</td>
+        {{/if}}
+    
+        {{#if coord2_notfirst}}
+            <td></td>
+        {{else}}
+            <td>{{file}}</td>
+        {{/if}}
     <td class="number">{{line}}</td>
     {{/if}}
 
@@ -137,10 +158,7 @@
     <td>{{testgroup}}</td>
     <td class="number">{{testnumber}}</td>
     {{/if}}
-</tr>
 </template>
-
-
 
 
 

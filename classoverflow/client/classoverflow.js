@@ -28,6 +28,30 @@ Meteor.startup(function () {
 }); 
 
 
+//ADD NOTFIRST ATTRIBUTES
+//logic based on code here:
+//http://stackoverflow.com/questions/28663936/looking-at-previous-item-in-handlebars-loop-meteorjs
+function add_not_firsts(my_collection,classtitle){
+    var coord1 = 'ps';
+    var coord2 = 'file';
+    if (classtitle==='6.005'){
+        var my_fetched_collection = my_collection.find({},{sort: {ps:1,file:1,line:1}}).fetch()
+    }
+    var previous_item = {}
+    return _.map(my_fetched_collection, function(current_item) {
+        // add an isAwesome property based on the previous kitten
+        if (previous_item[coord1] === current_item[coord1]){
+            current_item.coord1_notfirst = true;
+            if (previous_item[coord2] === current_item[coord2]){
+                current_item.coord2_notfirst = true;
+            }
+        }
+        previous_item = current_item;
+        return current_item
+    });
+}
+
+
 //ROUTER CALLS
 Router.route('/',{
     template: 'mainpage',
@@ -55,7 +79,7 @@ Router.route('/class/:classtitle',{
         if (classtitle==='6.005') {
             return {'classtitle': classtitle,
                     'level': 1,
-                    'errors': Errors.find({},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
+                    'errors': add_not_firsts(Errors,classtitle)} //Errors.find({},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
         }else if (classtitle==='6.004'){
             return {'classtitle': classtitle,
                     'level': 1,
