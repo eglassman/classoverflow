@@ -1,158 +1,118 @@
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="author" content="Elena Glassman, with help from Aaron Lin">
-
     <title>ClassOverflow</title>
-
-    <div class="container">
-      
-
-      <!--Instructions Modal -->
-      <div class="modal fade" id="myInstructionsModal" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Instructions</h4>
-            </div>
-            <div class="modal-body">
-              <p>If you are looking for hints on how to get your design past a particular test, enter the module and test number into the header and click the button to 'Find or Add Error.'</p>
-
-              <p>If you can contribute another hint to help future students struggling with the same test case, please go ahead and do so! <b>Answer the question "If you were a lab assistant helping a student with this problem, what would you say to help them fix it?"</b></p>
-            </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
-          </div>
-          
-        </div>
-      </div>
-
-      <!--Feedback Modal -->
-      <div class="modal fade" id="myFeedbackModal" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Feedback</h4>
-            </div>
-            <div class="modal-body">
-              <p>Please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a> if you have any feedback on the design or operation of this site.</p>
-            </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
-          </div>
-          
-        </div>
-      </div>
-
-      <!--Sign-In Modal -->
-      <div class="modal fade" id="mySignInModal" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Sign In</h4>
-            </div>
-            <div class="modal-body">
-              <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please first <a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a>.</p>
-            </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
-          </div>
-          
-        </div>
-      </div>
-      
-    </div>
-
 </head>
 
-<template name="classes">
-    <div class="container">
-        <header>
-            <h1>Classes registered with ClassOverflow</h1>
-        </header>
+<template name="mylogin">
+    {{#if certAuthEnabled }}
+        {{#if currentUser }}
+        {{else}}
+            <button type="button" class="btn btn-default navbar-btn" onclick="CertAuth.login();">Sign in with certificates</button>
+        {{/if}}
+    {{/if}}
 
+    {{#if currentUser.profile.isEdxUser}} 
+    {{else}}
+        <ul class="nav navbar-nav navbar-right">
+            <li><a>{{> loginButtons}}</a></li>
+        </ul>
+    {{/if}}
+</template>
+
+<template name="navbar">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+              <a class="navbar-brand">
+                ClassOverflow
+              </a>
+              {{> mylogin}}
+            </div>
+        </div>
+    </nav>
+</template>
+
+<template name="mainpage">
+    {{> navbar}}
+
+    <div class="container">
+        <h3>Classes</h3>
         <ul>
-            {{#each classes}} {{> class}} {{/each}}
+            {{#each class_entries}} {{> classlink}} {{/each}}
         </ul>
     </div>
 </template>
 
-<template name="class">
-    <li><a href="{{route}} ">{{classtitle}}</a></li>
+<template name="classlink">
+    <li><a href="/class/{{classtitle}}">{{classtitle}}</a></li>
 </template>
+
+
 
 <template name="classpage">
-    {{> navbar}} {{> errorTable}}
-</template>
+    {{> navbar}}
 
-<template name="navbar">
-    <!-- Fixed navbar -->
+    <div class="container">
 
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">ClassOverflow</a>
-            </div>
+        <h3>{{classtitle}}</h3>
 
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <!--li><a>Instructions</a><a>Submit Feedback</a></li-->
-                    <!--li><a><button type="button" class="btn btn-default btn-xs instructions">Instructions</button></a></li-->
-                    <!-- Trigger the modal with a button -->
-                    <li><a><button type="button" class="btn btn-info btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button></a></li>
-                    <!--li><a><button type="button" class="btn btn-default btn-xs feedback">Feedback</button></a></li-->
-                    <li><a><button type="button" class="btn btn-info btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button></a></li>
+        <table>
 
-                    {{#if certAuthEnabled }}
-                      {{#if currentUser }}
-                      {{else}}
-                        <li><a class="certLogin" onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">Sign in with certificates</a></li>
-                      {{/if}}
-                    {{/if}}
-                    {{#if currentUser.profile.isEdxUser}} 
-                    {{else}}
-                      <li><a>
-                         {{> loginButtons}}
-                      </a></li>
-                    {{/if}}
-                    
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a>
-                            <form class="errorCoords-form form-inline" role="search">
-                                {{#each errorCoords}} {{> errorCoord}} {{/each}}
-                                <button type="submit" class="btn btn-default btn-primary" id='find-add-error-btn'>Find/Add Error</button>
-                            </form>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+        {{#if is6005 classtitle}}
+        <tr>
+            <th>Problem Set</th>
+            <th>Test Filename</th>
+            <th>Line Number</th>
+        </tr>
+        {{/if}}
+        {{#if is6004 classtitle}}
+        <tr>
+            <th>Lab</th>
+            <th>Module</th>
+            <th>Test Number</th>
+        </tr>
+        {{/if}}
+
+        {{#each errors}}
+            {{> error_row}}
+        {{/each}}
+        </table>
+
+    </div>
 
 </template>
+
+<template name="error_row">
+<tr>
+    {{#if is6005 class}}
+
+    <td>{{ps}}</td>
+    <td>{{file}}</td>
+    <td>{{line}}</td>
+    
+    {{/if}}
+
+    {{#if is6004 class}}
+
+    <td>{{lab}}</td>
+    <td>{{module}}</td>
+    <td>{{testNum}}</td>
+    
+    {{/if}}
+    <!--td>{{assignment}}</td>
+    <td>{{testgroup}}</td>
+    <td>{{testnumber}}</td-->
+</tr>
+</template>
+
+<template name="error_coord_values">
+
+</template>
+
+
+
+
+
+
 
 <template name="errorCoord">
     <div class="form-group">

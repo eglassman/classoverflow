@@ -2,19 +2,34 @@
 Log = new Mongo.Collection("log");
 
 //COLLECTIONS TO BE PUBLISHED TO CLIENT
-Classes = new Meteor.Collection('classes');
+Classes = new Meteor.Collection("classes");
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
 //COLLECTIONS being published to client
+//only publishing that which is relevant to the 
+//class being accessed, hiding user info everyone
+//shouldn't have.
 Meteor.publish("classes", function () {
-    return Classes.find();
+    return Classes.find({});
 });
-Meteor.publish("errors", function () {
-    return Errors.find();
+Meteor.publish("errors", function (classtitle) {
+    check(classtitle,String);
+    var error_entries = Errors.find({"class":classtitle},{fields: {
+        'first_follower': 0,
+        'createdAt': 0,
+    }});
+    if (error_entries) {return error_entries}
+    return this.ready();
 });
-Meteor.publish("hints", function () {
-    return Hints.find();
+Meteor.publish("hints", function (classtitle) {
+    check(classtitle,String);
+    var hint_entries = Hints.find({"class":classtitle},{fields: {
+        'user': 0,
+        'createdAt': 0,
+    }});
+    if (hint_entries) {return hint_entries}
+    return this.ready();
 });
 
 
@@ -25,20 +40,23 @@ var edxpass = '071a0f58e44494a90dbc5844c480586c';
 //CLASS-SPECIFIC INFO
 var classDict = {}
 
-classDict['6.004'] = {}
-classDict['6.004']['lab'] = {'label':'Lab Number','type':'number'}
-classDict['6.004']['module'] = {'label':'Module','type':'string'}
-classDict['6.004']['testNum'] = {'label':'Test Number','type':'number'}
+classDict['6.004'] = {};
+classDict['6.004']['errorCoords'] = ['lab','module','testNum'];
+classDict['6.004']['lab'] = {'label':'Lab Number','type':'number'};
+classDict['6.004']['module'] = {'label':'Module','type':'string'};
+classDict['6.004']['testNum'] = {'label':'Test Number','type':'number'};
 
-classDict['6.005'] = {}
-classDict['6.005']['ps'] = {'label':'Problem Set','type':'number'}
-classDict['6.005']['file'] = {'label':'File Name','type':'string'}
-classDict['6.005']['line'] = {'label':'Line Number','type':'number'}
+classDict['6.005'] = {};
+classDict['6.005']['errorCoords'] = ['ps','file','line'];
+classDict['6.005']['ps'] = {'label':'Problem Set','type':'number'};
+classDict['6.005']['file'] = {'label':'File Name','type':'string'};
+classDict['6.005']['line'] = {'label':'Line Number','type':'number'};
 
-classDict['61b'] = {}
-classDict['61b']['branch'] = {'label':'Branch','type':'number'}
-classDict['61b']['testGroup'] = {'label':'Test Group Name','type':'string'}
-classDict['61b']['testNum'] = {'label':'Test Number','type':'number'}
+classDict['61b'] = {};
+classDict['61b']['errorCoords'] = ['branch','testGroup','testNum'];
+classDict['61b']['branch'] = {'label':'Branch','type':'number'};
+classDict['61b']['testGroup'] = {'label':'Test Group Name','type':'string'};
+classDict['61b']['testNum'] = {'label':'Test Number','type':'number'};
 
 
 //LOGGING FUNCTIONS
@@ -52,8 +70,6 @@ function logThis(classtitle,action,receivingObject){
     logObj['createdAt'] = new Date();
 
     Log.insert(logObj,function (err, result) {
-        //assert.equal(err, null);
-        //console.log("log insertion:",err,result);
         if (err) {console.log('problem adding hints')} 
         else {'log entry added',result}
     });
@@ -102,7 +118,6 @@ Meteor.methods({
         userErrorCoords['first_follower'] = Meteor.userId();
 
         Errors.insert(userErrorCoords,function (err, result) {
-            //assert.equal(err, null);
             if (err) {console.log('problem adding errors')} 
             else {logThis(classtitle,'addError',result);}
         });
@@ -131,8 +146,6 @@ Meteor.methods({
         hintObj['upvotes'] = 0;
 
         Hints.insert(hintObj,function (err, result) {
-            //assert.equal(err, null);
-            //console.log("hint insertion: ",err,result);
             if (err) {console.log('problem adding hints')} 
             else {logThis(classtitle,'addHint',result);}
         });
@@ -207,11 +220,13 @@ Meteor.methods({
     }
 });
 
+
+
+//ACCOUNTS LOGIN FUNCTIONS
 Accounts.onLogin(function(user){
     console.log('logged in',user.user._id )
     Log.insert({'userId': user.user._id, 'loggedInAt': new Date()})
 });
-
 
 Accounts.onCreateUser(function(options, user) {
     if (options.profile) {
@@ -219,34 +234,32 @@ Accounts.onCreateUser(function(options, user) {
     } else {
         user.profile = {};
     }
-
     user.profile.upvotedHints = []; 
     user.profile.followedErrors = [];
-
     return user;
 });
+
+
 
 Meteor.startup(function () {
     Classes.remove({});
 
     for (var classtitle in classDict) {
 
-        errorCoords = []
+        // errorCoordDetails = []
 
-        for (var errorCoord in classDict[classtitle]) {
-            errorCoords.push({
-                'name': errorCoord,
-                'label': classDict[classtitle][errorCoord]['label'],
-                'type': classDict[classtitle][errorCoord]['type']
-            })
-        }
+        // classDict[classtitle]['errorCoords'].each(function(){
+        //     errorCoordDetails.push({
+        //         'name': this,
+        //         'label': classDict[classtitle][this]['label'],
+        //         'type': classDict[classtitle][this]['type']
+        //     })
+        // });
 
         Classes.insert({
             'classtitle': classtitle,
-            'route': '/class/'+classtitle,
-            'errorCoords': errorCoords
+            'errorCoords': classDict[classtitle]['errorCoords']
         },function (err, result) {
-            //assert.equal(err, null);
             if (err) {console.log('problem adding classes')} 
             else {console.log("class insertion: ",result);}
         })
