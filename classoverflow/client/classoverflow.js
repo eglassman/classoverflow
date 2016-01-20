@@ -63,6 +63,46 @@ Router.route('/class/:classtitle',{
     }
 });
 
+Router.route('/class/:classtitle/assignment/:assignment',{
+    template: 'classpage',
+    subscriptions: function() {
+        this.subscribe('errors',this.params.classtitle).wait();
+    },
+    data: function () {
+        var classtitle = this.params.classtitle;
+        if (classtitle==='6.005') {
+            return {'classtitle': classtitle,
+                    'errors': Errors.find({ps:parseInt(this.params.assignment)},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
+        }else if (classtitle==='6.004'){
+            return {'classtitle': classtitle,
+                    'errors': Errors.find({lab:parseInt(this.params.assignment)},{sort: {lab:1,module:1,testNum:1}}).fetch()}
+        }
+    },
+    action: function () {
+        this.render();
+    }
+});
+
+Router.route('/class/:classtitle/assignment/:assignment/testgroup/:testgroup',{
+    template: 'classpage',
+    subscriptions: function() {
+        this.subscribe('errors',this.params.classtitle).wait();
+    },
+    data: function () {
+        var classtitle = this.params.classtitle;
+        if (classtitle==='6.005') {
+            return {'classtitle': classtitle,
+                    'errors': Errors.find({ps:parseInt(this.params.assignment),file:this.params.testgroup},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
+        }else if (classtitle==='6.004'){
+            return {'classtitle': classtitle,
+                    'errors': Errors.find({lab:parseInt(this.params.assignment),module:this.params.testgroup},{sort: {lab:1,module:1,testNum:1}}).fetch()}
+        }
+    },
+    action: function () {
+        this.render();
+    }
+});
+
 
 Accounts.ui.config({
     passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
