@@ -1,5 +1,18 @@
 Classes = new Meteor.Collection('classes');
-Errors = new Mongo.Collection("errors");
+Errors = new Mongo.Collection("errors", {
+    transform: function(errorEntry) {
+        dtypes = Session.get("coord_dtypes");
+        currentSearch = Session.get("currentSearch");
+        _.each(dtypes, function(value, key, obj) {
+            coordValue = convert_to_dtype(errorEntry[key], "string");
+            if (currentSearch[key]) {
+                searchregex = new RegExp("("+currentSearch[key]+")", "i");
+                errorEntry[key] = coordValue.replace(searchregex, "<b>$1</b>");
+            }
+        });
+        return errorEntry;
+    }
+});
 Hints = new Mongo.Collection("hints");
 
 Meteor.subscribe("classes");
@@ -88,8 +101,6 @@ Router.map(function () {
         },
         action: function () {
             if (this.ready()) {
-                console.log("ready!");
-
 
                 var theclass = Classes.findOne({
                     classtitle: this.params.classtitle
@@ -158,6 +169,7 @@ if (Meteor.isClient) {
         }
     });
     Template.registerHelper('errorCoordsForAnError',function(){
+        // Why is this a global helper?
         var curError = this;
         var title = Session.get('class');
         var coordVals = [];
@@ -166,30 +178,32 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             thisclass['errorCoords'].forEach(function(ec){
+                // Kind of an ugly way to achieve this
                 errorcoord = ec['name'];
                 coordvalue = curError[errorcoord];
-                // ec stands for errorcoord?
-                // ec['name'] is 'module', coordvalue is 'excalibur'
-                currentsearchvalue = Session.get("currentSearch")[errorcoord];
-                // Use the next line when you enforce some columns to be specific dtypes
-                //if (Session.get("coord_dtypes")[errorcoord]=="string") {
-                if (typeof(coordvalue)=="string") {
-                    if (currentsearchvalue) {
-                        searchregex = new RegExp("("+currentsearchvalue+")", "i");
-                        modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
-                    }
-                    else {
-                        modified_val = coordvalue;
-                    }  
-                } 
-                else {
-                    modified_val = coordvalue;
-                }
-                coordVals.push({val: modified_val});
-            });              
+                coordVals.push({val: coordvalue});
+                // // ec stands for errorcoord?
+                // // ec['name'] is 'module', coordvalue is 'excalibur'
+                // currentsearchvalue = Session.get("currentSearch")[errorcoord];
+                // // Use the next line when you enforce some columns to be specific dtypes
+                // //if (Session.get("coord_dtypes")[errorcoord]=="string") {
+                // if (typeof(coordvalue)=="string") {
+                //     if (0 && currentsearchvalue) {
+                //         searchregex = new RegExp("("+currentsearchvalue+")", "i");
+                //         modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
+                //     }
+                //     else {
+                //         modified_val = coordvalue;
+                //     }  
+                // } 
+                // else {
+                //     modified_val = coordvalue;
+                // }
+                // coordVals.push({val: modified_val});
+            });            
             return coordVals;
         } else {
-            console.log('no title supplied');
+            console.log('No title supplied');
         }
     });
     Template.registerHelper('certAuthEnabled',function(){
@@ -222,17 +236,16 @@ if (Meteor.isClient) {
                 if (currentSearch.hasOwnProperty(inputfield)) {
                     inputvalue = currentSearch[inputfield];
                     if (inputvalue) {
-                        dtype = Session.get('coord_dtypes')[inputfield];
-                        inputvalue = convert_to_dtype(inputvalue, dtype)
+                        dtype = Session.get("coord_dtypes")[inputfield];
+                        inputvalue = convert_to_dtype(inputvalue, dtype);
                         if (dtype=="string") {
                             var newregex = new RegExp(inputvalue,"i");
                             // Search string for inputvalue, case insensitive
-                            search_obj = {"$regex": newregex};
+                            search_query[inputfield] = {"$regex": newregex};
                         }
                         else {
-                            search_obj = inputvalue;
+                            search_query[inputfield] = inputvalue;
                         }
-                        search_query[inputfield] = search_obj;
                     }
                 }
             }
@@ -243,6 +256,7 @@ if (Meteor.isClient) {
                 return Errors.find({"class": Session.get('class')}, sort_obj);
             }
             else {
+                Session.set("errorMessage", "");
                 return search_results;
             }
         }
@@ -369,18 +383,21 @@ if (Meteor.isClient) {
                 });
                 return thisclass['errorCoords'];
             } else {
-                console.log('no title supplied');
+                console.log('No title supplied');
             }
+        },
+        ifErrorMessage: function() {
+            message = Session.get("errorMessage");
+            if (!message) {
+                return false;
+            }
+            return true;
         }
     });
     
     Template.navbar.events({
         "submit .errorCoords-form": function (event) {
             event.preventDefault();
-
-
-
-
             if (!Meteor.userId()) {
                 $('#mySignInModal').modal('show');
             } else {
@@ -399,9 +416,14 @@ if (Meteor.isClient) {
     Template.submission_modal.events({
         "click #addErrorButton": function(event) {
             // Assumes that user isn't changing Session(currentSearch)
+            currentSearch = Session.get("currentSearch");
+            dtypes = Session.get("coord_dtypes");
+            properSearch = _.object(_.map(currentSearch, function(val, key) {
+                return [key, convert_to_dtype(val, dtypes[key])];
+            }))
             Meteor.call('addError',
                 Session.get("class"),
-                Session.get("currentSearch"),
+                properSearch,
                 function(error,result){
                     if (error) {
                         console.log('error during addError', error)

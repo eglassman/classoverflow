@@ -152,7 +152,11 @@
                     </li>
                 </ul>
             </div>
-            {{> errorMessageBar}}
+            {{#if ifErrorMessage}}
+              {{> errorMessageBar}}
+            {{else}}
+              <!-- else: Don't display anything -->
+            {{/if}}
         </div>
     </nav>
 </template>
@@ -227,6 +231,12 @@
     <td>{{{val}}}</td>
     <!-- Triple curly braces indicates unescaped HTML 
     to process the bold tags of regex matches -->
+</template>
+
+<template name="errorCoordTableRowDisplay">
+  <td>{{{lab}}}</td>
+  <td>{{{module}}}</td>
+  <td>{{{testNum}}}</td>
 </template>
 
 <template name="hint">
