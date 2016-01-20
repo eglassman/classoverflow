@@ -53,7 +53,37 @@
 
     <div class="container">
 
-        <h3>{{classtitle}}</h3>
+        <h3>
+        <a href="/">Home</a>
+        {{#if islevel level 1}}
+            / {{classtitle}}
+        {{/if}}
+        {{#if islevel level 2}}
+            / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
+            /   {{#if is6004 classtitle}}Lab{{/if}} 
+                {{#if is6005 classtitle}}Problem Set{{/if}} 
+                {{assignment}}
+        {{/if}}
+        {{#if islevel level 3}}
+            / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
+            / <a href="/class/{{classtitle}}/assignment/{{assignment}}">
+                {{#if is6004 classtitle}}Lab{{/if}} 
+                {{#if is6005 classtitle}}Problem Set{{/if}} 
+                {{assignment}}
+              </a>
+            /   {{#if is6004 classtitle}}Module{{/if}}
+                {{#if is6005 classtitle}}Test Filename{{/if}} 
+                {{testgroup}}
+        {{/if}}
+
+        <!--a href="/class/{{classtitle}}/assignment/{{assignment}}/testgroup/{{testgroup}}">
+            {{#if is6004 classtitle}}Module{{/if}}
+            {{#if is6005 classtitle}}Test Filename{{/if}} 
+            {{testgroup}}
+        </a-->
+        </h3>
+
+
 
         <table>
 
@@ -71,6 +101,13 @@
             <th>Test Number</th>
         </tr>
         {{/if}}
+        {{#if is61b classtitle}}
+        <tr>
+            <th>Assignment</th>
+            <th>Test Group</th>
+            <th>Test Number</th>
+        </tr>
+        {{/if}}
 
         {{#each errors}}
             {{> error_row}}
@@ -84,30 +121,24 @@
 <template name="error_row">
 <tr>
     {{#if is6005 class}}
-
-    <td>{{ps}}</td>
+    <td class="number" {{#if notfirst}}display='none'{{/if}>{{ps}}</td>
     <td>{{file}}</td>
-    <td>{{line}}</td>
-    
+    <td class="number">{{line}}</td>
     {{/if}}
 
     {{#if is6004 class}}
-
-    <td>{{lab}}</td>
+    <td class="number">{{lab}}</td>
     <td>{{module}}</td>
-    <td>{{testNum}}</td>
-    
+    <td class="number">{{testNum}}</td>
     {{/if}}
-    <!--td>{{assignment}}</td>
+
+    {{#if is61b class}}
+    <td>{{assignment}}</td>
     <td>{{testgroup}}</td>
-    <td>{{testnumber}}</td-->
+    <td class="number">{{testnumber}}</td>
+    {{/if}}
 </tr>
 </template>
-
-<template name="error_coord_values">
-
-</template>
-
 
 
 
