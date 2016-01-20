@@ -24,10 +24,9 @@ Meteor.startup(function () {
         CertAuth.login();
         Session.set('certAuthEnabled',true);
     }
-    if (!Meteor.user() && this.params.query.student_id) {
-        loginAsEdxStudent(this.params.query.student_id);
-    }
+    
 }); 
+
 
 //ROUTER CALLS
 Router.route('/',{
@@ -39,6 +38,9 @@ Router.route('/',{
         return {'class_entries': Classes.find().fetch().sort({classtitle:1}) }
     },
     action: function () {
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
         this.render();
     }
 });
@@ -52,13 +54,18 @@ Router.route('/class/:classtitle',{
         var classtitle = this.params.classtitle;
         if (classtitle==='6.005') {
             return {'classtitle': classtitle,
+                    'level': 1,
                     'errors': Errors.find({},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
         }else if (classtitle==='6.004'){
             return {'classtitle': classtitle,
+                    'level': 1,
                     'errors': Errors.find({},{sort: {lab:1,module:1,testNum:1}}).fetch()}
         }
     },
     action: function () {
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
         this.render();
     }
 });
@@ -70,15 +77,23 @@ Router.route('/class/:classtitle/assignment/:assignment',{
     },
     data: function () {
         var classtitle = this.params.classtitle;
+        var assignment = this.params.assignment;
         if (classtitle==='6.005') {
             return {'classtitle': classtitle,
+                    'assignment': assignment,
+                    'level': 2,
                     'errors': Errors.find({ps:parseInt(this.params.assignment)},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
         }else if (classtitle==='6.004'){
             return {'classtitle': classtitle,
+                    'assignment': assignment,
+                    'level': 2,
                     'errors': Errors.find({lab:parseInt(this.params.assignment)},{sort: {lab:1,module:1,testNum:1}}).fetch()}
         }
     },
     action: function () {
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
         this.render();
     }
 });
@@ -96,15 +111,20 @@ Router.route('/class/:classtitle/assignment/:assignment/testgroup/:testgroup',{
             return {'classtitle': classtitle,
                     'assignment': assignment,
                     'testgroup': testgroup,
+                    'level': 3,
                     'errors': Errors.find({ps:parseInt(assignment),file:testgroup},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
         } else if (classtitle==='6.004'){
             return {'classtitle': classtitle,
                     'assignment': assignment,
                     'testgroup': testgroup,
+                    'level': 3,
                     'errors': Errors.find({lab:parseInt(assignment),module:testgroup},{sort: {lab:1,module:1,testNum:1}}).fetch()}
         }
     },
     action: function () {
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
         this.render();
     }
 });
@@ -121,6 +141,14 @@ Template.registerHelper('is6005',function(classtitle){
 Template.registerHelper('is6004',function(classtitle){
     return classtitle=='6.004'
 });
+Template.registerHelper('is61b',function(classtitle){
+    return classtitle=='61b'
+});
+
+Template.registerHelper('islevel',function(level,levelnumber){
+    return level==levelnumber
+});
+
 Template.registerHelper('certAuthEnabled',function(){
     return Session.get('certAuthEnabled');
 });
