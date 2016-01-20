@@ -90,12 +90,18 @@ Router.route('/class/:classtitle/assignment/:assignment/testgroup/:testgroup',{
     },
     data: function () {
         var classtitle = this.params.classtitle;
+        var assignment = this.params.assignment;
+        var testgroup = this.params.testgroup;
         if (classtitle==='6.005') {
             return {'classtitle': classtitle,
-                    'errors': Errors.find({ps:parseInt(this.params.assignment),file:this.params.testgroup},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
-        }else if (classtitle==='6.004'){
+                    'assignment': assignment,
+                    'testgroup': testgroup,
+                    'errors': Errors.find({ps:parseInt(assignment),file:testgroup},{sort: {ps:1,file:1,line:1}}).fetch()}//.sort({'ps':1})}
+        } else if (classtitle==='6.004'){
             return {'classtitle': classtitle,
-                    'errors': Errors.find({lab:parseInt(this.params.assignment),module:this.params.testgroup},{sort: {lab:1,module:1,testNum:1}}).fetch()}
+                    'assignment': assignment,
+                    'testgroup': testgroup,
+                    'errors': Errors.find({lab:parseInt(assignment),module:testgroup},{sort: {lab:1,module:1,testNum:1}}).fetch()}
         }
     },
     action: function () {
