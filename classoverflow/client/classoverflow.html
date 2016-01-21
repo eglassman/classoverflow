@@ -19,7 +19,7 @@
 
 <template name="navbar">
     <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
+        <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="/">
                     ClassOverflow
@@ -35,7 +35,7 @@
 <template name="mainpage">
     {{> navbar}}
 
-    <div class="container">
+    <div class="container-fluid">
         <h3>Classes</h3>
         <ul>
             {{#each class_entries}} {{> classlink}} {{/each}}
@@ -54,7 +54,7 @@
 
     {{> modals}}
 
-    <div class="container">
+    <div class="container-fluid">
 
         <h3>
         <a href="/">Home</a>
@@ -160,13 +160,13 @@
             <td class="number"><h4>Line</h4>{{line}}</td>
         {{/if}}
         {{#if coord1_notfirst}}
-            <td>
+            <td class="wide_td">
                 <label id="follow-{{_id}}">
                     <input type="checkbox">
                 </label>
             </td>
         {{else}}
-            <td>
+            <td class="wide_td">
                 <h4>Alerts</h4>
                 <label id="follow-{{_id}}">
                     <input type="checkbox"> I want more hints.
@@ -247,7 +247,7 @@
 </template>
 
 <template name="errorTable">
-    <div class="container">
+    <div class="container-fluid">
         <!--div id="errorTable">This is where the table will go!</div-->
         <table>
             <tr>
