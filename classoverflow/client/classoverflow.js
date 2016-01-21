@@ -171,23 +171,23 @@ if (Meteor.isClient) {
             return Classes.find().fetch();
         }
     });
-    Template.errorTable.helpers({
-        errors: function () {
-            var title = Session.get('class');
-            var coordsSortObj = {}
-            var thisclass = Classes.findOne({
-                classtitle: title
-            });
+    // Template.errorTable.helpers({
+    //     errors: function () {
+    //         var title = Session.get('class');
+    //         var coordsSortObj = {}
+    //         var thisclass = Classes.findOne({
+    //             classtitle: title
+    //         });
             
-            thisclass['errorCoords'].forEach(function(ec){
-                //console.log(ec);
-                coordsSortObj[ec['name']] = 1;
-            });
-            //console.log(coordsSortObj)
-            return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
-        }
-    });
-    Template.error.helpers({
+    //         thisclass['errorCoords'].forEach(function(ec){
+    //             //console.log(ec);
+    //             coordsSortObj[ec['name']] = 1;
+    //         });
+    //         //console.log(coordsSortObj)
+    //         return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
+    //     }
+    // });
+    Template.errorTable.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
         },
@@ -200,7 +200,7 @@ if (Meteor.isClient) {
             }
         }
     });
-    Template.error.events({
+    Template.errorTable.events({
         "submit .new-hint-entry": function(event) {
             console.log(event)
             var hintText = event.target[0].value;

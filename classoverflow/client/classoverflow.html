@@ -207,51 +207,44 @@
     </div>
 </template>
 
-<template name="errorTable">
-    <div class="container">
-        <!--div id="errorTable">This is where the table will go!</div-->
-        <table class="table table-condensed">
-            <!-- <tr> -->
-                <!-- <th>Followers</th>
-                {{#each errorCoords}} 
-                    {{> errorCoordTableHeader}}
-                {{/each}}
-                <th>Hints</th> -->
-            <!-- </tr> -->
-            {{#each errors}} {{> error}} {{/each}}
-        </table>
-    </div>
-</template>
 
-<template name="error">
-    <tr id="{{_id}}">
-        <td>
-            <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
-          {{#if ifRequested}}I'm requesting more hints.{{else}}I want more hints!{{/if}}
-            </button>
-        </td>
-        {{#each errorCoordsForAnError }} {{> errorCoordTableRow}} {{/each}}
-        <td>
-            <ul>
-                {{#each hintsHelper}} {{> hint}} {{/each}}
-                <li>
-                    <form class="new-hint-entry form-inline">
-                        <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
-                        <button id='new-hint-entry' type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
-                    </form>
-                </li>
-            </ul>
-        </td>
-    </tr>
+<template name="errorTable">
+    <div class="container-fluid">
+    {{#each sorted_errors}}
+        <div class="row" id="{{_id}}">
+            <div class="col-xs-1">
+                <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
+              {{#if ifRequested}}I'm requesting more hints.{{else}}I want more hints!{{/if}}
+                </button>
+            </div>
+            {{#each errorCoordsForAnError }} 
+            <div class="col-xs-1 centered">
+                {{val}}
+            </div> 
+            {{/each}}
+            <div class="col-xs-8">
+                <ul>
+                    {{#each hintsHelper}} {{> hint}} {{/each}}
+                    <li>
+                        <form class="new-hint-entry form-inline">
+                            <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
+                            <button id='new-hint-entry' type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {{/each}}
+    </div>
 </template>
 
 <template name="errorCoordTableHeader">
     <th>{{placeholder}}</th>
 </template>
 
-<template name="errorCoordTableRow">
+<!-- <template name="errorCoordTableRow">
     <td>{{val}}</td>
-</template>
+</template> -->
 
 <template name="hint">
     <li>

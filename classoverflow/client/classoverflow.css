@@ -42,3 +42,6 @@ td li {
 .certLogin:hover {
     text-decoration: underline !important;
 }
+.centered {
+	text-align: center;
+}
