@@ -80,21 +80,23 @@
 
 </head>
 
-<template name="mainpage">
-    <div class="container">
-        <header>
-            <h1>Classes registered with ClassOverflow</h1>
-        </header>
 
+<template name="mainpage">
+    <div class="container-fluid">
+        <h3>Classes</h3>
         <ul>
-            {{#each classes}} {{> class}} {{/each}}
+        {{#each class_entries}}
+            {{> classlink}}
+        {{/each}}
         </ul>
     </div>
 </template>
 
-<template name="class">
-    <li><a href="{{route}} ">{{classtitle}}</a></li>
+<template name="classlink">
+    <li><a href="/class/{{classtitle}}">{{classtitle}}</a></li>
 </template>
+
+
 
 <template name="classpage">
     {{> navbar}} {{> errorTable}}
