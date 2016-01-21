@@ -4,6 +4,10 @@ body { padding-top: 70px; }
 	width: 100px;
 	text-align: right;
 }
+.wide_td {
+	width: 100px;
+}
+
 td,th {
 	padding-right: 15px;
 	vertical-align: top;

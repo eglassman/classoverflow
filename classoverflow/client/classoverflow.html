@@ -52,6 +52,8 @@
 <template name="classpage">
     {{> navbar}}
 
+    {{> modals}}
+
     <div class="container">
 
         <h3>
@@ -140,7 +142,7 @@
         {{#if coord1_notfirst}}
             <td></td>
         {{else}}
-            <td class="number"><b>Problem Set</b><br>{{ps}}</td>
+            <td class="number"><h5>Problem Set</h5><br>{{ps}}</td>
         {{/if}}
     
         {{#if coord2_notfirst}}
@@ -149,24 +151,23 @@
             {{#if coord1_notfirst}}
                 <td>{{file}}</td>
             {{else}}
-                <td><b>Test File</b><br>{{file}}</td>
+                <td><h5>Test File</h5><br>{{file}}</td>
             {{/if}}
         {{/if}}
         {{#if coord1_notfirst}}
             <td class="number">{{line}}</td>
         {{else}}
-            <td class="number"><b>Line</b><br>{{line}}</td>
+            <td class="number"><h5>Line</h5><br>{{line}}</td>
         {{/if}}
         {{#if coord1_notfirst}}
-            <td>
+            <td class="wide_td">
                 <label id="follow-{{_id}}">
                     <input type="checkbox">
                 </label>
             </td>
         {{else}}
             <td>
-                <b>Follow?</b>
-                <br>
+                <h5>Want more hints?</h5>
                 <label id="follow-{{_id}}">
                     <input type="checkbox">
                 </label>
@@ -187,23 +188,54 @@
     {{/if}}
 
     <td>
-        <!-- <ul> -->
+
         {{#unless coord1_notfirst}}
-        <b>Hints from Fellow Students and Staff</b>
+        <h5>Hints from Fellow Students and Staff</h5>
         <br>
         {{/unless}}
         
         {{#each hints _id}}
             {{> hint}}
         {{/each}}
-        <!-- </ul> -->
+        <i><b>{{requests}} people want more hints.</b> <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addHintModal" data-error-id="{{_id}}">Add a hint</button> if you've already resolved this error.</i>
+
     </td>
 </template>
 
 <template name="hint">
-<!-- <li>hint!</li> -->
 &bull; {{hint}}
 <br>
+</template>
+
+<template name="modals">
+
+<div class="modal fade" id="addHintModal" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addHintModalLabel">New message</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="control-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="control-label">Message:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit Hint</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </template>
 
 
