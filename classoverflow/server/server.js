@@ -51,6 +51,9 @@ classDict['6.005']['errorCoords'] = ['ps','file','line'];
 classDict['6.005']['ps'] = {'label':'Problem Set','type':'number'};
 classDict['6.005']['file'] = {'label':'File Name','type':'string'};
 classDict['6.005']['line'] = {'label':'Line Number','type':'number'};
+classDict['6.005']['assignment'] = 'Problem Set'
+classDict['6.005']['testgroup'] = 'Test Group'
+classDict['6.005']['testnum'] = 'Test Number'
 
 classDict['61b'] = {};
 classDict['61b']['errorCoords'] = ['branch','testGroup','testNum'];
@@ -258,7 +261,9 @@ Meteor.startup(function () {
 
         Classes.insert({
             'classtitle': classtitle,
-            'errorCoords': classDict[classtitle]['errorCoords']
+            'assignment': classDict[classtitle]['assignment'],
+            'testgroup': classDict[classtitle]['testgroup'],
+            'testnum': classDict[classtitle]['testnum']
         },function (err, result) {
             if (err) {console.log('problem adding classes')} 
             else {console.log("class insertion: ",result);}
