@@ -1,11 +1,11 @@
 body { padding-top: 70px; }
 
 .number { 
-	width: 100px;
+	/*width: 100px;*/
 	text-align: right;
 }
 .wide_td {
-	width: 100px;
+	width: 50px;
 }
 
 td,th {

@@ -142,7 +142,7 @@
         {{#if coord1_notfirst}}
             <td></td>
         {{else}}
-            <td class="number"><h5>Problem Set</h5>{{ps}}</td>
+            <td class="number wide_td"><h4>Problem Set</h4>{{ps}}</td>
         {{/if}}
     
         {{#if coord2_notfirst}}
@@ -151,23 +151,23 @@
             {{#if coord1_notfirst}}
                 <td>{{file}}</td>
             {{else}}
-                <td><h5>Test File</h5>{{file}}</td>
+                <td><h4>Test File</h4>{{file}}</td>
             {{/if}}
         {{/if}}
         {{#if coord1_notfirst}}
             <td class="number">{{line}}</td>
         {{else}}
-            <td class="number"><h5>Line</h5>{{line}}</td>
+            <td class="number"><h4>Line</h4>{{line}}</td>
         {{/if}}
         {{#if coord1_notfirst}}
-            <td class="wide_td">
+            <td>
                 <label id="follow-{{_id}}">
                     <input type="checkbox">
                 </label>
             </td>
         {{else}}
-            <td class="wide_td">
-                <h5>Notifications</h5>
+            <td>
+                <h4>Alerts</h4>
                 <label id="follow-{{_id}}">
                     <input type="checkbox"> I want more hints.
                 </label>
@@ -190,7 +190,7 @@
     <td>
 
         {{#unless coord1_notfirst}}
-        <h5>Hints from Fellow Students and Staff</h5>
+        <h4>Hints from Fellow Students and Staff</h4>
         {{/unless}}
         
         {{#each hints _id}}
@@ -213,22 +213,22 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addHintModalLabel">New message</h4>
+        <h4 class="modal-title" id="addHintModalLabel">New Hint</h4>
       </div>
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="recipient-name" class="control-label">Recipient:</label>
-            <input type="text" class="form-control" id="recipient-name">
+            <label for="error-name" class="control-label">Error:</label>
+            <input type="text" class="form-control" id="error-name">
           </div>
           <div class="form-group">
-            <label for="message-text" class="control-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
+            <label for="hint-text" class="control-label">Hint:</label>
+            <textarea class="form-control" id="hint-text"></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
         <button type="button" class="btn btn-primary">Submit Hint</button>
       </div>
     </div>
