@@ -45,6 +45,9 @@ classDict['6.004']['errorCoords'] = ['lab','module','testNum'];
 classDict['6.004']['lab'] = {'label':'Lab Number','type':'number'};
 classDict['6.004']['module'] = {'label':'Module','type':'string'};
 classDict['6.004']['testNum'] = {'label':'Test Number','type':'number'};
+classDict['6.004']['assignment'] = 'Lab Number'
+classDict['6.004']['testgroup'] = 'Module'
+classDict['6.004']['testnum'] = 'Test Number'
 
 classDict['6.005'] = {};
 classDict['6.005']['errorCoords'] = ['ps','file','line'];
@@ -52,14 +55,20 @@ classDict['6.005']['ps'] = {'label':'Problem Set','type':'number'};
 classDict['6.005']['file'] = {'label':'File Name','type':'string'};
 classDict['6.005']['line'] = {'label':'Line Number','type':'number'};
 classDict['6.005']['assignment'] = 'Problem Set'
-classDict['6.005']['testgroup'] = 'Test Group'
-classDict['6.005']['testnum'] = 'Test Number'
+classDict['6.005']['assignment_key'] = 'ps'
+classDict['6.005']['testgroup'] = 'File Name'
+classDict['6.005']['testgroup_key'] = 'file'
+classDict['6.005']['testnum'] = 'Line'
+classDict['6.005']['testnum_key'] = 'line'
 
 classDict['61b'] = {};
 classDict['61b']['errorCoords'] = ['branch','testGroup','testNum'];
 classDict['61b']['branch'] = {'label':'Branch','type':'number'};
 classDict['61b']['testGroup'] = {'label':'Test Group Name','type':'string'};
 classDict['61b']['testNum'] = {'label':'Test Number','type':'number'};
+classDict['6.004']['assignment'] = 'Branch'
+classDict['6.004']['testgroup'] = 'Test Group'
+classDict['6.004']['testnum'] = 'Test Number'
 
 
 //LOGGING FUNCTIONS

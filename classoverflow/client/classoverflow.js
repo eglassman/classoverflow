@@ -174,6 +174,9 @@ Template.registerHelper('certAuthEnabled',function(){
 Template.registerHelper('log',function(){
     console.log(this);
 });
+Template.registerHelper('accessProperty',function(dataObj,prop){
+    return {assignmentkey_value: dataObj[prop]}
+});
 
 Template.registerHelper('is6005',function(classtitle){
     return classtitle=='6.005'

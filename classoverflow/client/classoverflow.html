@@ -38,7 +38,9 @@
     <div class="container-fluid">
         <h3>Classes</h3>
         <ul>
-            {{#each class_entries}} {{> classlink}} {{/each}}
+        {{#each class_entries}}
+            {{> classlink}}
+        {{/each}}
         </ul>
     </div>
 </template>
@@ -51,81 +53,49 @@
 
 <template name="classpage">
     {{> navbar}}
-
-    {{> modals}}
+    {{> signInModal}}
 
     <div class="container-fluid">
 
         <h3>
-        <a href="/">Home</a>
-        {{#if islevel level 1}}
-            / {{classtitle}}
-        {{/if}}
-        {{#if islevel level 2}}
-            / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
-            /   {{#if is6004 classtitle}}Lab{{/if}} 
-                {{#if is6005 classtitle}}Problem Set{{/if}} 
-                {{assignment}}
-        {{/if}}
-        {{#if islevel level 3}}
-            / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
-            / <a href="/class/{{classtitle}}/assignment/{{assignment}}">
-                {{#if is6004 classtitle}}Lab{{/if}} 
-                {{#if is6005 classtitle}}Problem Set{{/if}} 
-                {{assignment}}
-              </a>
-            /   {{#if is6004 classtitle}}Module{{/if}}
-                {{#if is6005 classtitle}}Test Filename{{/if}} 
-                {{testgroup}}
-        {{/if}}
-
-        <!--a href="/class/{{classtitle}}/assignment/{{assignment}}/testgroup/{{testgroup}}">
-            {{#if is6004 classtitle}}Module{{/if}}
-            {{#if is6005 classtitle}}Test Filename{{/if}} 
-            {{testgroup}}
-        </a-->
+            <a href="/">Home</a>
+            {{#if islevel level 1}}
+                / {{classtitle}}
+            {{/if}}
+            {{#if islevel level 2}}
+                / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
+                /   {{#with class_info classtitle}}
+                        {{assignment}}
+                    {{/with}}
+            {{/if}}
+            {{#if islevel level 3}}
+                / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
+                / <a href="/class/{{classtitle}}/assignment/{{assignment}}">
+                    {{#with class_info classtitle}}
+                        {{assignment}}
+                    {{/with}}
+                  </a>
+                /   {{#with class_info classtitle}}
+                        {{testgroup}}
+                    {{/with}}
+            {{/if}}
         </h3>
 
-
-
         <table class="table table-condensed">
-        <!-- <table> -->
-        <!-- <thead>
-            {{#if is6005 classtitle}}
-            <tr>
-                <th>Problem Set</th>
-                <th>Test Filename</th>
-                <th>Line Number</th>
-                <th>Hints from Fellow Students and Staff</th>
-            </tr>
-            {{/if}}
-            {{#if is6004 classtitle}}
-            <tr>
-                <th>Lab</th>
-                <th>Module</th>
-                <th>Test Number</th>
-            </tr>
-            {{/if}}
-            {{#if is61b classtitle}}
-            <tr>
-                <th>Assignment</th>
-                <th>Test Group</th>
-                <th>Test Number</th>
-            </tr>
-            {{/if}}
-        </thead> -->
-        <tbody>
-            {{#each errors}}
-                {{> error_row}}
-            {{/each}}
-        </tbody>
+            <tbody>
+                {{#each errors}}
+                <tr>
+                    {{> error_row_tds}}
+                </tr>
+                {{/each}}
+            </tbody>
         </table>
 
     </div>
 
 </template>
 
-<template name="error_row">
+<!-- <template name="error_row">
 {{#if coord1_notfirst}}
     <tr>
         {{> error_row_tds}}
@@ -135,45 +105,80 @@
         {{> error_row_tds}}
     </tr>
 {{/if}}
-</template>
+</template> -->
 
 <template name="error_row_tds">
-    {{#if is6005 class}}
+    {{log}}
         {{#if coord1_notfirst}}
             <td></td>
         {{else}}
-            <td class="number wide_td"><h4>Problem Set</h4>{{ps}}</td>
+            <td class="wide_td">
+                {{#with class_info class}}
+                    <h4>{{assignment}}</h4>
+                    {{#with accessProperty this assignmentkey}}
+                        {{assignmentkey_value}}
+                    {{/with}}
+                {{/with}}
+
+            </td>
         {{/if}}
     
         {{#if coord2_notfirst}}
             <td></td>
         {{else}}
             {{#if coord1_notfirst}}
-                <td>{{file}}</td>
+                <td>
+                    {{#with class_info class}}
+                        {{testgroup_key}}
+                    {{/with}}
+                </td>
             {{else}}
-                <td><h4>Test File</h4>{{file}}</td>
+                <td>
+                    {{#with class_info class}}
+                        <h4>{{testgroup}}</h4>{{testgroup_key}}
+                    {{/with}}
+                </td>
             {{/if}}
         {{/if}}
         {{#if coord1_notfirst}}
-            <td class="number">{{line}}</td>
+            {{#with class_info class}}
+                <td class="number">
+                    {{testnum_key}}
+                </td>
+            {{/with}}
         {{else}}
-            <td class="number"><h4>Line</h4>{{line}}</td>
+            {{#with class_info class}}
+                <td class="number">
+                    <h4>{{testnum}}</h4>{{{testnum_key}}}
+                </td>
+            {{/with}}
         {{/if}}
         {{#if coord1_notfirst}}
             <td class="wide_td">
-                <label id="follow-{{_id}}">
+                <!-- <label id="follow-{{_id}}">
                     <input type="checkbox">
-                </label>
+                </label> -->
+                {{#if is6005 class}}
+                <button type="button" class="btn btn-link btn-xs follow">
+                    <span class="glyphicon glyphicon-envelope"></span> {{requests}} followers
+                </button>
+                {{else}}
+                <button type="button" class="btn btn-link btn-xs follow">
+                    <span class="glyphicon glyphicon-envelope"></span> {{follows}} followers
+                </button>
+                {{/if}}
             </td>
         {{else}}
             <td class="wide_td">
-                <h4>Alerts</h4>
-                <label id="follow-{{_id}}">
+                <h4>Hint Alerts</h4>
+                <!-- <label id="follow-{{_id}}">
                     <input type="checkbox"> I want more hints.
-                </label>
+                </label> -->
+                <button type="button" class="btn btn-link btn-xs follow">
+                    <span class="glyphicon glyphicon-envelope"></span> {{requests}} followers
+                </button>
             </td>
         {{/if}}
-    {{/if}}
 
     {{#if is6004 class}}
     <td class="number">{{lab}}</td>
@@ -196,30 +201,40 @@
         {{#each hints _id}}
             {{> hint}}
         {{/each}}
-        <b>{{requests}} people want more hints.</b> <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addHintModal" data-error-id="{{_id}}">Add a hint</button> if you've already resolved this error.
+
+        {{> addHintModal}}
+
+        <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#addHintModal-{{_id}}" data-error-id="{{_id}}">Add a hint</button>
 
     </td>
 </template>
 
 <template name="hint">
-&bull; {{hint}}
+    <!-- <a class="upvote">
+        <span class="glyphicon glyphicon-arrow-up"></span>
+    </a> -->
+
+    <button type="button" class="btn btn-link btn-xs upvote">
+        <span class="glyphicon glyphicon-arrow-up"></span> {{upvotes}} upvotes
+    </button>
+    &bull; {{hint}}
 <br>
 </template>
 
-<template name="modals">
+<template name="addHintModal">
 
-<div class="modal fade" id="addHintModal" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
+<div class="modal fade" id="addHintModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addHintModalLabel">New Hint</h4>
+        <h4 class="modal-title" id="addHintModalLabel">New hint</h4>
       </div>
       <div class="modal-body">
         <form>
           <div class="form-group">
             <label for="error-name" class="control-label">Error:</label>
-            <input type="text" class="form-control" id="error-name">
+            <input type="text" class="form-control" id="error-name" value="Problem set {{ps}}, in test file {{file}}, on line {{line}}" disabled>
           </div>
           <div class="form-group">
             <label for="hint-text" class="control-label">Hint:</label>
@@ -237,6 +252,28 @@
 
 </template>
 
+
+<template name="signInModal">
+
+<div class="modal fade" id="mySignInModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Sign In</h4>
+        </div>
+        <div class="modal-body">
+            {{#if certAuthEnabled }}
+                <p>In order to perform this operation, please first <a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a>.</p>
+            {{else}}
+                <p>In order to perform this operation, please first sign in or follow any personalized ClassOverflow links provided by course software or email.</p>
+            {{/if}}
+        </div>
+      </div>
+    </div>
+</div>
+
+</template>
 
 
 
