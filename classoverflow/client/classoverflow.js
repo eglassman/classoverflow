@@ -76,6 +76,7 @@ Router.route('/',{
 Router.route('/class/:classtitle',{
     template: 'classpage',
     subscriptions: function() {
+        this.subscribe('classes').wait();
         this.subscribe('errors',this.params.classtitle).wait();
         this.subscribe('hints',this.params.classtitle).wait();
     },
@@ -102,7 +103,9 @@ Router.route('/class/:classtitle',{
 Router.route('/class/:classtitle/assignment/:assignment',{
     template: 'classpage',
     subscriptions: function() {
+        this.subscribe('classes').wait();
         this.subscribe('errors',this.params.classtitle).wait();
+        this.subscribe('hints',this.params.classtitle).wait();
     },
     data: function () {
         var classtitle = this.params.classtitle;
@@ -130,7 +133,9 @@ Router.route('/class/:classtitle/assignment/:assignment',{
 Router.route('/class/:classtitle/assignment/:assignment/testgroup/:testgroup',{
     template: 'classpage',
     subscriptions: function() {
+        this.subscribe('classes').wait();
         this.subscribe('errors',this.params.classtitle).wait();
+        this.subscribe('hints',this.params.classtitle).wait();
     },
     data: function () {
         var classtitle = this.params.classtitle;
@@ -163,6 +168,12 @@ Accounts.ui.config({
     passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
     forceEmailLowercase: true
 });
+Template.registerHelper('certAuthEnabled',function(){
+    return Session.get('certAuthEnabled');
+});
+Template.registerHelper('log',function(){
+    console.log(this);
+});
 
 Template.registerHelper('is6005',function(classtitle){
     return classtitle=='6.005'
@@ -174,6 +185,10 @@ Template.registerHelper('is61b',function(classtitle){
     return classtitle=='61b'
 });
 
+Template.registerHelper('class_info',function(classtitle){
+    return Classes.findOne({'classtitle':classtitle});
+});
+
 Template.registerHelper('islevel',function(level,levelnumber){
     return level==levelnumber
 });
@@ -182,6 +197,31 @@ Template.registerHelper('hints',function(error_id){
     return Hints.find({errorId:error_id}, {sort: {upvotes: -1, _id: 1}}).fetch();
 });
 
-Template.registerHelper('certAuthEnabled',function(){
-    return Session.get('certAuthEnabled');
+Template.hint.events({
+    "click .upvote": function(event){
+
+        if (Meteor.userId()) {
+            var hintId = this._id;
+            Meteor.call('toggleUpvote',Session.get('class'),hintId);
+        } else {
+            //alert('Please sign in so you can upvote this hint.');
+            $('#mySignInModal').modal('show');
+        }
+        return false;
+    }
 });
+Template.error_row_tds.events({
+    "click .follow": function(event){
+
+        if (Meteor.userId()) {
+            var hintId = this._id;
+            Meteor.call('toggleFollow',Session.get('class'),hintId);
+        } else {
+            //alert('Please sign in so you can upvote this hint.');
+            $('#mySignInModal').modal('show');
+        }
+        return false;
+    }
+});
+
+
