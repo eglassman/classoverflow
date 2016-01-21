@@ -34,6 +34,7 @@ Meteor.startup(function () {
 function add_not_firsts(my_collection,classtitle){
     var coord1 = 'ps';
     var coord2 = 'file';
+    var coord3 = 'line'
     if (classtitle==='6.005'){
         var my_fetched_collection = my_collection.find({},{sort: {ps:1,file:1,line:1}}).fetch()
     }
@@ -44,6 +45,9 @@ function add_not_firsts(my_collection,classtitle){
             current_item.coord1_notfirst = true;
             if (previous_item[coord2] === current_item[coord2]){
                 current_item.coord2_notfirst = true;
+                if (previous_item[coord3] === current_item[coord3]){
+                    current_item.coord3_notfirst = true;
+                }
             }
         }
         previous_item = current_item;
@@ -73,6 +77,7 @@ Router.route('/class/:classtitle',{
     template: 'classpage',
     subscriptions: function() {
         this.subscribe('errors',this.params.classtitle).wait();
+        this.subscribe('hints',this.params.classtitle).wait();
     },
     data: function () {
         var classtitle = this.params.classtitle;
@@ -171,6 +176,10 @@ Template.registerHelper('is61b',function(classtitle){
 
 Template.registerHelper('islevel',function(level,levelnumber){
     return level==levelnumber
+});
+
+Template.registerHelper('hints',function(error_id){
+    return Hints.find({errorId:error_id}, {sort: {upvotes: -1, _id: 1}}).fetch();
 });
 
 Template.registerHelper('certAuthEnabled',function(){

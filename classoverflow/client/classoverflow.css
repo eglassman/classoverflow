@@ -1,11 +1,12 @@
 body { padding-top: 70px; }
 
 .number { 
-	/*width: 100px;*/
+	width: 100px;
 	text-align: right;
 }
 td,th {
 	padding-right: 15px;
+	vertical-align: top;
 }
 
 /*Source: http://stackoverflow.com/questions/351058/space-between-two-rows-in-a-table*/

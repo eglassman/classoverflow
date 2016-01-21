@@ -85,34 +85,37 @@
 
 
 
+        <!-- <table class="table table-condensed"> -->
         <table>
-
-        {{#if is6005 classtitle}}
-        <tr>
-            <!-- <th>Problem Set</th> -->
-            <th></th>
-            <th>Test Filename</th>
-            <th>Line Number</th>
-        </tr>
-        {{/if}}
-        {{#if is6004 classtitle}}
-        <tr>
-            <th>Lab</th>
-            <th>Module</th>
-            <th>Test Number</th>
-        </tr>
-        {{/if}}
-        {{#if is61b classtitle}}
-        <tr>
-            <th>Assignment</th>
-            <th>Test Group</th>
-            <th>Test Number</th>
-        </tr>
-        {{/if}}
-
-        {{#each errors}}
-            {{> error_row}}
-        {{/each}}
+        <!-- <thead>
+            {{#if is6005 classtitle}}
+            <tr>
+                <th>Problem Set</th>
+                <th>Test Filename</th>
+                <th>Line Number</th>
+                <th>Hints from Fellow Students and Staff</th>
+            </tr>
+            {{/if}}
+            {{#if is6004 classtitle}}
+            <tr>
+                <th>Lab</th>
+                <th>Module</th>
+                <th>Test Number</th>
+            </tr>
+            {{/if}}
+            {{#if is61b classtitle}}
+            <tr>
+                <th>Assignment</th>
+                <th>Test Group</th>
+                <th>Test Number</th>
+            </tr>
+            {{/if}}
+        </thead> -->
+        <tbody>
+            {{#each errors}}
+                {{> error_row}}
+            {{/each}}
+        </tbody>
         </table>
 
     </div>
@@ -136,15 +139,23 @@
         {{#if coord1_notfirst}}
             <td></td>
         {{else}}
-            <td class="number">Problem Set {{ps}}</td>
+            <td class="number"><b>Problem Set</b><br>{{ps}}</td>
         {{/if}}
     
         {{#if coord2_notfirst}}
             <td></td>
         {{else}}
-            <td>{{file}}</td>
+            {{#if coord1_notfirst}}
+                <td>{{file}}</td>
+            {{else}}
+                <td><b>Test File</b><br>{{file}}</td>
+            {{/if}}
         {{/if}}
-    <td class="number">{{line}}</td>
+        {{#if coord1_notfirst}}
+            <td class="number">{{line}}</td>
+        {{else}}
+            <td class="number"><b>Line</b><br>{{line}}</td>
+        {{/if}}
     {{/if}}
 
     {{#if is6004 class}}
@@ -158,6 +169,24 @@
     <td>{{testgroup}}</td>
     <td class="number">{{testnumber}}</td>
     {{/if}}
+
+    <td>
+        <!-- <ul> -->
+        {{#unless coord1_notfirst}}
+        <b>Hints from Fellow Students and Staff</b>
+        <br>
+        {{/unless}}
+        
+        {{#each hints _id}}
+            {{> hint}}
+        {{/each}}
+        <!-- </ul> -->
+    </td>
+</template>
+
+<template name="hint">
+<!-- <li>hint!</li> -->
+{{hint}}
 </template>
 
 
@@ -213,7 +242,7 @@
     <td>{{val}}</td>
 </template>
 
-<template name="hint">
+<!-- <template name="hint">
     <li>
         <div class="clearfix hintText">
         {{hint}}
@@ -222,4 +251,4 @@
         </button>
         </div>
     </li>
-</template>
+</template> -->
