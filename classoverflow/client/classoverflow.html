@@ -142,7 +142,7 @@
         {{#if coord1_notfirst}}
             <td></td>
         {{else}}
-            <td class="number"><h5>Problem Set</h5><br>{{ps}}</td>
+            <td class="number"><h5>Problem Set</h5>{{ps}}</td>
         {{/if}}
     
         {{#if coord2_notfirst}}
@@ -151,13 +151,13 @@
             {{#if coord1_notfirst}}
                 <td>{{file}}</td>
             {{else}}
-                <td><h5>Test File</h5><br>{{file}}</td>
+                <td><h5>Test File</h5>{{file}}</td>
             {{/if}}
         {{/if}}
         {{#if coord1_notfirst}}
             <td class="number">{{line}}</td>
         {{else}}
-            <td class="number"><h5>Line</h5><br>{{line}}</td>
+            <td class="number"><h5>Line</h5>{{line}}</td>
         {{/if}}
         {{#if coord1_notfirst}}
             <td class="wide_td">
@@ -166,10 +166,10 @@
                 </label>
             </td>
         {{else}}
-            <td>
-                <h5>Want more hints?</h5>
+            <td class="wide_td">
+                <h5>Notifications</h5>
                 <label id="follow-{{_id}}">
-                    <input type="checkbox">
+                    <input type="checkbox"> I want more hints.
                 </label>
             </td>
         {{/if}}
@@ -191,13 +191,12 @@
 
         {{#unless coord1_notfirst}}
         <h5>Hints from Fellow Students and Staff</h5>
-        <br>
         {{/unless}}
         
         {{#each hints _id}}
             {{> hint}}
         {{/each}}
-        <i><b>{{requests}} people want more hints.</b> <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addHintModal" data-error-id="{{_id}}">Add a hint</button> if you've already resolved this error.</i>
+        <b>{{requests}} people want more hints.</b> <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addHintModal" data-error-id="{{_id}}">Add a hint</button> if you've already resolved this error.
 
     </td>
 </template>
