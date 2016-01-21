@@ -135,17 +135,17 @@ if (Meteor.isClient) {
         console.log('template logging',this);
     });
 
-    Template.registerHelper('errorCoords',function(){
-        var title = Session.get('class');
-        if (title) {
-            var thisclass = Classes.findOne({
-                classtitle: title
-            });
-            return thisclass['errorCoords'];
-        } else {
-            console.log('no title supplied');
-        }
-    });
+    // Template.registerHelper('errorCoords',function(){
+    //     var title = Session.get('class');
+    //     if (title) {
+    //         var thisclass = Classes.findOne({
+    //             classtitle: title
+    //         });
+    //         return thisclass['errorCoords'];
+    //     } else {
+    //         console.log('no title supplied');
+    //     }
+    // });
     Template.registerHelper('errorCoordsForAnError',function(){
         var curError = this;
         var title = Session.get('class');

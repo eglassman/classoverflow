@@ -98,9 +98,7 @@
 
 
 
-<template name="classpage">
-    {{> navbar}} {{> errorTable}}
-</template>
+
 
 <template name="mylogin">
     <li><a><button type="button" class="btn btn-info btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button></a></li>
@@ -151,6 +149,58 @@
 
 </template>
 
+
+
+
+
+<template name="classpage">
+
+    {{> altnavbar}}
+    {{> errorTable}}
+    
+</template>
+
+<template name="altnavbar">
+
+     <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="navbar-header col-xs-9">
+                    <a class="navbar-brand" href="/">
+                        ClassOverflow
+                    </a>
+                </div>
+                <div class="col-xs-3">
+                    <ul class="nav navbar-nav navbar-right">
+                        {{> mylogin}}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-1"><h4>Followers</h4></div>
+                {{#each errorCoords}} 
+                    {{> errorCoordNavbar}}
+                {{/each}}
+                <div class="col-xs-8"><h4>Hints</h4></div>
+                    <!-- <tr>
+                        <th>Followers</th>
+                        {{#each errorCoords}} 
+                            {{> errorCoordTableHeader}}
+                        {{/each}}
+                        <th>Hints</th>
+                    </tr>
+                </table> -->
+            </div>
+        </div>
+    </nav>
+
+</template>
+
+<template name="errorCoordNavbar">
+    <div class="col-xs-1"><h4>{{placeholder}}</h4></div>
+</template>
+
 <template name="errorCoord">
     <div class="form-group">
         {{placeholder}} <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{coordvalue}}" /> <!--placeholder="{{placeholder}}"-->
@@ -160,12 +210,14 @@
 <template name="errorTable">
     <div class="container">
         <!--div id="errorTable">This is where the table will go!</div-->
-        <table>
-            <tr>
-                <th>Requests</th>
-                {{#each errorCoords}} {{> errorCoordTableHeader}} {{/each}}
-                <th>Hints</th>
-            </tr>
+        <table class="table table-condensed">
+            <!-- <tr> -->
+                <!-- <th>Followers</th>
+                {{#each errorCoords}} 
+                    {{> errorCoordTableHeader}}
+                {{/each}}
+                <th>Hints</th> -->
+            <!-- </tr> -->
             {{#each errors}} {{> error}} {{/each}}
         </table>
     </div>
