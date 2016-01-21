@@ -7,15 +7,30 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-//COLLECTIONS actually published to client
+//COLLECTIONS being published to client
+//only publishing that which is relevant to the 
+//class being accessed, hiding user info everyone
+//shouldn't have.
 Meteor.publish("classes", function () {
-    return Classes.find();
+    return Classes.find({});
 });
-Meteor.publish("errors", function () {
-    return Errors.find();
+Meteor.publish("errors", function (classtitle) {
+    check(classtitle,String);
+    var error_entries = Errors.find({"class":classtitle},{fields: {
+        'first_follower': 0,
+        'createdAt': 0,
+    }});
+    if (error_entries) {return error_entries}
+    return this.ready();
 });
-Meteor.publish("hints", function () {
-    return Hints.find();
+Meteor.publish("hints", function (classtitle) {
+    check(classtitle,String);
+    var hint_entries = Hints.find({"class":classtitle},{fields: {
+        'user': 0,
+        'createdAt': 0,
+    }});
+    if (hint_entries) {return hint_entries}
+    return this.ready();
 });
 
 var edxpass = '071a0f58e44494a90dbc5844c480586c';
