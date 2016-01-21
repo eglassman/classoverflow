@@ -56,6 +56,12 @@ Router.route('/class/:classtitle',{
         this.subscribe('errors',this.params.classtitle).wait();
         this.subscribe('hints',this.params.classtitle).wait();
     },
+    template: 'classpage',
+    data: function(){
+        return Classes.findOne({
+            classtitle: this.params.classtitle
+        });
+    },
     action: function () {
 
         //console.log(this.params.classtitle);
@@ -84,9 +90,7 @@ Router.route('/class/:classtitle',{
         console.log(Session)
 
         if (this.ready()) {
-            this.render('classpage', {
-                data: theclass
-            }); 
+            this.render(); 
         }
     }
 });
