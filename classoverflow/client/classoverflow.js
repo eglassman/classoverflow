@@ -2,9 +2,9 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-Meteor.subscribe("classes");
-Meteor.subscribe("errors");
-Meteor.subscribe("hints");
+// Meteor.subscribe("classes");
+// Meteor.subscribe("errors");
+// Meteor.subscribe("hints");
 
 
 myScrollIntoView = function(result) {
@@ -52,10 +52,10 @@ Router.route('/',{
 
 Router.route('/class/:classtitle',{
     subscriptions: function() {
-
-        return Meteor.subscribe('errors');
+        this.subscribe('classes').wait();
+        this.subscribe('errors',this.params.classtitle).wait();
+        this.subscribe('hints',this.params.classtitle).wait();
     },
-
     action: function () {
 
         //console.log(this.params.classtitle);
