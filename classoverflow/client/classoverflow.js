@@ -34,8 +34,8 @@ loginAsEdxStudent = function(edxstudentID) {
 //ROUTER CALLS
 Router.route('/',{
     template: 'mainpage',
-    subscriptions: function() {
-        this.subscribe('classes').wait();
+    waitOn: function() {
+        return Meteor.subscribe('classes');
     },
     data: function(){
         return {'class_entries': Classes.find().fetch().sort({classtitle:1}) }
@@ -51,40 +51,66 @@ Router.route('/',{
 });
 
 Router.route('/class/:classtitle',{
-    subscriptions: function() {
-        this.subscribe('classes').wait();
-        this.subscribe('errors',this.params.classtitle).wait();
-        this.subscribe('hints',this.params.classtitle).wait();
+    waitOn: function() {
+        return [Meteor.subscribe('classes'),
+                Meteor.subscribe('errors',this.params.classtitle),
+                Meteor.subscribe('hints',this.params.classtitle)];
     },
-    template: 'classpage',
-    data: function(){
-        return Classes.findOne({
-            classtitle: this.params.classtitle
-        });
-    },
+    //template: 'classpage',
     action: function () {
 
         console.log('this.params',this.params)
-        var theclass = Classes.findOne({
+        var class_entry = Classes.findOne({
             classtitle: this.params.classtitle
         });
+        console.log('class_entry',class_entry);//,class_entry[0]class_entry[0]['name'])
         
-        for (var q in this.params.query) {
-            var formparam = q.split('_param')[0];
-            console.log(formparam)
-            Session.set(formparam,this.params.query[q])
-        }
+        // for (var q in this.params.query) {
+        //     var formparam = q.split('_param')[0];
+        //     console.log(formparam)
+        //     Session.set(formparam,this.params.query[q])
+        // }
         Session.set('class', this.params.classtitle);
-        Session.set('numErrorCoords',theclass['errorCoords'].length);
+        Session.set('numErrorCoords',class_entry['errorCoords'].length);
+
+        console.log('Session',Session)
 
         //find or login with student id
-        if (!Meteor.user() && this.params.query.student_id) {
-            loginAsEdxStudent(this.params.query.student_id);
+        if (this.params.query.student_id){
+            if (!Meteor.user()) {
+                console.log('loggin in with student id')
+                loginAsEdxStudent(this.params.query.student_id);
+            }
         }
         Session.set('submitQ', false);
         
+        //console.log('testing eval',eval(class_entry[0]['name']))
+        //var dataObj= {test:'hi'}
+
+
+        var errorCoords = class_entry['errorCoords'];
+
+        var sortObj = {};
+        sortObj[errorCoords[0]['name']] = 1;
+        sortObj[errorCoords[1]['name']] = 1;
+        sortObj[errorCoords[2]['name']] = 1;
+        console.log('sortObj',sortObj)
+
+        var dataObj = {
+            'classtitle': this.params.classtitle,
+            'level': 1,
+            'errorCoords': errorCoords,
+            'sorted_errors': Errors.find({},{sort: sortObj}).fetch()
+        };
+
+        console.log('dataObj',dataObj)
+
         if (this.ready()) {
-            this.render(); 
+            this.render('classpage',{
+                data: function(){
+                    return dataObj
+                }
+            }); 
         }
     }
 });
@@ -105,6 +131,10 @@ if (Meteor.isClient) {
         forceEmailLowercase: true
     });
     
+    Template.registerHelper('log',function(){
+        console.log('template logging',this);
+    });
+
     Template.registerHelper('errorCoords',function(){
         var title = Session.get('class');
         if (title) {
