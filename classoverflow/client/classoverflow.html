@@ -6,7 +6,9 @@
     {{#if certAuthEnabled }}
         {{#if currentUser }}
         {{else}}
-            <button type="button" class="btn btn-default navbar-btn" onclick="CertAuth.login();">Sign in with certificates</button>
+            <li>
+                <button type="button" class="btn btn-default navbar-btn" onclick="CertAuth.login();">Sign in with certificates</button>
+            </li>
         {{/if}}
     {{/if}}
 
@@ -19,7 +21,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand">
+                <a class="navbar-brand" href="/">
                     ClassOverflow
                 </a>
             </div>
@@ -154,6 +156,21 @@
             <td class="number">{{line}}</td>
         {{else}}
             <td class="number"><b>Line</b><br>{{line}}</td>
+        {{/if}}
+        {{#if coord1_notfirst}}
+            <td>
+                <label id="follow-{{_id}}">
+                    <input type="checkbox">
+                </label>
+            </td>
+        {{else}}
+            <td>
+                <b>Follow?</b>
+                <br>
+                <label id="follow-{{_id}}">
+                    <input type="checkbox">
+                </label>
+            </td>
         {{/if}}
     {{/if}}
 
