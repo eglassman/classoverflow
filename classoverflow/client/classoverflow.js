@@ -31,12 +31,24 @@ loginAsEdxStudent = function(edxstudentID) {
     });
 }
 
+//ROUTER CALLS
+Router.route('/',{
+    template: 'mainpage',
+    subscriptions: function() {
+        this.subscribe('classes').wait();
+    },
+    data: function(){
+        return {'class_entries': Classes.find().fetch().sort({classtitle:1}) }
+    },
+    action: function () {
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
+        this.render();
+    }
+});
 
 Router.map(function () {
-    this.route('about'); // By default, path = '/about', template = 'about'
-    this.route('/', function () {
-        this.render('mainpage');
-    });
     this.route('/class/:classtitle', { 
 
         subscriptions: function() {
