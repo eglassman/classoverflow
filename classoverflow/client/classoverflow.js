@@ -35,7 +35,7 @@ loginAsEdxStudent = function(edxstudentID) {
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
     this.route('/', function () {
-        this.render('classes');
+        this.render('mainpage');
     });
     this.route('/class/:classtitle', { 
 
@@ -128,7 +128,7 @@ if (Meteor.isClient) {
         return Session.get('certAuthEnabled');
     });
     
-    Template.classes.helpers({
+    Template.mainpage.helpers({
         classes: function () {
             return Classes.find().fetch();
         }
