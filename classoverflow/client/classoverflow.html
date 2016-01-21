@@ -10,23 +10,22 @@
         {{/if}}
     {{/if}}
 
-    {{#if currentUser.profile.isEdxUser}} 
-    {{else}}
-        <ul class="nav navbar-nav navbar-right">
-            <li><a>{{> loginButtons}}</a></li>
-        </ul>
-    {{/if}}
+    {{#unless currentUser.profile.isEdxUser}} 
+        {{> loginButtons}}
+    {{/unless}}
 </template>
 
 <template name="navbar">
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-              <a class="navbar-brand">
-                ClassOverflow
-              </a>
-              {{> mylogin}}
+                <a class="navbar-brand">
+                    ClassOverflow
+                </a>
             </div>
+            <ul class="nav navbar-nav navbar-right">
+                {{> mylogin}}
+            </ul>
         </div>
     </nav>
 </template>
@@ -85,8 +84,8 @@
 
 
 
-        <!-- <table class="table table-condensed"> -->
-        <table>
+        <table class="table table-condensed">
+        <!-- <table> -->
         <!-- <thead>
             {{#if is6005 classtitle}}
             <tr>
@@ -186,7 +185,8 @@
 
 <template name="hint">
 <!-- <li>hint!</li> -->
-{{hint}}
+&bull; {{hint}}
+<br>
 </template>
 
 
