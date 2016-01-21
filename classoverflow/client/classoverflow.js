@@ -44,53 +44,51 @@ Router.route('/',{
         if (!Meteor.user() && this.params.query.student_id) {
             loginAsEdxStudent(this.params.query.student_id);
         }
-        this.render();
+        if (this.ready()) {
+            this.render();
+        }
     }
 });
 
-Router.map(function () {
-    this.route('/class/:classtitle', { 
+Router.route('/class/:classtitle',{
+    subscriptions: function() {
 
-        subscriptions: function() {
+        return Meteor.subscribe('errors');
+    },
 
-            return Meteor.subscribe('errors');
-        },
+    action: function () {
 
-        action: function () {
-
-                //console.log(this.params.classtitle);
-                console.log('this.params',this.params)
-                var theclass = Classes.findOne({
-                    classtitle: this.params.classtitle
-                });
-                //theclass['query'] = this.params.query;
-                for (var q in this.params.query) {
-                    //console.log(q,this.params.query[q])
-                    var formparam = q.split('_param')[0];
-                    console.log(formparam)
-                    Session.set(formparam,this.params.query[q])
-                    //theclass[q] = this.params.query[q]
-                }
-                //console.log(theclass);
-                Session.set('class', this.params.classtitle);
-                //console.log(theclass)
-                Session.set('numErrorCoords',theclass['errorCoords'].length);
-
-                //find or login with student id
-                if (!Meteor.user() && this.params.query.student_id) {
-                    loginAsEdxStudent(this.params.query.student_id);
-                }
-                Session.set('submitQ', false);
-                console.log(Session)
-
-                if (this.ready()) {
-                    this.render('classpage', {
-                        data: theclass
-                    }); 
-                }
-            }
+        //console.log(this.params.classtitle);
+        console.log('this.params',this.params)
+        var theclass = Classes.findOne({
+            classtitle: this.params.classtitle
         });
-        
+        //theclass['query'] = this.params.query;
+        for (var q in this.params.query) {
+            //console.log(q,this.params.query[q])
+            var formparam = q.split('_param')[0];
+            console.log(formparam)
+            Session.set(formparam,this.params.query[q])
+            //theclass[q] = this.params.query[q]
+        }
+        //console.log(theclass);
+        Session.set('class', this.params.classtitle);
+        //console.log(theclass)
+        Session.set('numErrorCoords',theclass['errorCoords'].length);
+
+        //find or login with student id
+        if (!Meteor.user() && this.params.query.student_id) {
+            loginAsEdxStudent(this.params.query.student_id);
+        }
+        Session.set('submitQ', false);
+        console.log(Session)
+
+        if (this.ready()) {
+            this.render('classpage', {
+                data: theclass
+            }); 
+        }
+    }
 });
 
 Meteor.startup(function () {
