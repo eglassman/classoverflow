@@ -1,7 +1,7 @@
 /* CSS declarations go here */
 body {
   min-height: 2000px;
-  padding-top: 150px;
+  padding-top: 100px;
 }
 th, td {
     padding: 10px;
@@ -42,6 +42,17 @@ td li {
 .certLogin:hover {
     text-decoration: underline !important;
 }
+
 .centered {
 	text-align: center;
+}
+.righted {
+	text-align: right;
+}
+.wrapped {
+	word-wrap: break-word;
+}
+.error_row {
+	border-bottom-style: solid;
+    border-bottom-color: #eeeeee;
 }

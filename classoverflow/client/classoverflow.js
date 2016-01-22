@@ -155,7 +155,7 @@ if (Meteor.isClient) {
                 classtitle: title
             });
             thisclass['errorCoords'].forEach(function(ec){
-                coordVals.push({val: curError[ec['name']]});
+                coordVals.push({val: curError[ec['name']], placeholder: ec['placeholder']});
             });                
             return coordVals;
         } else {

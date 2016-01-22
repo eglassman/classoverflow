@@ -178,11 +178,11 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-1"><h4>Followers</h4></div>
+                <div class="col-xs-1 righted"><h4>Followers</h4></div>
                 {{#each errorCoords}} 
                     {{> errorCoordNavbar}}
                 {{/each}}
-                <div class="col-xs-8"><h4>Hints</h4></div>
+                <div class="col-xs-8"><h4>Hints from Fellow Students and Staff</h4></div>
                     <!-- <tr>
                         <th>Followers</th>
                         {{#each errorCoords}} 
@@ -211,26 +211,35 @@
 <template name="errorTable">
     <div class="container-fluid">
     {{#each sorted_errors}}
-        <div class="row" id="{{_id}}">
-            <div class="col-xs-1">
-                <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
-              {{#if ifRequested}}I'm requesting more hints.{{else}}I want more hints!{{/if}}
+        <div class="row error_row" id="{{_id}}">
+            <div class="col-xs-1 righted">
+                <button type="button" class="btn btn-link request">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
                 </button>
             </div>
             {{#each errorCoordsForAnError }} 
-            <div class="col-xs-1 centered">
+            <div class="col-xs-1 centered wrapped">
                 {{val}}
             </div> 
             {{/each}}
             <div class="col-xs-8">
                 <ul>
-                    {{#each hintsHelper}} {{> hint}} {{/each}}
+                    {{#each hintsHelper}} 
+                        {{> hint}} 
+                    {{/each}}
+
+                    {{> addHintModal}}
+
                     <li>
+                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addHintModal-{{_id}}" data-error-id="{{_id}}">Add a hint</button>
+                    </li>
+                    <!-- <li>
                         <form class="new-hint-entry form-inline">
                             <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
                             <button id='new-hint-entry' type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
                         </form>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
         </div>
@@ -238,9 +247,44 @@
     </div>
 </template>
 
-<template name="errorCoordTableHeader">
-    <th>{{placeholder}}</th>
+<template name="addHintModal">
+
+<div class="modal fade" id="addHintModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addHintModalLabel">New hint</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            {{#each errorCoordsForAnError }} 
+                <label for="error-name" class="control-label">{{placeholder}}:</label>
+                <input type="text" class="form-control" id="error-name" value="{{val}}" disabled>
+            {{/each}}
+          </div>
+          <div class="form-group">
+            <label for="hint-text" class="control-label">Hint:</label>
+            <textarea class="form-control" id="hint-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+        <button type="button" class="btn btn-primary">Submit Hint</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </template>
+
+
+
+<!-- <template name="errorCoordTableHeader">
+    <th>{{placeholder}}</th>
+</template> -->
 
 <!-- <template name="errorCoordTableRow">
     <td>{{val}}</td>
@@ -248,11 +292,13 @@
 
 <template name="hint">
     <li>
-        <div class="clearfix hintText">
-        {{hint}}
-        <button type="button" class="btn btn-default btn-sm pull-right upvote {{#if ifUpvoted}}upvoted btn-warning {{else}}notupvoted btn-info{{/if}}">
-            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
+        <button type="button" class="btn btn-link btn-xs upvote">
+            <span class="glyphicon glyphicon-arrow-up"></span>
+            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} ({{upvotes}})
         </button>
-        </div>
+        {{hint}}
+        <!-- <button type="button" class="btn btn-default btn-sm pull-right upvote {{#if ifUpvoted}}upvoted btn-warning {{else}}notupvoted btn-info{{/if}}">
+            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
+        </button> -->
     </li>
 </template>
