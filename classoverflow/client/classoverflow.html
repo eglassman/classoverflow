@@ -218,11 +218,13 @@
                     {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
                 </button>
             </div>
+            {{log}}
             {{#each errorCoordsForAnError}} 
+            {{log}}
             <div class="col-xs-1 centered wrapped">
             {{#if first}}
                 {{#unless last}}
-                <a href="#">
+                <a href="{{route}}">
                   <span class="glyphicon glyphicon-filter"></span>
                 </a>
                 {{/unless}}

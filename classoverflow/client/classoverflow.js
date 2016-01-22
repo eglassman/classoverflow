@@ -34,8 +34,8 @@ loginAsEdxStudent = function(edxstudentID) {
 //ADD NOTFIRST ATTRIBUTES
 //logic based on code here:
 //http://stackoverflow.com/questions/28663936/looking-at-previous-item-in-handlebars-loop-meteorjs
-function add_not_firsts(my_collection,sortObj,coordNames){
-    var my_fetched_collection = my_collection.find({},{sort: sortObj}).fetch()
+function add_not_firsts(my_collection,filterObj,sortObj,coordNames){
+    var my_fetched_collection = my_collection.find(filterObj,{sort: sortObj}).fetch()
     var previous_item = {}
     return _.map(my_fetched_collection, function(current_item) {
         // add an isAwesome property based on the previous kitten
@@ -122,11 +122,156 @@ Router.route('/class/:classtitle',{
         coordNames.push(errorCoords[2]['name']);
         console.log('coordNames',coordNames)
 
+        var filterObj = {};
+
         var dataObj = {
             'classtitle': this.params.classtitle,
             'level': 1,
             'errorCoords': errorCoords,
-            'sorted_errors': add_not_firsts(Errors,sortObj,coordNames)};
+            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
+        
+
+        console.log('dataObj',dataObj)
+
+        if (this.ready()) {
+            this.render('classpage',{
+                data: function(){
+                    return dataObj
+                }
+            }); 
+        }
+    }
+});
+
+Router.route('/class/:classtitle/:assignment',{
+    waitOn: function() {
+        return [Meteor.subscribe('classes'),
+                Meteor.subscribe('errors',this.params.classtitle),
+                Meteor.subscribe('hints',this.params.classtitle)];
+    },
+    //template: 'classpage',
+    action: function () {
+
+        var class_entry = Classes.findOne({
+            classtitle: this.params.classtitle
+        });
+        Session.set('class', this.params.classtitle);
+        Session.set('numErrorCoords',class_entry['errorCoords'].length);
+
+        //find or login with student id
+        if (this.params.query.student_id){
+            if (!Meteor.user()) {
+                console.log('loggin in with student id')
+                loginAsEdxStudent(this.params.query.student_id);
+            }
+        }
+        Session.set('submitQ', false);
+        
+        var errorCoords = class_entry['errorCoords'];
+
+        var sortObj = {};
+        sortObj[errorCoords[0]['name']] = 1;
+        sortObj[errorCoords[1]['name']] = 1;
+        sortObj[errorCoords[2]['name']] = 1;
+        console.log('sortObj',sortObj)
+
+        var coordNames = [];
+        coordNames.push(errorCoords[0]['name']);
+        coordNames.push(errorCoords[1]['name']);
+        coordNames.push(errorCoords[2]['name']);
+        console.log('coordNames',coordNames)
+
+        var filterObj = {};
+        if (errorCoords[0]['inputType']==='int') {
+            filterObj[errorCoords[0]['name']] = parseInt(this.params.assignment);
+        } else if (errorCoords[0]['inputType']==='string') {
+            filterObj[errorCoords[0]['name']] = this.params.assignment;
+        } else {
+            alert('unknown type in url');
+        }
+        
+
+        var dataObj = {
+            'classtitle': this.params.classtitle,
+            'level': 1,
+            'errorCoords': errorCoords,
+            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
+        
+
+        console.log('dataObj',dataObj)
+
+        if (this.ready()) {
+            this.render('classpage',{
+                data: function(){
+                    return dataObj
+                }
+            }); 
+        }
+    }
+});
+
+Router.route('/class/:classtitle/:assignment/:testgroup',{
+    waitOn: function() {
+        return [Meteor.subscribe('classes'),
+                Meteor.subscribe('errors',this.params.classtitle),
+                Meteor.subscribe('hints',this.params.classtitle)];
+    },
+    //template: 'classpage',
+    action: function () {
+
+        var class_entry = Classes.findOne({
+            classtitle: this.params.classtitle
+        });
+        Session.set('class', this.params.classtitle);
+        Session.set('numErrorCoords',class_entry['errorCoords'].length);
+
+        //find or login with student id
+        if (this.params.query.student_id){
+            if (!Meteor.user()) {
+                console.log('loggin in with student id')
+                loginAsEdxStudent(this.params.query.student_id);
+            }
+        }
+        Session.set('submitQ', false);
+        
+        var errorCoords = class_entry['errorCoords'];
+
+        var sortObj = {};
+        sortObj[errorCoords[0]['name']] = 1;
+        sortObj[errorCoords[1]['name']] = 1;
+        sortObj[errorCoords[2]['name']] = 1;
+        console.log('sortObj',sortObj)
+
+        var coordNames = [];
+        coordNames.push(errorCoords[0]['name']);
+        coordNames.push(errorCoords[1]['name']);
+        coordNames.push(errorCoords[2]['name']);
+        console.log('coordNames',coordNames)
+
+        var filterObj = {};
+        if (errorCoords[0]['inputType']==='int') {
+            filterObj[errorCoords[0]['name']] = parseInt(this.params.assignment);
+        } else if (errorCoords[0]['inputType']==='string') {
+            filterObj[errorCoords[0]['name']] = this.params.assignment;
+        } else {
+            alert('unknown type in url');
+        }
+        if (errorCoords[1]['inputType']==='int') {
+            filterObj[errorCoords[1]['name']] = parseInt(this.params.testgroup);
+        } else if (errorCoords[1]['inputType']==='string') {
+            filterObj[errorCoords[1]['name']] = this.params.testgroup;
+        } else {
+            alert('unknown type in url');
+        }
+        
+
+        var dataObj = {
+            'classtitle': this.params.classtitle,
+            'level': 1,
+            'errorCoords': errorCoords,
+            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
 
@@ -189,15 +334,19 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
+            var route = '/class/'+title;
             thisclass['errorCoords'].forEach(function(ec,ind){
                 var field_name_first = 'coord'+ind.toString()+'first'
-                console.log('field_name_first',field_name_first)
+                //console.log('field_name_first',field_name_first)
+                //route = route + '/' + ec['name'] + '/' + curError[ec['name']];
+                route = route + '/' + curError[ec['name']];
                 coordVals.push({
                     val: curError[ec['name']], 
                     placeholder: ec['placeholder'], 
-                    first: curError[field_name_first]
+                    first: curError[field_name_first],
+                    route: route
                 });
-                console.log('coordVals',coordVals)
+                // console.log('coordVals',coordVals)
             });
             var lastCoord = coordVals[coordVals.length-1];
             lastCoord['last'] = true;
