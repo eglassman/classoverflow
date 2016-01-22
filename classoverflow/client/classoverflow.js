@@ -86,17 +86,20 @@ Router.route('/',{
 
 Router.route('/class/:classtitle',{
     waitOn: function() {
+        var classtitle = decodeURIComponent(this.params.classtitle);
         return [Meteor.subscribe('classes'),
-                Meteor.subscribe('errors',this.params.classtitle),
-                Meteor.subscribe('hints',this.params.classtitle)];
+                Meteor.subscribe('errors',classtitle),
+                Meteor.subscribe('hints',classtitle)];
     },
     //template: 'classpage',
     action: function () {
 
+        var classtitle = decodeURIComponent(this.params.classtitle);
+
         var class_entry = Classes.findOne({
-            classtitle: this.params.classtitle
+            classtitle: classtitle
         });
-        Session.set('class', this.params.classtitle);
+        Session.set('class', classtitle);
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
@@ -125,7 +128,7 @@ Router.route('/class/:classtitle',{
         var filterObj = {};
 
         var dataObj = {
-            'classtitle': this.params.classtitle,
+            'classtitle': classtitle,
             'level': 1,
             'errorCoords': errorCoords,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
@@ -146,17 +149,21 @@ Router.route('/class/:classtitle',{
 
 Router.route('/class/:classtitle/:assignment',{
     waitOn: function() {
+        var classtitle = decodeURIComponent(this.params.classtitle);
         return [Meteor.subscribe('classes'),
-                Meteor.subscribe('errors',this.params.classtitle),
-                Meteor.subscribe('hints',this.params.classtitle)];
+                Meteor.subscribe('errors',classtitle),
+                Meteor.subscribe('hints',classtitle)];
     },
     //template: 'classpage',
     action: function () {
 
+        var classtitle = decodeURIComponent(this.params.classtitle);
+        var assignment = decodeURIComponent(this.params.assignment);
+
         var class_entry = Classes.findOne({
-            classtitle: this.params.classtitle
+            classtitle: classtitle
         });
-        Session.set('class', this.params.classtitle);
+        Session.set('class', classtitle);
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
@@ -184,19 +191,19 @@ Router.route('/class/:classtitle/:assignment',{
 
         var filterObj = {};
         if (errorCoords[0]['inputType']==='int') {
-            filterObj[errorCoords[0]['name']] = parseInt(this.params.assignment);
+            filterObj[errorCoords[0]['name']] = parseInt(assignment);
         } else if (errorCoords[0]['inputType']==='string') {
-            filterObj[errorCoords[0]['name']] = this.params.assignment;
+            filterObj[errorCoords[0]['name']] = assignment;
         } else {
             alert('unknown type in url');
         }
         
 
         var dataObj = {
-            'classtitle': this.params.classtitle,
+            'classtitle': classtitle,
             'level': 2,
             'errorCoords': errorCoords,
-            'assignment': this.params.assignment,
+            'assignment': assignment,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
@@ -215,17 +222,22 @@ Router.route('/class/:classtitle/:assignment',{
 
 Router.route('/class/:classtitle/:assignment/:testgroup',{
     waitOn: function() {
+        var classtitle = decodeURIComponent(this.params.classtitle);
         return [Meteor.subscribe('classes'),
-                Meteor.subscribe('errors',this.params.classtitle),
-                Meteor.subscribe('hints',this.params.classtitle)];
+                Meteor.subscribe('errors',classtitle),
+                Meteor.subscribe('hints',classtitle)];
     },
     //template: 'classpage',
     action: function () {
 
+        var classtitle = decodeURIComponent(this.params.classtitle);
+        var assignment = decodeURIComponent(this.params.assignment);
+        var testgroup = decodeURIComponent(this.params.testgroup);
+
         var class_entry = Classes.findOne({
-            classtitle: this.params.classtitle
+            classtitle: classtitle
         });
-        Session.set('class', this.params.classtitle);
+        Session.set('class', classtitle);
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
@@ -253,27 +265,27 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
 
         var filterObj = {};
         if (errorCoords[0]['inputType']==='int') {
-            filterObj[errorCoords[0]['name']] = parseInt(this.params.assignment);
+            filterObj[errorCoords[0]['name']] = parseInt(assignment);
         } else if (errorCoords[0]['inputType']==='string') {
-            filterObj[errorCoords[0]['name']] = this.params.assignment;
+            filterObj[errorCoords[0]['name']] = assignment;
         } else {
             alert('unknown type in url');
         }
         if (errorCoords[1]['inputType']==='int') {
-            filterObj[errorCoords[1]['name']] = parseInt(this.params.testgroup);
+            filterObj[errorCoords[1]['name']] = parseInt(testgroup);
         } else if (errorCoords[1]['inputType']==='string') {
-            filterObj[errorCoords[1]['name']] = this.params.testgroup;
+            filterObj[errorCoords[1]['name']] = testgroup;
         } else {
             alert('unknown type in url');
         }
         
 
         var dataObj = {
-            'classtitle': this.params.classtitle,
+            'classtitle': classtitle,
             'level': 3,
             'errorCoords': errorCoords,
-            'assignment': this.params.assignment,
-            'testgroup': this.params.testgroup,
+            'assignment': assignment,
+            'testgroup': testgroup,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
