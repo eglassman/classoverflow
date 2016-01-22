@@ -127,11 +127,21 @@ Router.route('/class/:classtitle',{
 
         var filterObj = {};
 
+        var num_errors = Errors.find(filterObj).count();
+        if (num_errors===0) {
+            var no_errors = true;
+            var sorted_errors = add_not_firsts(Errors,{},sortObj,coordNames)
+        } else {
+            var no_errors = false;
+            var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
+        }
+
         var dataObj = {
             'classtitle': classtitle,
             'level': 1,
             'errorCoords': errorCoords,
-            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            'sorted_errors': sorted_errors,
+            'no_errors': no_errors};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
 
@@ -198,13 +208,22 @@ Router.route('/class/:classtitle/:assignment',{
             alert('unknown type in url');
         }
         
+        var num_errors = Errors.find(filterObj).count();
+        if (num_errors===0) {
+            var no_errors = true;
+            var sorted_errors = add_not_firsts(Errors,{},sortObj,coordNames)
+        } else {
+            var no_errors = false;
+            var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
+        }
 
         var dataObj = {
             'classtitle': classtitle,
             'level': 2,
             'errorCoords': errorCoords,
             'assignment': assignment,
-            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            'sorted_errors': sorted_errors,
+            'no_errors': no_errors};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
 
@@ -278,6 +297,15 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
         } else {
             alert('unknown type in url');
         }
+
+        var num_errors = Errors.find(filterObj).count();
+        if (num_errors===0) {
+            var no_errors = true;
+            var sorted_errors = add_not_firsts(Errors,{},sortObj,coordNames)
+        } else {
+            var no_errors = false;
+            var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
+        }
         
 
         var dataObj = {
@@ -286,7 +314,8 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
             'errorCoords': errorCoords,
             'assignment': assignment,
             'testgroup': testgroup,
-            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            'sorted_errors': sorted_errors,
+            'no_errors': no_errors};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
 
@@ -369,6 +398,15 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
         } else {
             alert('unknown type in url');
         }
+
+        var num_errors = Errors.find(filterObj).count();
+        if (num_errors===0) {
+            var no_errors = true;
+            var sorted_errors = add_not_firsts(Errors,{},sortObj,coordNames)
+        } else {
+            var no_errors = false;
+            var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
+        }
         
 
         var dataObj = {
@@ -378,7 +416,8 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'assignment': assignment,
             'testgroup': testgroup,
             'testnum': testnum,
-            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            'sorted_errors': sorted_errors,
+            'no_errors': no_errors};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
 
