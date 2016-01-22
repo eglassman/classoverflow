@@ -377,6 +377,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'errorCoords': errorCoords,
             'assignment': assignment,
             'testgroup': testgroup,
+            'testnum': testnum,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         

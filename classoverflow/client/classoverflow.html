@@ -170,6 +170,7 @@
                     <!-- a class="navbar-brand" href="/">
                         ClassOverflow
                     </a> -->
+                    {{log}}
                     <h3>
                         <a href="/">ClassOverflow</a>
                         {{#if islevel level 1}}
@@ -186,6 +187,16 @@
                                     {{assignment}}
                               </a>
                             / {{testgroup}}
+                        {{/if}}
+                        {{#if islevel level 4}}
+                            / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
+                            / <a href="/class/{{classtitle}}/{{assignment}}">
+                                    {{assignment}}
+                              </a>
+                            / <a href="/class/{{classtitle}}/{{assignment}}/{{testgroup}}">
+                                    {{testgroup}}
+                              </a>
+                            / {{testnum}}
                         {{/if}}
                     </h3>
                 </div>
