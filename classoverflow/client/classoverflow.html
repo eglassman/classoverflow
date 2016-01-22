@@ -315,14 +315,15 @@
           </div>
           <div class="form-group">
             <label for="hint-text" class="control-label">Hint:</label>
-            <textarea class="form-control" id="hint-text"></textarea>
+            <textarea class="form-control" id="hint-text-for-{{_id}}"></textarea>
           </div>
+          <button type="click" class="btn btn-primary submit-hint" id="submit-hint-for-{{_id}}" data-error-id="{{_id}}">Submit Hint</button>
         </form>
       </div>
-      <div class="modal-footer">
+      <!-- <div class="modal-footer"> -->
         <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-        <button type="button" class="btn btn-primary">Submit Hint</button>
-      </div>
+        <!-- <button type="submit" class="btn btn-primary submit-hint" id="submit-hint-for-{{_id}}">Submit Hint</button> -->
+      <!-- </div> -->
     </div>
   </div>
 </div>
