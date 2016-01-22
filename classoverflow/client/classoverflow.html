@@ -251,7 +251,34 @@
 
 <template name="errorTable">
     <div class="container-fluid">
-        {{> addErrorBtn}}
+        
+        {{#if no_errors}}
+        <div class="row highlighted">
+            <div class="col-xs-1 centered wrapped">
+                <h5>{{assignment}}</h5>
+            </div>
+            <div class="col-xs-1 centered wrapped">
+                <h5>{{testgroup}}</h5>
+            </div>
+            <div class="col-xs-1 centered wrapped">
+                <h5>{{testnum}}</h5>
+            </div>
+            <div class="col-xs-9">
+                <h5>is not in our database for {{classtitle}}, but you can
+                <button type="button" class="btn btn-link no-errors-add-error" data-toggle="modal" data-class="{{classtitle}}" data-assignment="{{assignment}}" data-testgroup="{{testgroup}}" data-testnum="{{testnum}}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Error
+                </button> if you want others to contribute hints for resolving it.</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>All errors for {{classtitle}}</h4>
+            </div>
+        </div> 
+        {{else}}
+            {{> addErrorBtn}}
+        {{/if}}
     {{#each sorted_errors}}
         <div class="row error_row" id="{{_id}}">
             
@@ -303,7 +330,9 @@
             </div>
         </div>
     {{/each}}
-    {{> addErrorBtn}}
+    {{#unless no_errors}}
+        {{> addErrorBtn}}
+    {{/unless}}
     </div>
 </template>
 
