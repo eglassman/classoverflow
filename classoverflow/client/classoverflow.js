@@ -429,6 +429,7 @@ if (Meteor.isClient) {
                 } else {
                     //event.target[0].value = ''; //clear the hint field on success
                     $('#hint-text-for-'+errorId).val('');
+                    $('#addHintModal-'+errorId).modal('hide');
                 }
                 
             });
@@ -448,6 +449,14 @@ if (Meteor.isClient) {
         }
     });
     Template.errorTable.events({
+        "click .add-hint": function(event){
+            if (Meteor.userId()){
+                var errorId = $(event.target).data('error-id');
+                $('#addHintModal-'+errorId).modal('show');
+            } else {
+                $('#mySignInModal').modal('show');
+            }
+        },
         "submit .new-hint-entry": function(event) {
             console.log(event)
             var hintText = event.target[0].value;
