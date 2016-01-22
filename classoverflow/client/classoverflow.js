@@ -302,6 +302,97 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
     }
 });
 
+Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
+    waitOn: function() {
+        var classtitle = decodeURIComponent(this.params.classtitle);
+        return [Meteor.subscribe('classes'),
+                Meteor.subscribe('errors',classtitle),
+                Meteor.subscribe('hints',classtitle)];
+    },
+    //template: 'classpage',
+    action: function () {
+
+        var classtitle = decodeURIComponent(this.params.classtitle);
+        var assignment = decodeURIComponent(this.params.assignment);
+        var testgroup = decodeURIComponent(this.params.testgroup);
+        var testnum = decodeURIComponent(this.params.testnum);
+
+        var class_entry = Classes.findOne({
+            classtitle: classtitle
+        });
+        Session.set('class', classtitle);
+        Session.set('numErrorCoords',class_entry['errorCoords'].length);
+
+        //find or login with student id
+        if (this.params.query.student_id){
+            if (!Meteor.user()) {
+                console.log('loggin in with student id')
+                loginAsEdxStudent(this.params.query.student_id);
+            }
+        }
+        Session.set('submitQ', false);
+        
+        var errorCoords = class_entry['errorCoords'];
+
+        var sortObj = {};
+        sortObj[errorCoords[0]['name']] = 1;
+        sortObj[errorCoords[1]['name']] = 1;
+        sortObj[errorCoords[2]['name']] = 1;
+        console.log('sortObj',sortObj)
+
+        var coordNames = [];
+        coordNames.push(errorCoords[0]['name']);
+        coordNames.push(errorCoords[1]['name']);
+        coordNames.push(errorCoords[2]['name']);
+        console.log('coordNames',coordNames)
+
+        var filterObj = {};
+        if (errorCoords[0]['inputType']==='int') {
+            filterObj[errorCoords[0]['name']] = parseInt(assignment);
+        } else if (errorCoords[0]['inputType']==='string') {
+            filterObj[errorCoords[0]['name']] = assignment;
+        } else {
+            alert('unknown type in url');
+        }
+        if (errorCoords[1]['inputType']==='int') {
+            filterObj[errorCoords[1]['name']] = parseInt(testgroup);
+        } else if (errorCoords[1]['inputType']==='string') {
+            filterObj[errorCoords[1]['name']] = testgroup;
+        } else {
+            alert('unknown type in url');
+        }
+
+        if (errorCoords[2]['inputType']==='int') {
+            filterObj[errorCoords[2]['name']] = parseInt(testnum);
+        } else if (errorCoords[2]['inputType']==='string') {
+            filterObj[errorCoords[2]['name']] = testnum;
+        } else {
+            alert('unknown type in url');
+        }
+        
+
+        var dataObj = {
+            'classtitle': classtitle,
+            'level': 4,
+            'errorCoords': errorCoords,
+            'assignment': assignment,
+            'testgroup': testgroup,
+            'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
+            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
+        
+
+        console.log('dataObj',dataObj)
+
+        if (this.ready()) {
+            this.render('classpage',{
+                data: function(){
+                    return dataObj
+                }
+            }); 
+        }
+    }
+});
+
 
 // Router.route('/class/:classtitle/assignment/:assignment',{
 //     waitOn: function() {
