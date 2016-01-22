@@ -54,7 +54,14 @@ td li {
 .error_row {
 	border-bottom-style: solid;
     border-bottom-color: #eeeeee;
+    margin-top: 10px;
 }
 .glyphicon {
 	display: inline;
+}
+.bottom-padding {
+	padding-bottom: 20px;
+}
+span.glyphicon {
+    font-size: 1.2em;
 }
