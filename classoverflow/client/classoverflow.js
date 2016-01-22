@@ -349,12 +349,12 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            var route = '/class/'+title;
+            var route = '/class/'+encodeURIComponent(title);
             thisclass['errorCoords'].forEach(function(ec,ind){
                 var field_name_first = 'coord'+ind.toString()+'first'
                 //console.log('field_name_first',field_name_first)
                 //route = route + '/' + ec['name'] + '/' + curError[ec['name']];
-                route = route + '/' + curError[ec['name']];
+                route = route + '/' + encodeURIComponent(curError[ec['name']]);
                 coordVals.push({
                     val: curError[ec['name']], 
                     placeholder: ec['placeholder'], 
