@@ -31,6 +31,40 @@ loginAsEdxStudent = function(edxstudentID) {
     });
 }
 
+//ADD NOTFIRST ATTRIBUTES
+//logic based on code here:
+//http://stackoverflow.com/questions/28663936/looking-at-previous-item-in-handlebars-loop-meteorjs
+function add_not_firsts(my_collection,sortObj,coordNames){
+    var my_fetched_collection = my_collection.find({},{sort: sortObj}).fetch()
+    var previous_item = {}
+    return _.map(my_fetched_collection, function(current_item) {
+        // add an isAwesome property based on the previous kitten
+        if (previous_item[coordNames[0]] === current_item[coordNames[0]]){
+            current_item.coord0first = false;
+            // current_item.coord1first = false;
+            // current_item.coord2first = false;
+            if (previous_item[coordNames[1]] === current_item[coordNames[1]]){
+                current_item.coord1first = false;
+                // current_item.coord2first = false;
+                if (previous_item[coordNames[2]] === current_item[coordNames[2]]){
+                    current_item.coord2first = false;
+                } else {
+                    current_item.coord2first = true;
+                }
+            } else {
+                current_item.coord1first = true;
+                current_item.coord2first = true;
+            }
+        } else {
+            current_item.coord0first = true;
+            current_item.coord1first = true;
+            current_item.coord2first = true;
+        }
+        previous_item = current_item;
+        return current_item
+    });
+}
+
 //ROUTER CALLS
 Router.route('/',{
     template: 'mainpage',
@@ -59,21 +93,11 @@ Router.route('/class/:classtitle',{
     //template: 'classpage',
     action: function () {
 
-        console.log('this.params',this.params)
         var class_entry = Classes.findOne({
             classtitle: this.params.classtitle
         });
-        console.log('class_entry',class_entry);//,class_entry[0]class_entry[0]['name'])
-        
-        // for (var q in this.params.query) {
-        //     var formparam = q.split('_param')[0];
-        //     console.log(formparam)
-        //     Session.set(formparam,this.params.query[q])
-        // }
         Session.set('class', this.params.classtitle);
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
-
-        console.log('Session',Session)
 
         //find or login with student id
         if (this.params.query.student_id){
@@ -84,10 +108,6 @@ Router.route('/class/:classtitle',{
         }
         Session.set('submitQ', false);
         
-        //console.log('testing eval',eval(class_entry[0]['name']))
-        //var dataObj= {test:'hi'}
-
-
         var errorCoords = class_entry['errorCoords'];
 
         var sortObj = {};
@@ -96,12 +116,19 @@ Router.route('/class/:classtitle',{
         sortObj[errorCoords[2]['name']] = 1;
         console.log('sortObj',sortObj)
 
+        var coordNames = [];
+        coordNames.push(errorCoords[0]['name']);
+        coordNames.push(errorCoords[1]['name']);
+        coordNames.push(errorCoords[2]['name']);
+        console.log('coordNames',coordNames)
+
         var dataObj = {
             'classtitle': this.params.classtitle,
             'level': 1,
             'errorCoords': errorCoords,
-            'sorted_errors': Errors.find({},{sort: sortObj}).fetch()
-        };
+            'sorted_errors': add_not_firsts(Errors,sortObj,coordNames)};
+            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
+        
 
         console.log('dataObj',dataObj)
 
@@ -114,6 +141,14 @@ Router.route('/class/:classtitle',{
         }
     }
 });
+
+
+// Router.route('/class/:classtitle/assignment/:assignment',{
+//     waitOn: function() {
+//         return [Meteor.subscribe('classes'),
+//                 Meteor.subscribe('errors',this.params.classtitle),
+//                 Meteor.subscribe('hints',this.params.classtitle)];
+//     },
 
 Meteor.startup(function () {
 
@@ -154,8 +189,15 @@ if (Meteor.isClient) {
             var thisclass = Classes.findOne({
                 classtitle: title
             });
-            thisclass['errorCoords'].forEach(function(ec){
-                coordVals.push({val: curError[ec['name']], placeholder: ec['placeholder']});
+            thisclass['errorCoords'].forEach(function(ec,ind){
+                var field_name_first = 'coord'+ind.toString()+'first'
+                console.log('field_name_first',field_name_first)
+                coordVals.push({
+                    val: curError[ec['name']], 
+                    placeholder: ec['placeholder'], 
+                    first: curError[field_name_first]
+                });
+                console.log('coordVals',coordVals)
             });
             var lastCoord = coordVals[coordVals.length-1];
             lastCoord['last'] = true;

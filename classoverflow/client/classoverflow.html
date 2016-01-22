@@ -220,12 +220,14 @@
             </div>
             {{#each errorCoordsForAnError}} 
             <div class="col-xs-1 centered wrapped">
+            {{#if first}}
                 {{#unless last}}
                 <a href="#">
                   <span class="glyphicon glyphicon-filter"></span>
                 </a>
                 {{/unless}}
-                {{val}} 
+                {{val}}
+            {{/if}} 
             </div> 
             {{/each}}
             <div class="col-xs-8">
