@@ -156,7 +156,10 @@ if (Meteor.isClient) {
             });
             thisclass['errorCoords'].forEach(function(ec){
                 coordVals.push({val: curError[ec['name']], placeholder: ec['placeholder']});
-            });                
+            });
+            var lastCoord = coordVals[coordVals.length-1];
+            lastCoord['last'] = true;
+            coordVals[coordVals.length-1] = lastCoord;             
             return coordVals;
         } else {
             console.log('no title supplied');

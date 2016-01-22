@@ -56,3 +56,6 @@ td li {
 	border-bottom-style: solid;
     border-bottom-color: #eeeeee;
 }
+.glyphicon {
+	display: inline;
+}
