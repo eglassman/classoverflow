@@ -414,6 +414,39 @@ if (Meteor.isClient) {
             }
         }
     });
+    Template.addHintModal.events({
+        "click .submit-hint": function(event){
+            //event.preventDefault();
+            console.log('.submit-hint clicked', event)
+            console.log('event.target',event.target)
+            var errorId = $(event.target).data('error-id');
+            var hintText = $('#hint-text-for-'+errorId).val();
+            console.log(hintText)
+
+            Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error,result){
+                if (error) {
+                    console.log('error in Meteor.addHint call',error) //log failure to add hint
+                } else {
+                    //event.target[0].value = ''; //clear the hint field on success
+                    $('#hint-text-for-'+errorId).val('');
+                }
+                
+            });
+
+            return false
+            //var button = $(event.relatedTarget) // Button that triggered the modal
+            //var errorId = button.data('error-id') // Extract info from data-* attributes
+            //console.log('errorId',errorId)
+
+            //event.preventDefault();
+              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            //var modal = $(this)
+            //modal.find('.modal-title').text('New message to ' + recipient)
+            //modal.find('.modal-body input').val(recipient)
+            //return false
+        }
+    });
     Template.errorTable.events({
         "submit .new-hint-entry": function(event) {
             console.log(event)
