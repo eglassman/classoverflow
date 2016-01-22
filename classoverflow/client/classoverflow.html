@@ -197,10 +197,11 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-1 righted"><h4>Followers</h4></div>
+                
                 {{#each errorCoords}} 
                     {{> errorCoordNavbar}}
                 {{/each}}
+                <div class="col-xs-1"><h4>Alerts</h4></div>
                 <div class="col-xs-8"><h4>Hints from Fellow Students and Staff</h4></div>
                     <!-- <tr>
                         <th>Followers</th>
@@ -231,12 +232,7 @@
     <div class="container-fluid">
     {{#each sorted_errors}}
         <div class="row error_row" id="{{_id}}">
-            <div class="col-xs-1 righted">
-                <button type="button" class="btn btn-link request">
-                    <span class="glyphicon glyphicon-envelope"></span>
-                    {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
-                </button>
-            </div>
+            
             <!-- {{log}} -->
             {{#each errorCoordsForAnError}} 
             <!-- {{log}} -->
@@ -253,6 +249,14 @@
             {{/if}} 
             </div> 
             {{/each}}
+
+            <div class="col-xs-1">
+                <button type="button" class="btn btn-link request">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
+                </button>
+            </div>
+
             <div class="col-xs-8">
                 <ul>
                     {{#each hintsHelper}} 
