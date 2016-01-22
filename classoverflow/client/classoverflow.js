@@ -194,8 +194,9 @@ Router.route('/class/:classtitle/:assignment',{
 
         var dataObj = {
             'classtitle': this.params.classtitle,
-            'level': 1,
+            'level': 2,
             'errorCoords': errorCoords,
+            'assignment': this.params.assignment,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
@@ -269,8 +270,10 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
 
         var dataObj = {
             'classtitle': this.params.classtitle,
-            'level': 1,
+            'level': 3,
             'errorCoords': errorCoords,
+            'assignment': this.params.assignment,
+            'testgroup': this.params.testgroup,
             'sorted_errors': add_not_firsts(Errors,filterObj,sortObj,coordNames)};
             //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
         
@@ -358,6 +361,10 @@ if (Meteor.isClient) {
     });
     Template.registerHelper('certAuthEnabled',function(){
         return Session.get('certAuthEnabled');
+    });
+
+    Template.registerHelper('islevel',function(level,levelnumber){
+        return level==levelnumber
     });
     
     Template.mainpage.helpers({
