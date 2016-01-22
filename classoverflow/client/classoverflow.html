@@ -156,7 +156,7 @@
 <template name="classpage">
 
     {{> altnavbar}}
-
+    {{> addErrorModal}}
     {{> errorTable}}
     
 </template>
@@ -230,7 +230,7 @@
 <template name="addErrorBtn">
     <div class="row">
         <div class="col-xs-3 centered bottom-padding">
-            <button type="button" class="btn btn-link addError">
+            <button type="button" class="btn btn-link add-error">
                 <span class="glyphicon glyphicon-search"></span>
                 Cannot find your error?
             </button>
@@ -330,7 +330,35 @@
 
 </template>
 
+<template name="addErrorModal">
 
+<div class="modal fade" id="addErrorModal" tabindex="-1" role="dialog" aria-labelledby="addErrorModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addErrorModalLabel">New error</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            {{#each errorCoordsForAnError }} 
+                <label for="error-name" class="control-label">{{placeholder}}:</label>
+                <input type="text" class="form-control" id="error-name">
+            {{/each}}
+          </div>
+          <div class="form-group">
+            <label for="hint-text-in-error-modal" class="control-label">(Optional) Hint:</label>
+            <textarea class="form-control" id="hint-text-in-error-modal" placeholder="If you already have a hint for this error, please write it here."></textarea>
+          </div>
+          <button type="click" class="btn btn-primary submit-error" id="submit-error">Submit Hint</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
 
 <!-- <template name="errorCoordTableHeader">
     <th>{{placeholder}}</th>
