@@ -317,6 +317,7 @@ Meteor.startup(function () {
         CertAuth.login();
         Session.set('certAuthEnabled',true);
     }
+    Meteor.call('sendEmail','elg@mit.edu','a','b','c');
   
 }); 
 
