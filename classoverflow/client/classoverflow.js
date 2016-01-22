@@ -414,6 +414,34 @@ if (Meteor.isClient) {
             }
         }
     });
+    Template.addErrorBtn.events({
+        "click .add-error": function(event){
+            console.log('add-error button clicked',event)
+            if (Meteor.userId()){
+                $('#addErrorModal').modal('show');
+            } else {
+                $('#mySignInModal').modal('show');
+            }
+            return false;
+        }
+    });
+    Template.addErrorModal.events({
+        'click .submit-error': function(event){
+
+            console.log('event.target', event.target)
+
+            Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
+                //console.log(error,result);
+                if (error) {
+                    console.log('error during addError', error)
+                } else {
+                    //myScrollIntoView(result);
+                    $('#addErrorModal').modal('hide');
+                }
+            });
+            return false;
+        }
+    });
     Template.addHintModal.events({
         "click .submit-hint": function(event){
             //event.preventDefault();
@@ -456,6 +484,7 @@ if (Meteor.isClient) {
             } else {
                 $('#mySignInModal').modal('show');
             }
+            return false;
         },
         "submit .new-hint-entry": function(event) {
             console.log(event)
