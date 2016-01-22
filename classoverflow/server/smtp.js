@@ -1,4 +1,4 @@
-
+//based on http://lukaszkups.net/blog/0005_sending_emails_with_meteor/
 Meteor.methods({
   sendEmail: function (errorString,errorLink,hint) {
     check(errorString, String);
