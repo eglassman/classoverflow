@@ -95,7 +95,7 @@ Meteor.methods({
         var candidateError = errorCoords; //{};
 
         candidateError['class'] = theclass;
-        candidateError['requests'] = 0;
+        candidateError['requests'] = 1;
         candidateError['createdAt'] = new Date();
         candidateError['owner'] = Meteor.userId(); // _id of logged in user
         //candidateError['requesters'] = [];
