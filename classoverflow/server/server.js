@@ -322,6 +322,27 @@ Meteor.startup(function () {
                     }
     ],
                 route: '/class/6.005'
+            },
+            {
+                classtitle: '61b',
+                errorCoords: [
+                    {
+                        name: "branch",
+                        placeholder: "Branch",
+                        inputType: 'string'
+                    },
+                    {
+                        name: "testgroup",
+                        placeholder: 'Test Group',
+                        inputType: 'string'
+                    },
+                    {
+                        name: "testnum",
+                        placeholder: 'Test Number',
+                        inputType: 'int'
+                    }
+    ],
+                route: '/class/61b'
             }
            ];
         classes.forEach(function (c) {
