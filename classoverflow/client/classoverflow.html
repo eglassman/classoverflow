@@ -260,52 +260,75 @@
         {{else}}
             {{> addErrorBtn}}
         {{/if}}
-    {{#each sorted_errors}}
-        <div class="row error_row" id="{{_id}}">
-            
-            {{#each errorCoordsForAnError}} 
-                <div class="col-xs-1 centered wrapped">
-                    {{#if first}}
-                        {{#unless last}}
-                            <a href="{{route}}">
-                                <span class="glyphicon glyphicon-filter"></span>{{val}}
-                            </a>
-                        {{else}}
-                            {{val}}
-                        {{/unless}}
-                        
-                    {{/if}} 
-                </div> 
-            {{/each}}
-
-            <div class="col-xs-1">
-                <button type="button" class="btn btn-link request">
-                    <span class="glyphicon glyphicon-envelope"></span>
-                    {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
-                </button>
+    {{#if one_error}}
+        {{#each sorted_errors}}        
+            <div class="row error_row highlighted" id="{{_id}}">
+                {{> error_row}}
+            </div> 
+        {{/each}}
+    {{else}}
+        {{#each sorted_errors}}        
+            <div class="row error_row" id="{{_id}}">
+                {{> error_row}}
+            </div> 
+        {{/each}}
+    {{/if}}
+    {{#if one_error}}
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>All errors for {{classtitle}}</h4>
             </div>
-
-            <div class="col-xs-8">
-                <ul>
-                    {{#each hintsHelper}} 
-                        {{> hint}} 
-                    {{/each}}
-
-                    {{> addHintModal}}
-
-                    <li>
-                        <button type="button" class="btn btn-link add-hint" data-toggle="modal" data-error-id="{{_id}}">
-                            <span class="glyphicon glyphicon-plus"></span>
-                            Hint
-                        </button>
-                    </li>
-                </ul>
+        </div> 
+        {{#each all_errors}}
+            <div class="row error_row" id="{{_id}}">
+                {{> error_row}}
             </div>
-        </div>
-    {{/each}}
+        {{/each}}
+    {{/if}}
     {{#unless no_errors}}
         {{> addErrorBtn}}
     {{/unless}}
+    </div>
+</template>
+
+<template name="error_row">
+    {{#each errorCoordsForAnError}} 
+        <div class="col-xs-1 centered wrapped">
+            {{#if first}}
+                {{#unless last}}
+                    <a href="{{route}}">
+                        <span class="glyphicon glyphicon-filter"></span>{{val}}
+                    </a>
+                {{else}}
+                    {{val}}
+                {{/unless}}
+                
+            {{/if}} 
+        </div> 
+    {{/each}}
+
+    <div class="col-xs-1">
+        <button type="button" class="btn btn-link request">
+            <span class="glyphicon glyphicon-envelope"></span>
+            {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
+        </button>
+    </div>
+
+    <div class="col-xs-8">
+        <ul>
+            {{#each hintsHelper}} 
+                {{> hint}} 
+            {{/each}}
+
+            {{> addHintModal}}
+
+            <li>
+                <button type="button" class="btn btn-link add-hint" data-toggle="modal" data-error-id="{{_id}}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Hint
+                </button>
+            </li>
+        </ul>
     </div>
 </template>
 

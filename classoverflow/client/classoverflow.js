@@ -371,6 +371,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             alert('unknown type in url');
         }
 
+        var one_error = false;
         var num_errors = Errors.find(filterObj).count();
         if (num_errors===0) {
             var no_errors = true;
@@ -378,6 +379,10 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
         } else {
             var no_errors = false;
             var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
+            if (num_errors===1) {
+                var one_error = true;
+                var all_errors = add_not_firsts(Errors,{},sortObj,coordNames)
+            }
         }
         
         var dataObj = {
@@ -388,7 +393,9 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'testgroup': testgroup,
             'testnum': testnum,
             'sorted_errors': sorted_errors,
-            'no_errors': no_errors};
+            'no_errors': no_errors,
+            'one_error': one_error,
+            'all_errors': all_errors};
 
         if (this.ready()) {
             this.render('classpage',{
