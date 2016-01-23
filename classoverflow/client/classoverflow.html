@@ -9,7 +9,6 @@
     <title>ClassOverflow</title>
 
     <div class="container">
-      
 
       <!--Instructions Modal -->
       <div class="modal fade" id="myInstructionsModal" role="dialog">
@@ -26,18 +25,13 @@
 
               <p>If you can contribute another hint to help future students struggling with the same test case, please go ahead and do so! <b>Answer the question "If you were a lab assistant helping a student with this problem, what would you say to help them fix it?"</b></p>
             </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
           </div>
-          
         </div>
       </div>
 
       <!--Feedback Modal -->
       <div class="modal fade" id="myFeedbackModal" role="dialog">
         <div class="modal-dialog">
-        
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
@@ -47,18 +41,13 @@
             <div class="modal-body">
               <p>Please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a> if you have any feedback on the design or operation of this site.</p>
             </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
           </div>
-          
         </div>
       </div>
 
       <!--Sign-In Modal -->
       <div class="modal fade" id="mySignInModal" role="dialog">
         <div class="modal-dialog">
-        
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
@@ -68,17 +57,13 @@
             <div class="modal-body">
               <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please first <a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a>.</p>
             </div>
-            <!--div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div-->
           </div>
-          
         </div>
       </div>
-      
     </div>
-
 </head>
+
+
 
 
 <template name="mainpage">
@@ -93,7 +78,9 @@
 </template>
 
 <template name="classlink">
-    <li><a href="/class/{{classtitle}}">{{classtitle}}</a></li>
+    <li>
+        <a href="/class/{{classtitle}}">{{classtitle}}</a>
+    </li>
 </template>
 
 
@@ -137,7 +124,9 @@
                     <li>
                         <a>
                             <form class="errorCoords-form form-inline" role="search">
-                                {{#each errorCoords}} {{> errorCoord}} {{/each}}
+                                {{#each errorCoords}}
+                                    {{> errorCoord}}
+                                {{/each}}
                                 <button type="submit" class="btn btn-default btn-primary" id='find-add-error-btn'>Find/Add Error</button>
                             </form>
                         </a>
@@ -163,14 +152,10 @@
 
 <template name="altnavbar">
 
-     <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="row">
                 <div class="navbar-header col-xs-6">
-                    <!-- a class="navbar-brand" href="/">
-                        ClassOverflow
-                    </a> -->
-                    {{log}}
                     <h3>
                         <a href="/">ClassOverflow</a>
                         {{#if islevel level 1}}
@@ -179,7 +164,6 @@
                         {{#if islevel level 2}}
                             / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
                             / {{assignment}}
-
                         {{/if}}
                         {{#if islevel level 3}}
                             / <a href="/class/{{classtitle}}">{{classtitle}}</a> 
@@ -207,21 +191,16 @@
                 </div>
             </div>
 
-            <div class="row">
-                
+            <div class="row"> 
                 {{#each errorCoords}} 
                     {{> errorCoordNavbar}}
                 {{/each}}
-                <div class="col-xs-1"><h4>Alerts</h4></div>
-                <div class="col-xs-8"><h4>Hints from Fellow Students and Staff</h4></div>
-                    <!-- <tr>
-                        <th>Followers</th>
-                        {{#each errorCoords}} 
-                            {{> errorCoordTableHeader}}
-                        {{/each}}
-                        <th>Hints</th>
-                    </tr>
-                </table> -->
+                <div class="col-xs-1">
+                    <h4>Alerts</h4>
+                </div>
+                <div class="col-xs-8">
+                    <h4>Hints from Fellow Students and Staff</h4>
+                </div>
             </div>
         </div>
     </nav>
@@ -229,12 +208,14 @@
 </template>
 
 <template name="errorCoordNavbar">
-    <div class="col-xs-1"><h4>{{placeholder}}</h4></div>
+    <div class="col-xs-1">
+        <h4>{{placeholder}}</h4>
+    </div>
 </template>
 
 <template name="errorCoord">
     <div class="form-group">
-        {{placeholder}} <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{coordvalue}}" /> <!--placeholder="{{placeholder}}"-->
+        {{placeholder}} <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{coordvalue}}" />
     </div>
 </template>
 
@@ -282,21 +263,19 @@
     {{#each sorted_errors}}
         <div class="row error_row" id="{{_id}}">
             
-            <!-- {{log}} -->
             {{#each errorCoordsForAnError}} 
-            <!-- {{log}} -->
-            <div class="col-xs-1 centered wrapped">
-            {{#if first}}
-                {{#unless last}}
-                <a href="{{route}}">
-                  <span class="glyphicon glyphicon-filter"></span>{{val}}
-                </a>
-                {{else}}
-                    {{val}}
-                {{/unless}}
-                
-            {{/if}} 
-            </div> 
+                <div class="col-xs-1 centered wrapped">
+                    {{#if first}}
+                        {{#unless last}}
+                            <a href="{{route}}">
+                                <span class="glyphicon glyphicon-filter"></span>{{val}}
+                            </a>
+                        {{else}}
+                            {{val}}
+                        {{/unless}}
+                        
+                    {{/if}} 
+                </div> 
             {{/each}}
 
             <div class="col-xs-1">
@@ -320,12 +299,6 @@
                             Hint
                         </button>
                     </li>
-                    <!-- <li>
-                        <form class="new-hint-entry form-inline">
-                            <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
-                            <button id='new-hint-entry' type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
-                        </form>
-                    </li> -->
                 </ul>
             </div>
         </div>
@@ -360,10 +333,6 @@
           <button type="click" class="btn btn-primary submit-hint" id="submit-hint-for-{{_id}}" data-error-id="{{_id}}">Submit Hint</button>
         </form>
       </div>
-      <!-- <div class="modal-footer"> -->
-        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-        <!-- <button type="submit" class="btn btn-primary submit-hint" id="submit-hint-for-{{_id}}">Submit Hint</button> -->
-      <!-- </div> -->
     </div>
   </div>
 </div>
@@ -383,6 +352,7 @@
         <form>
           <div class="form-group">
             {{#each errorCoordsForAnError }} 
+                {{log}}
                 <label for="error-name" class="control-label">{{placeholder}}:</label>
                 <input type="text" class="form-control" id="error-name">
             {{/each}}
@@ -400,13 +370,6 @@
 
 </template>
 
-<!-- <template name="errorCoordTableHeader">
-    <th>{{placeholder}}</th>
-</template> -->
-
-<!-- <template name="errorCoordTableRow">
-    <td>{{val}}</td>
-</template> -->
 
 <template name="hint">
     <li>
@@ -415,8 +378,5 @@
             {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} ({{upvotes}})
         </button>
         {{hint}}
-        <!-- <button type="button" class="btn btn-default btn-sm pull-right upvote {{#if ifUpvoted}}upvoted btn-warning {{else}}notupvoted btn-info{{/if}}">
-            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
-        </button> -->
     </li>
 </template>

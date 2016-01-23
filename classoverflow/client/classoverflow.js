@@ -2,11 +2,6 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-// Meteor.subscribe("classes");
-// Meteor.subscribe("errors");
-// Meteor.subscribe("hints");
-
-
 myScrollIntoView = function(result) {
     $('tr').removeClass('highlighted');
     $('#'+result).addClass('highlighted');
@@ -117,13 +112,11 @@ Router.route('/class/:classtitle',{
         sortObj[errorCoords[0]['name']] = 1;
         sortObj[errorCoords[1]['name']] = 1;
         sortObj[errorCoords[2]['name']] = 1;
-        console.log('sortObj',sortObj)
 
         var coordNames = [];
         coordNames.push(errorCoords[0]['name']);
         coordNames.push(errorCoords[1]['name']);
         coordNames.push(errorCoords[2]['name']);
-        console.log('coordNames',coordNames)
 
         var filterObj = {};
 
@@ -142,11 +135,7 @@ Router.route('/class/:classtitle',{
             'errorCoords': errorCoords,
             'sorted_errors': sorted_errors,
             'no_errors': no_errors};
-            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
-        
-
-        console.log('dataObj',dataObj)
-
+            
         if (this.ready()) {
             this.render('classpage',{
                 data: function(){
@@ -164,7 +153,6 @@ Router.route('/class/:classtitle/:assignment',{
                 Meteor.subscribe('errors',classtitle),
                 Meteor.subscribe('hints',classtitle)];
     },
-    //template: 'classpage',
     action: function () {
 
         var classtitle = decodeURIComponent(this.params.classtitle);
@@ -191,13 +179,11 @@ Router.route('/class/:classtitle/:assignment',{
         sortObj[errorCoords[0]['name']] = 1;
         sortObj[errorCoords[1]['name']] = 1;
         sortObj[errorCoords[2]['name']] = 1;
-        console.log('sortObj',sortObj)
 
         var coordNames = [];
         coordNames.push(errorCoords[0]['name']);
         coordNames.push(errorCoords[1]['name']);
         coordNames.push(errorCoords[2]['name']);
-        console.log('coordNames',coordNames)
 
         var filterObj = {};
         if (errorCoords[0]['inputType']==='int') {
@@ -224,11 +210,7 @@ Router.route('/class/:classtitle/:assignment',{
             'assignment': assignment,
             'sorted_errors': sorted_errors,
             'no_errors': no_errors};
-            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
-        
-
-        console.log('dataObj',dataObj)
-
+            
         if (this.ready()) {
             this.render('classpage',{
                 data: function(){
@@ -246,7 +228,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
                 Meteor.subscribe('errors',classtitle),
                 Meteor.subscribe('hints',classtitle)];
     },
-    //template: 'classpage',
     action: function () {
 
         var classtitle = decodeURIComponent(this.params.classtitle);
@@ -274,13 +255,11 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
         sortObj[errorCoords[0]['name']] = 1;
         sortObj[errorCoords[1]['name']] = 1;
         sortObj[errorCoords[2]['name']] = 1;
-        console.log('sortObj',sortObj)
 
         var coordNames = [];
         coordNames.push(errorCoords[0]['name']);
         coordNames.push(errorCoords[1]['name']);
         coordNames.push(errorCoords[2]['name']);
-        console.log('coordNames',coordNames)
 
         var filterObj = {};
         if (errorCoords[0]['inputType']==='int') {
@@ -316,10 +295,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
             'testgroup': testgroup,
             'sorted_errors': sorted_errors,
             'no_errors': no_errors};
-            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
-        
-
-        console.log('dataObj',dataObj)
 
         if (this.ready()) {
             this.render('classpage',{
@@ -338,7 +313,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
                 Meteor.subscribe('errors',classtitle),
                 Meteor.subscribe('hints',classtitle)];
     },
-    //template: 'classpage',
     action: function () {
 
         var classtitle = decodeURIComponent(this.params.classtitle);
@@ -367,13 +341,11 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
         sortObj[errorCoords[0]['name']] = 1;
         sortObj[errorCoords[1]['name']] = 1;
         sortObj[errorCoords[2]['name']] = 1;
-        console.log('sortObj',sortObj)
 
         var coordNames = [];
         coordNames.push(errorCoords[0]['name']);
         coordNames.push(errorCoords[1]['name']);
         coordNames.push(errorCoords[2]['name']);
-        console.log('coordNames',coordNames)
 
         var filterObj = {};
         if (errorCoords[0]['inputType']==='int') {
@@ -408,7 +380,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             var sorted_errors = add_not_firsts(Errors,filterObj,sortObj,coordNames)
         }
         
-
         var dataObj = {
             'classtitle': classtitle,
             'level': 4,
@@ -418,10 +389,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'testnum': testnum,
             'sorted_errors': sorted_errors,
             'no_errors': no_errors};
-            //'sorted_errors': Errors.find({},{sort: sortObj}).fetch()};
-        
-
-        console.log('dataObj',dataObj)
 
         if (this.ready()) {
             this.render('classpage',{
@@ -434,13 +401,6 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
 });
 
 
-// Router.route('/class/:classtitle/assignment/:assignment',{
-//     waitOn: function() {
-//         return [Meteor.subscribe('classes'),
-//                 Meteor.subscribe('errors',this.params.classtitle),
-//                 Meteor.subscribe('hints',this.params.classtitle)];
-//     },
-
 Meteor.startup(function () {
 
     //Deploy edX version without settings.json
@@ -449,7 +409,6 @@ Meteor.startup(function () {
         Session.set('certAuthEnabled',true);
     }
     Meteor.call('sendEmail','elg@mit.edu','a','b','c');
-  
 }); 
 
 if (Meteor.isClient) {
@@ -462,17 +421,6 @@ if (Meteor.isClient) {
         console.log('template logging',this);
     });
 
-    // Template.registerHelper('errorCoords',function(){
-    //     var title = Session.get('class');
-    //     if (title) {
-    //         var thisclass = Classes.findOne({
-    //             classtitle: title
-    //         });
-    //         return thisclass['errorCoords'];
-    //     } else {
-    //         console.log('no title supplied');
-    //     }
-    // });
     Template.registerHelper('errorCoordsForAnError',function(){
         var curError = this;
         var title = Session.get('class');
@@ -483,9 +431,7 @@ if (Meteor.isClient) {
             });
             var route = '/class/'+encodeURIComponent(title);
             thisclass['errorCoords'].forEach(function(ec,ind){
-                var field_name_first = 'coord'+ind.toString()+'first'
-                //console.log('field_name_first',field_name_first)
-                //route = route + '/' + ec['name'] + '/' + curError[ec['name']];
+                var field_name_first = 'coord'+ind.toString()+'first';
                 route = route + '/' + encodeURIComponent(curError[ec['name']]);
                 coordVals.push({
                     val: curError[ec['name']], 
@@ -493,7 +439,6 @@ if (Meteor.isClient) {
                     first: curError[field_name_first],
                     route: route
                 });
-                // console.log('coordVals',coordVals)
             });
             var lastCoord = coordVals[coordVals.length-1];
             lastCoord['last'] = true;
@@ -516,22 +461,7 @@ if (Meteor.isClient) {
             return Classes.find().fetch();
         }
     });
-    // Template.errorTable.helpers({
-    //     errors: function () {
-    //         var title = Session.get('class');
-    //         var coordsSortObj = {}
-    //         var thisclass = Classes.findOne({
-    //             classtitle: title
-    //         });
-            
-    //         thisclass['errorCoords'].forEach(function(ec){
-    //             //console.log(ec);
-    //             coordsSortObj[ec['name']] = 1;
-    //         });
-    //         //console.log(coordsSortObj)
-    //         return Errors.find({class: Session.get('class')},{sort: coordsSortObj}).fetch();
-    //     }
-    // });
+
     Template.errorTable.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
@@ -562,11 +492,9 @@ if (Meteor.isClient) {
             console.log('event.target', event.target)
 
             Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
-                //console.log(error,result);
                 if (error) {
                     console.log('error during addError', error)
                 } else {
-                    //myScrollIntoView(result);
                     $('#addErrorModal').modal('hide');
                 }
             });
@@ -584,9 +512,8 @@ if (Meteor.isClient) {
 
             Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error,result){
                 if (error) {
-                    console.log('error in Meteor.addHint call',error) //log failure to add hint
+                    console.log('error in Meteor.addHint call',error) 
                 } else {
-                    //event.target[0].value = ''; //clear the hint field on success
                     $('#hint-text-for-'+errorId).val('');
                     $('#addHintModal-'+errorId).modal('hide');
                 }
@@ -594,17 +521,6 @@ if (Meteor.isClient) {
             });
 
             return false
-            //var button = $(event.relatedTarget) // Button that triggered the modal
-            //var errorId = button.data('error-id') // Extract info from data-* attributes
-            //console.log('errorId',errorId)
-
-            //event.preventDefault();
-              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-            //var modal = $(this)
-            //modal.find('.modal-title').text('New message to ' + recipient)
-            //modal.find('.modal-body input').val(recipient)
-            //return false
         }
     });
     Template.errorTable.events({
@@ -640,7 +556,6 @@ if (Meteor.isClient) {
                     });
 
                 } else {
-                    //alert('Please sign in so you can add this hint.'); 
                     $('#mySignInModal').modal('show');
                 }
             }
@@ -651,7 +566,6 @@ if (Meteor.isClient) {
             if (Meteor.userId()) {
                 Meteor.call('toggleRequest', Session.get('class'), this._id);
             } else {
-                //alert('Please sign in so you can request hints for this error.');
                 $('#mySignInModal').modal('show');
             }
             return false;
@@ -669,14 +583,10 @@ if (Meteor.isClient) {
     });
     Template.hint.events({
         "click .upvote": function(event){
-
             if (Meteor.userId()) {
-
                 var hintId = this._id;
                 Meteor.call('toggleUpvote',Session.get('class'),hintId);
-
             } else {
-                //alert('Please sign in so you can upvote this hint.');
                 $('#mySignInModal').modal('show');
             }
             return false;
@@ -684,17 +594,14 @@ if (Meteor.isClient) {
     });
     
     Template.errorCoord.onRendered(function () {
-        console.log('error rendered')
         Session.set('errorCoordsRendered',1+Session.get('errorCoordsRendered'));
         if (Session.get('submitQ') && Session.get('errorCoordsRendered')==Session.get('numErrorCoords')) {
-            console.log('submit the sucker!')
             $('#find-add-error-btn').click();
             Session.set('submitQ',false)
         }
     });
     Template.navbar.helpers({
         errorCoords: function() {
-            console.log('navbar errorCoords')
             var title = Session.get('class');
             if (title) {
                 var thisclass = Classes.findOne({
@@ -711,8 +618,6 @@ if (Meteor.isClient) {
                     }
                 }
                 Session.set('submitQ',submitQ);
-                //console.log('finished errorCoords')
-                //console.log(Session.get('submitQ'))
                 return thisclass['errorCoords'];
             } else {
                 console.log('no title supplied');
@@ -726,14 +631,12 @@ if (Meteor.isClient) {
 
             var candidateErrorCoords = {};
             for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-
                 if (!event.target[i].value) {
                     alert('Please provide a value for all form fields.');
                     break;
                 } else {
                     var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
                     candidateErrorCoords[event.target[i].name] = coordVal;
-
                 }
             }
 
@@ -741,22 +644,15 @@ if (Meteor.isClient) {
             registeredError = Errors.findOne(candidateErrorCoords);
             console.log('registeredError',registeredError)
             if (!registeredError) {
-                console.log(Meteor.user())
                 if (Meteor.userId()) {
-                    
                     Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
-                        //console.log(error,result);
                         if (error) {
                             console.log('error during addError', error)
                         } else {
                             myScrollIntoView(result);
                         }
                     });
-                    //$('#'+insertedError).css("background-color","gray");
-                    //console.log($('#'+insertedError).text())
-                    //console.log($('#'+insertedError).css("background-color"))
                 } else {
-                    //alert('This error is not yet in our system. Please sign in so you can add it.');
                     $('#mySignInModal').modal('show');
                 }
             } else {
