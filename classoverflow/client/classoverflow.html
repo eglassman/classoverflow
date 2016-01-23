@@ -155,7 +155,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="row">
-                <div class="navbar-header col-xs-6">
+                <div class="navbar-header col-xs-8">
                     <h3>
                         <a href="/">ClassOverflow</a>
                         {{#if islevel level 1}}
@@ -182,9 +182,11 @@
                               </a>
                             / {{testnum}}
                         {{/if}}
+
+                        {{> addErrorBtn}}
                     </h3>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-4">
                     <ul class="nav navbar-nav navbar-right">
                         {{> mylogin}}
                     </ul>
@@ -220,14 +222,14 @@
 </template>
 
 <template name="addErrorBtn">
-    <div class="row">
-        <div class="col-xs-3 centered bottom-padding">
+<!--     <div class="row">
+        <div class="col-xs-3 centered bottom-padding"> -->
             <button type="button" class="btn btn-link add-error">
                 <span class="glyphicon glyphicon-search"></span>
-                Cannot find your error?
+                Cannot find your error? 
             </button>
-        </div>
-    </div>
+       <!--  </div>
+    </div> -->
 </template>
 
 <template name="errorTable">
@@ -257,8 +259,6 @@
                 <h4>All errors for {{classtitle}}</h4>
             </div>
         </div> 
-        {{else}}
-            {{> addErrorBtn}}
         {{/if}}
     {{#if one_error}}
         {{#each sorted_errors}}        
@@ -285,9 +285,6 @@
             </div>
         {{/each}}
     {{/if}}
-    {{#unless no_errors}}
-        {{> addErrorBtn}}
-    {{/unless}}
     </div>
 </template>
 
@@ -302,7 +299,6 @@
                 {{else}}
                     {{val}}
                 {{/unless}}
-                
             {{/if}} 
         </div> 
     {{/each}}
@@ -374,11 +370,19 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            {{#each errorCoordsForAnError }} 
-                {{log}}
-                <label for="error-name" class="control-label">{{placeholder}}:</label>
-                <input type="text" class="form-control" id="error-name">
-            {{/each}}
+
+                <label for="error-class" class="control-label">Class:</label>
+                <input type="text" class="form-control" id="error-class" value="{{classtitle}}">
+
+                <label for="error-assignment" class="control-label">Assignment:</label>
+                <input type="text" class="form-control" id="error-assignment" value="{{assignment}}">
+
+                <label for="error-testgroup" class="control-label">Test Group:</label>
+                <input type="text" class="form-control" id="error-testgroup" value="{{testgroup}}">
+
+                <label for="error-testnum" class="control-label">Test Number:</label>
+                <input type="text" class="form-control" id="error-testnum">
+
           </div>
           <div class="form-group">
             <label for="hint-text-in-error-modal" class="control-label">(Optional) Hint:</label>

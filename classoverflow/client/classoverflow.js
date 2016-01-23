@@ -469,17 +469,18 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.errorTable.helpers({
+    Template.error_row.helpers({
         hintsHelper: function () {
             return Hints.find({errorId:this._id}, {sort: {upvotes: -1, _id: 1}}).fetch();
         },
         ifRequested: function () {
             var errorId = this._id;
-            if (Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
-                return true
-            } else {
-                return false
+            if (Meteor.user()){
+                if (Meteor.user().profile['requestedErrors'].indexOf(errorId) >= 0) {
+                    return true;
+                } 
             }
+            return false;
         }
     });
     Template.addErrorBtn.events({
@@ -495,6 +496,8 @@ if (Meteor.isClient) {
     });
     Template.addErrorModal.events({
         'click .submit-error': function(event){
+
+            event.preventDefault();
 
             console.log('event.target', event.target)
 
@@ -581,11 +584,12 @@ if (Meteor.isClient) {
     Template.hint.helpers({
         ifUpvoted: function () {
             var hintId = this._id;
-            if (Meteor.user().profile['upvotedHints'].indexOf(hintId) >= 0) {
-                return true
-            } else {
-                return false
+            if (Meteor.user()){
+                if (Meteor.user().profile['upvotedHints'].indexOf(hintId) >= 0) {
+                    return true;
+                }
             }
+            return false;
         }
     });
     Template.hint.events({
