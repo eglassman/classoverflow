@@ -20,12 +20,6 @@ Meteor.publish("hints", function () {
 
 var edxpass = '071a0f58e44494a90dbc5844c480586c';
 
-function buildRegExp(searchText) {
-  // this is a dumb implementation
-  var parts = searchText.trim().split(/[ \-\:]+/);
-  return new RegExp("(" + parts.join('|') + ")", "ig");
-}
-
 requested = function(errorId) {
     var requestedErrors = Meteor.user().profile['requestedErrors'];
     console.log('requestedErrors',requestedErrors)
@@ -54,15 +48,23 @@ upvoted = function(hintId) {
 
 Meteor.methods({
 
-    addError: function(theclass,errorCoords) {
+    addError: function(theclass,submittedError) {
 
         if (! Meteor.userId() ) {
             throw new Meteor.Error('not-authorized'); 
         }
 
         //todo: check if values are right type, within range, appropriate size #sanitization
+        errorCoords = Classes.findOne({classtitle: theclass}).errorCoords;
+        properSearch = _.object(_.map(errorCoords, function(coord) {
+            submittedError[coord.name] = coordValue;
+            return [coord.name, convert_to_dtype(coordValue,coord.inputType)];
+        }));
 
-        console.log('errorCoords',errorCoords)
+
+
+
+        // console.log('errorCoords',errorCoords)
         
         //commenting out checking of values within coordinates
         /*Object.keys(errorCoords).forEach(function(key, index) {
@@ -83,7 +85,7 @@ Meteor.methods({
             }
         });*/
 
-        var candidateError = errorCoords; //{};
+        var candidateError = properSearch; //{};
 
         candidateError['class'] = theclass;
         candidateError['requests'] = 0;

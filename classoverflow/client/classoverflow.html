@@ -146,7 +146,7 @@
                                 {{#each errorCoords}} 
                                   {{> errorCoord}} 
                                 {{/each}}
-                                <button type="submit" class="btn btn-default btn-primary" id='find-add-error-btn'>Find/Add Error</button>
+                                <button type="submit" class="btn btn-danger {{#if ifAllCoordsExist}}active{{else}}disabled{{/if}}" id='find-add-error-btn'>Find/Add Error</button>
                             </form>
                         </a>
                     </li>
@@ -262,9 +262,9 @@
           <h4 class="modal-title">Register Error</h4>
         </div>
         <div class="modal-body">
-          {{#if ifErrorsExist}}
+          {{#if ifErrorCoordsValid}}
             <div id="error_with_submission">
-              {{ifErrorsExist}}
+              {{ifErrorCoordsValid}}
             </div>
           {{else}}
             <div id="confirm_submission">

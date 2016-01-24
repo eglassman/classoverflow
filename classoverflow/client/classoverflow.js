@@ -85,6 +85,15 @@ function sanitizeCurrentSearch(currentSearch) {
     );
 }
 
+function getProperSearch() {
+    currentSearch = Session.get("currentSearch");
+    coord_dtypes = Session.get("coord_dtypes");
+    properSearch = _.object(_.map(currentSearch, function(val, key) {
+        return [key, convert_to_dtype(val, coord_dtypes[key])];
+    }));
+    return properSearch;
+}
+
 Router.map(function () {
     this.route('about'); // By default, path = '/about', template = 'about'
     this.route('/', {
@@ -122,6 +131,14 @@ Router.map(function () {
                 }
                 else {
                     sanitizeCurrentSearch(this.params.query);
+                    // properSearch = getProperSearch();
+                    // if (Errors.find(properSearch).count()==0) {
+                    //     if(_.size(properSearch) == _.size(Session.get("coord_dtypes"))) {
+                    //         //$("#find-add-error-btn").click();
+                    //         //console.log($("#mySubmissionModal"))
+                    //         // Is it because the HTML hasn't loaded yet?
+                    //     }
+                    // }
                 }
 
                 if (!Meteor.user() && this.params.query.student_id) {
@@ -170,6 +187,7 @@ if (Meteor.isClient) {
     });
     Template.registerHelper('errorCoordsForAnError',function(){
         // Why is this a global helper?
+        // Also not very Meteor-ic
         var curError = this;
         var title = Session.get('class');
         var coordVals = [];
@@ -392,6 +410,9 @@ if (Meteor.isClient) {
                 return false;
             }
             return true;
+        },
+        ifAllCoordsExist: function() {
+            return _.size(Session.get("currentSearch"))==_.size(Session.get("coord_dtypes"))
         }
     });
     
@@ -416,11 +437,7 @@ if (Meteor.isClient) {
     Template.submission_modal.events({
         "click #addErrorButton": function(event) {
             // Assumes that user isn't changing Session(currentSearch)
-            currentSearch = Session.get("currentSearch");
-            dtypes = Session.get("coord_dtypes");
-            properSearch = _.object(_.map(currentSearch, function(val, key) {
-                return [key, convert_to_dtype(val, dtypes[key])];
-            }))
+            properSearch = getProperSearch();
             Meteor.call('addError',
                 Session.get("class"),
                 properSearch,
@@ -453,14 +470,16 @@ if (Meteor.isClient) {
         getCurrentSearch: function(errorCoord) {
             return Session.get("currentSearch")[errorCoord];
         },
-        ifErrorsExist: function() {
+        ifErrorCoordsValid: function() {
             coord_dtypes = Session.get("coord_dtypes");
-            currentSearch = Session.get("currentSearch");
-            if (_.size(currentSearch) != _.size(coord_dtypes)) {
+            properSearch = getProperSearch();
+
+            if (_.size(properSearch) != _.size(coord_dtypes)) {
                 return "Please provide a value for all form values";
             }
-            else if (Errors.find(currentSearch).count()!=0) {
+            else if (Errors.find(properSearch).count()!=0) {
                 return "The error already exists.";
+                // todo: You need to convert currentSearch to the appropriate data-type before searching
             }
             return false;
         }
