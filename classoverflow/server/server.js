@@ -74,7 +74,7 @@ Meteor.methods({
         console.log('errorCoords',errorCoords)
         
         Object.keys(errorCoords).forEach(function(key, index) {
-            console.log(key, value);
+            console.log(key, errorCoords[key]);
             var value = errorCoords[key];
 
             //todo: check if its supposed to be an int or a string!

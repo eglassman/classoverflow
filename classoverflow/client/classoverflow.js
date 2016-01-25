@@ -500,10 +500,35 @@ if (Meteor.isClient) {
 
             event.preventDefault();
 
+            console.log('event', event)
             console.log('event.target', event.target)
 
             var candidateErrorCoords = {};
 
+            // console.log('#error-class',$('#error-class').val())
+            // var error_class = $('#error-class').val()
+            console.log('#error-assignment',$('#error-assignment').val())
+            console.log('#error-testgroup',$('#error-testgroup').val())
+            console.log('#error-testnum',$('#error-testnum').val())
+
+            // var submit_allowed = False;
+            // $('#submit-error').prop('disabled','disabled');
+
+            var title = Session.get('class');
+            var thisclass = Classes.findOne({
+                classtitle: title
+            });
+            candidateErrorCoords[thisclass['errorCoords'][0]['name']] = $('#error-assignment').val()
+            candidateErrorCoords[thisclass['errorCoords'][1]['name']] = $('#error-testgroup').val()
+            candidateErrorCoords[thisclass['errorCoords'][2]['name']] = $('#error-testnum').val()
+
+
+            // if (Classes.find({classtitle:error_class}).count()>0) {
+            //     console.log('class match')
+            // } else {
+            //     $('#error-testnum').after('<span class="glyphicon glyphicon-remove form-control-feedback"></span>');
+            //     $('#submit-error').prop('disabled',true);
+            // }
             
             // for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
             //     if (!event.target[i].value) {
@@ -520,6 +545,7 @@ if (Meteor.isClient) {
                 if (error) {
                     console.log('error during addError', error)
                 } else {
+                    console.log('added',candidateErrorCoords)
                     $('#addErrorModal').modal('hide');
                 }
             });
