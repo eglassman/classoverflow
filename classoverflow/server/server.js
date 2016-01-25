@@ -235,12 +235,32 @@ Meteor.methods({
             Log.insert(logObj);
         }
     },
-    'loginAsEdxStudent': function(edxstudentID) {
-        var edxUserName = 'edx'+edxstudentID;
-        var user = Accounts.findUserByUsername(edxUserName);
+    'loginAsEdxStudent': function(edxstudentID,source) {
+        console.log(edxstudentID,source)
+        //console.log('params',params)
+        //var edxstudentID = params.query.student_id;
+        //var source = params.query.source;
+        console.log('edxstudentID,source',edxstudentID,source)
+        if (source=='berkeley') {
+            var edxUserName = 'berk'+edxstudentID;
+            var user = Accounts.findUserByUsername(edxUserName);
+            //var email = atob(edxstudentID);
+            try {
+                var email = atob(edxstudentID);
+            } catch(err) {
+                console.log(err,'no extracted email')
+                var email = ''
+            }     
+        } else {
+            var edxUserName = 'edx'+edxstudentID;
+            var user = Accounts.findUserByUsername(edxUserName);
+            var email = '';
+        }
+        console.log(email,'email',user,'user')
         if (!user) {
             Accounts.createUser({username: edxUserName,password:edxpass,profile:{
-                'isEdxUser':true
+                'isEdxUser':true,
+                email: email
             }});
         }
         return {username: edxUserName, password:edxpass}

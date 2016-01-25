@@ -2,19 +2,16 @@
 //Helper functions
 
 loginRouter = function(params){
-    if (!Meteor.user()) {
-        if (params.query.student_id && params.query.source=='berkeley'){
-            loginAsBerkeleyStudent(params.query.student_id);
-        } else {
-            if (params.query.student_id){
-                loginAsEdxStudent(params.query.student_id);
-            }
-        }
+    console.log('loginRouter',params)
+    if (params.query.student_id && !Meteor.user()){
+        console.log('edxstudentID,source',params.query.student_id,params.query.source)
+        //console.log(atob(params.query.source))
+        loginAsEdxStudent(params.query.student_id,params.query.source);
     }
 }
 
-loginAsEdxStudent = function(edxstudentID) {
-    Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
+loginAsEdxStudent = function(edxstudentID,source) {
+    Meteor.call('loginAsEdxStudent',edxstudentID,source, function(error,result){
         if (error) {
             console.log('error on login as edx student',error);
         } else {
