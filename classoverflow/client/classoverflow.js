@@ -296,6 +296,7 @@ Template.navbar.helpers({
     }
 });
 
+
 Template.navbar.events({
     "submit .errorCoords-form": function (event) {
         event.preventDefault();

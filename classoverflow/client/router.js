@@ -3,17 +3,27 @@
 
 loginRouter = function(params){
     if (!Meteor.user()) {
-        if (params.query.student_id && params.query.source=='berkeley'){
-            loginAsBerkeleyStudent(params.query.student_id);
-        } else {
-            if (params.query.student_id){
-                loginAsEdxStudent(params.query.student_id);
-            }
+        if (params.query.student_id){
+            console.log(params.query.student_id)
+            loginAsEdxStudent(params.query.student_id);
         }
     }
+    // console.log(params,params.query.source == 'berkeley')
+    // if (!Meteor.user()) {
+    //     if (params.query.student_id && params.query.source == 'berkeley'){
+    //         console.log('logging in as Berk')
+    //         loginAsBerkeleyStudent(params.query.student_id);
+    //         console.log('params.query.student_id',params.query.student_id)
+    //     } else {
+    //         if (params.query.student_id){
+    //             loginAsEdxStudent(params.query.student_id);
+    //         }
+    //     }
+    // }
 }
 
 loginAsEdxStudent = function(edxstudentID) {
+    console.log(edxstudentID)
     Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
         if (error) {
             console.log('error on login as edx student',error);
@@ -24,13 +34,13 @@ loginAsEdxStudent = function(edxstudentID) {
                 }
             });
         }
-
     });
 }
 
 loginAsBerkeleyStudent = function(studentID) {
     Meteor.call('loginAsBerkeleyStudent',studentID, function(error,result){
         if (error) {
+            console.log(studentID)
             console.log('error on login as berkeley student',error);
         } else {
             Meteor.loginWithPassword(result.username,result.password,function(error){
@@ -109,11 +119,14 @@ Router.route('/class/:classtitle',{
     action: function () {
 
         var classtitle = decodeURIComponent(this.params.classtitle);
+        console.log('classtitle',classtitle)
 
         var class_entry = Classes.findOne({
             classtitle: classtitle
         });
         Session.set('class', classtitle);
+
+        console.log("class_entry['errorCoords']",class_entry)
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id

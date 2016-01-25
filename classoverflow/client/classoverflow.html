@@ -193,6 +193,13 @@
                 </div>
             </div>
 
+            <form class="errorCoords-form form-inline" role="search">
+                {{#each errorCoords}} 
+                    {{> errorCoord}} 
+                {{/each}}
+                <button type="submit" class="btn btn-danger {{#if ifAllCoordsExist}}active{{else}}disabled{{/if}}" id='find-add-error-btn'>Find/Add Error</button>
+            </form>
+
             <div class="row"> 
                 {{#each errorCoords}} 
                     {{> errorCoordNavbar}}
