@@ -73,8 +73,7 @@ Meteor.methods({
 
         console.log('errorCoords',errorCoords)
         
-        //commenting out checking of values within coordinates
-        /*Object.keys(errorCoords).forEach(function(key, index) {
+        Object.keys(errorCoords).forEach(function(key, index) {
             console.log(key, value);
             var value = errorCoords[key];
 
@@ -90,7 +89,7 @@ Meteor.methods({
                throw new Meteor.Error('int-too-big'); 
                //todo: tell the user why its not getting added
             }
-        });*/
+        });
 
         var candidateError = errorCoords; //{};
 

@@ -486,6 +486,7 @@ if (Meteor.isClient) {
     Template.addErrorBtn.events({
         "click .add-error": function(event){
             console.log('add-error button clicked',event)
+
             if (Meteor.userId()){
                 $('#addErrorModal').modal('show');
             } else {
@@ -500,6 +501,20 @@ if (Meteor.isClient) {
             event.preventDefault();
 
             console.log('event.target', event.target)
+
+            var candidateErrorCoords = {};
+
+            
+            // for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
+            //     if (!event.target[i].value) {
+            //         //alert('Please provide a value for all form fields.');
+            //         return false;
+            //     } else {
+            //         var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
+            //         candidateErrorCoords[event.target[i].name] = coordVal;
+            //     }
+            //     console.log(candidateErrorCoords)
+            // }
 
             Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
                 if (error) {
