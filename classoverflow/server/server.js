@@ -248,10 +248,12 @@ Meteor.methods({
     'loginAsBerkeleyStudent': function(studentID) {
         //var edxUserName = 'edx'+edxstudentID;
         var admin = false;
+        Session.set('admin',false);
         if (studentID==admin_user_urlsafe) {
             admin = true;
+            Session.set('admin',true);
         }
-        var username = atob(studentID)
+        var username = atob(studentID);
         var user = Accounts.findUserByUsername(username);
         if (!user) {
             Accounts.createUser({
@@ -266,6 +268,13 @@ Meteor.methods({
             });
         }
         return {username: username, password:edxpass}
+    },
+    'admin': function(studentID){
+        var username = atob(studentID);
+        var user = Accounts.findUserByUsername(username);
+        //test this!
+        console.log('user.profile',user.profile)
+        return user.profile.admin
     }
 });
 

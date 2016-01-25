@@ -21,6 +21,20 @@ Accounts.ui.config({
 Template.registerHelper('log',function(){
     console.log('template logging',this);
 });
+Template.registerHelper('admin',function(){
+    if (Session.get('admin')){
+        Meteor.call('admin',Meteor.user().profile.studentID,function(ans,error){
+            if (ans) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+    } else {
+        return false;
+    }
+});
+
 
 Template.registerHelper('errorCoordsForAnError',function(){
     var curError = this;
@@ -77,6 +91,13 @@ Template.error_row.helpers({
         return false;
     }
 });
+Template.error_row.events({
+    "click .delete-error": function(event){
+        console.log('i want to delete',this)
+        Meteor.call('deleteError',errorId);
+    }
+})
+
 Template.addErrorBtn.events({
     "click .add-error": function(event){
         console.log('add-error button clicked',event)
@@ -236,6 +257,10 @@ Template.hint.events({
             $('#mySignInModal').modal('show');
         }
         return false;
+    },
+    "click .delete-hint": function(event){
+        console.log('i want to delete',this)
+        Meteor.call('deleteHint',errorId);
     }
 });
 
