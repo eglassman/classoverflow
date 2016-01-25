@@ -55,7 +55,7 @@
               <h4 class="modal-title">Sign In</h4>
             </div>
             <div class="modal-body">
-              <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please first <a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a>.</p>
+              <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please first <!--a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a-->sign in.</p>
             </div>
           </div>
         </div>
@@ -342,7 +342,7 @@
           <div class="form-group">
             {{#each errorCoordsForAnError }} 
                 <label for="error-name" class="control-label">{{placeholder}}:</label>
-                <input type="text" class="form-control" id="error-name" value="{{val}}" disabled>
+                <input type="text" class="form-control" id="error-name" value="{{val}}" readonly>
             {{/each}}
           </div>
           <div class="form-group">
