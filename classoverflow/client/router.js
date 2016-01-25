@@ -1,10 +1,37 @@
 
 //Helper functions
 
+loginRouter = function(params){
+    if (!Meteor.user()) {
+        if (params.query.student_id && params.query.source=='berkeley'){
+            loginAsBerkeleyStudent(params.query.student_id);
+        } else {
+            if (params.query.student_id){
+                loginAsEdxStudent(params.query.student_id);
+            }
+        }
+    }
+}
+
 loginAsEdxStudent = function(edxstudentID) {
     Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
         if (error) {
             console.log('error on login as edx student',error);
+        } else {
+            Meteor.loginWithPassword(result.username,result.password,function(error){
+                if (error) {
+                    console.log('error logging in with password',error);
+                }
+            });
+        }
+
+    });
+}
+
+loginAsBerkeleyStudent = function(studentID) {
+    Meteor.call('loginAsBerkeleyStudent',studentID, function(error,result){
+        if (error) {
+            console.log('error on login as berkeley student',error);
         } else {
             Meteor.loginWithPassword(result.username,result.password,function(error){
                 if (error) {
@@ -63,9 +90,7 @@ Router.route('/',{
         return {'class_entries': Classes.find().fetch().sort({classtitle:1}) }
     },
     action: function () {
-        if (!Meteor.user() && this.params.query.student_id) {
-            loginAsEdxStudent(this.params.query.student_id);
-        }
+        loginRouter(this.params);
         if (this.ready()) {
             this.render();
         }
@@ -92,12 +117,8 @@ Router.route('/class/:classtitle',{
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
-        if (this.params.query.student_id){
-            if (!Meteor.user()) {
-                console.log('loggin in with student id')
-                loginAsEdxStudent(this.params.query.student_id);
-            }
-        }
+        loginRouter(this.params)
+
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
@@ -162,12 +183,8 @@ Router.route('/class/:classtitle/:assignment',{
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
-        if (this.params.query.student_id){
-            if (!Meteor.user()) {
-                console.log('loggin in with student id')
-                loginAsEdxStudent(this.params.query.student_id);
-            }
-        }
+        loginRouter(this.params)
+        
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
@@ -238,12 +255,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
-        if (this.params.query.student_id){
-            if (!Meteor.user()) {
-                console.log('loggin in with student id')
-                loginAsEdxStudent(this.params.query.student_id);
-            }
-        }
+        loginRouter(this.params)
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
@@ -324,12 +336,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
         Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
-        if (this.params.query.student_id){
-            if (!Meteor.user()) {
-                console.log('loggin in with student id')
-                loginAsEdxStudent(this.params.query.student_id);
-            }
-        }
+        loginRouter(this.params)
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];

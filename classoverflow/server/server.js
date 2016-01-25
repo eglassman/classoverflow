@@ -244,6 +244,23 @@ Meteor.methods({
             }});
         }
         return {username: edxUserName, password:edxpass}
+    },
+    'loginAsBerkeleyStudent': function(studentID) {
+        //var edxUserName = 'edx'+edxstudentID;
+        var username = atob(studentID)
+        var user = Accounts.findUserByUsername(username);
+        if (!user) {
+            Accounts.createUser({
+                username: username,
+                email: username,
+                password: edxpass,
+                profile:{
+                    'isBerkUser':true,
+                    'studentID': studentID
+                    }
+            });
+        }
+        return {username: username, password:edxpass}
     }
 });
 
