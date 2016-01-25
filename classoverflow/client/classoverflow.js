@@ -2,25 +2,6 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
-
-loginAsEdxStudent = function(edxstudentID) {
-    Meteor.call('loginAsEdxStudent',edxstudentID, function(error,result){
-        if (error) {
-            console.log('error on login as edx student',error);
-        } else {
-            Meteor.loginWithPassword(result.username,result.password,function(error){
-                if (error) {
-                    console.log('error logging in with password',error);
-                }
-            });
-        }
-
-    });
-}
-
-
-
-
 Meteor.startup(function () {
 
     //Deploy edX version without settings.json
