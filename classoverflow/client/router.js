@@ -184,7 +184,7 @@ Router.route('/class/:classtitle/:assignment',{
 
         //find or login with student id
         loginRouter(this.params)
-        
+
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
