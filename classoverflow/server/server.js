@@ -272,7 +272,8 @@ Meteor.methods({
                 profile:{
                     'isEdxUser':true,
                     email: email,
-                    source: source
+                    source: source,
+                    admin: admin
                 }
             });
         }
@@ -302,12 +303,35 @@ Meteor.methods({
     //     }
     //     return {username: username, password:edxpass}
     // },
-    'admin': function(studentID){
-        var username = atob(studentID);
-        var user = Accounts.findUserByUsername(username);
-        //test this!
-        console.log('user.profile',user.profile)
-        return user.profile.admin
+    // 'isAdmin': function(username){
+    //     //var username = atob(studentID);
+    //     try {
+    //         var user = Accounts.findUserByUsername(username);
+    //         //test this!
+    //         console.log('user.profile',user.profile)
+    //         console.log(username,admin_user_urlsafe)
+    //         console.log(username == admin_user_urlsafe)
+    //         return username == admin_user_urlsafe
+    //     } catch(err) {
+    //         console.log('err',err)
+    //         return false
+    //     }
+    // },
+    deleteError: function(username,errorId){
+        try {
+            var user = Accounts.findUserByUsername(username);
+            //test this!
+            console.log('user.profile',user.profile)
+            console.log(username,admin_user_urlsafe)
+            console.log(username == admin_user_urlsafe)
+            if (username == admin_user_urlsafe) {
+                Errors.remove(errorId);
+            }
+        } catch(err) {
+            console.log('err',err)
+            return false
+        }
+        
     }
 });
 

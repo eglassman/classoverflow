@@ -6,7 +6,9 @@ loginRouter = function(params){
     if (params.query.student_id && !Meteor.user()){
         console.log('edxstudentID,source',params.query.student_id,params.query.source)
         //console.log(atob(params.query.source))
-        loginAsEdxStudent(params.query.student_id,params.query.source);
+        var student_id = params.query.student_id; //decodeURIComponent(params.query.student_id);
+        var source = params.query.source; //decodeURIComponent(params.query.source);
+        loginAsEdxStudent(student_id,source);
     }
 }
 
@@ -106,12 +108,11 @@ Router.route('/class/:classtitle',{
     action: function () {
 
         var classtitle = decodeURIComponent(this.params.classtitle);
+        Session.set('class', classtitle);
 
         var class_entry = Classes.findOne({
             classtitle: classtitle
         });
-        Session.set('class', classtitle);
-        Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
         loginRouter(this.params)
@@ -119,6 +120,7 @@ Router.route('/class/:classtitle',{
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
+        Session.set('numErrorCoords',errorCoords.length);
 
         var sortObj = {};
         sortObj[errorCoords[0]['name']] = 1;
@@ -172,19 +174,19 @@ Router.route('/class/:classtitle/:assignment',{
 
         var classtitle = decodeURIComponent(this.params.classtitle);
         var assignment = decodeURIComponent(this.params.assignment);
+        Session.set('class', classtitle);
 
         var class_entry = Classes.findOne({
             classtitle: classtitle
         });
-        Session.set('class', classtitle);
-        Session.set('numErrorCoords',class_entry['errorCoords'].length);
-
+        
         //find or login with student id
         loginRouter(this.params)
 
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
+        Session.set('numErrorCoords',errorCoords.length);
 
         var sortObj = {};
         sortObj[errorCoords[0]['name']] = 1;
@@ -244,18 +246,18 @@ Router.route('/class/:classtitle/:assignment/:testgroup',{
         var classtitle = decodeURIComponent(this.params.classtitle);
         var assignment = decodeURIComponent(this.params.assignment);
         var testgroup = decodeURIComponent(this.params.testgroup);
+        Session.set('class', classtitle);
 
         var class_entry = Classes.findOne({
             classtitle: classtitle
         });
-        Session.set('class', classtitle);
-        Session.set('numErrorCoords',class_entry['errorCoords'].length);
-
+        
         //find or login with student id
         loginRouter(this.params)
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
+        Session.set('numErrorCoords',errorCoords.length);
 
         var sortObj = {};
         sortObj[errorCoords[0]['name']] = 1;
@@ -325,18 +327,18 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
         var assignment = decodeURIComponent(this.params.assignment);
         var testgroup = decodeURIComponent(this.params.testgroup);
         var testnum = decodeURIComponent(this.params.testnum);
+        Session.set('class', classtitle);
 
         var class_entry = Classes.findOne({
             classtitle: classtitle
         });
-        Session.set('class', classtitle);
-        Session.set('numErrorCoords',class_entry['errorCoords'].length);
 
         //find or login with student id
         loginRouter(this.params)
         Session.set('submitQ', false);
         
         var errorCoords = class_entry['errorCoords'];
+        Session.set('numErrorCoords',errorCoords.length);
 
         var sortObj = {};
         sortObj[errorCoords[0]['name']] = 1;

@@ -308,7 +308,7 @@
             <span class="glyphicon glyphicon-envelope"></span>
             {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
         </button>
-        {{#if admin}}
+        {{#if isAdmin}}
             <button type="button" class="btn btn-link delete-error">
                 <span class="glyphicon glyphicon-minus"></span>
                 Delete
@@ -410,7 +410,7 @@
             <span class="glyphicon glyphicon-arrow-up"></span>
             {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} ({{upvotes}})
         </button>
-        {{#if admin}}
+        {{#if isAdmin}}
             <button type="button" class="btn btn-link delete-hint">
                 <span class="glyphicon glyphicon-minus"></span>
                 Delete

@@ -21,19 +21,7 @@ Accounts.ui.config({
 Template.registerHelper('log',function(){
     console.log('template logging',this);
 });
-Template.registerHelper('admin',function(){
-    if (Session.get('admin')){
-        Meteor.call('admin',Meteor.user().profile.studentID,function(ans,error){
-            if (ans) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-    } else {
-        return false;
-    }
-});
+
 
 
 Template.registerHelper('errorCoordsForAnError',function(){
@@ -89,12 +77,19 @@ Template.error_row.helpers({
             } 
         }
         return false;
+    },
+    isAdmin: function(){
+        if (Meteor.user()){
+            return Meteor.user().profile.admin
+        }
+        
     }
 });
 Template.error_row.events({
     "click .delete-error": function(event){
         console.log('i want to delete',this)
-        Meteor.call('deleteError',errorId);
+        var errorId = this._id;
+        Meteor.call('deleteError',Meteor.user().username,errorId);
     }
 })
 
