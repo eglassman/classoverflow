@@ -26,3 +26,6 @@ mrt:bootstrap-3
 meteorhacks:fast-render
 rcm:certauth
 email
+base64
+crypto-base64
+jparker:crypto-base64

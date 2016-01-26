@@ -246,7 +246,8 @@ Meteor.methods({
             var user = Accounts.findUserByUsername(edxUserName);
             //var email = atob(edxstudentID);
             try {
-                var email = atob(edxstudentID);
+                var email = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse('am9zaEBqb3NoaC51Zw=='));
+                //var email = atob(edxstudentID);
             } catch(err) {
                 console.log(err,'no extracted email')
                 var email = ''
@@ -326,7 +327,10 @@ Accounts.onCreateUser(function(options, user) {
 });
 
 Meteor.startup(function () {
-        console.log(Meteor.users.find({}).fetch())
+        // var Base64test = 'am9zaEBqb3NoaC51Zw==';
+        // var wordsObj = CryptoJS.enc.Base64.parse(Base64test);
+        // console.log('crypto',CryptoJS.enc.Utf8.stringify(wordsObj))
+        //console.log('example',CryptoJS.enc.Base64.parse(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('josh@joshh.ug'))))
         // code to run on server at startup
         //if (! Classes.findOne()){
         Classes.remove({});
