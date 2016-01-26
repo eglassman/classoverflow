@@ -1,9 +1,8 @@
 //PRIVATE COLLECTIONS ONLY ON SERVER
 Log = new Mongo.Collection("log");
-//SiteUsers = new Mongo.Collection("siteusers");
 
 //COLLECTIONS TO BE PUBLISHED TO CLIENT
-Classes = new Meteor.Collection('classes');
+Classes = new Meteor.Collection("classes");
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
@@ -33,6 +32,7 @@ Meteor.publish("hints", function (classtitle) {
     return this.ready();
 });
 
+//PASSWORD FOR STUDENT ID AUTHENTICATED USERS
 var edxpass = '071a0f58e44494a90dbc5844c480586c';
 
 requested = function(errorId) {
@@ -89,6 +89,21 @@ Meteor.methods({
                throw new Meteor.Error('int-too-big'); 
                //todo: tell the user why its not getting added
             }
+
+            //     //checking input type and size
+            // for (var errorCoord in classDict[classtitle]) {
+            //     if (typeof userErrorCoords[errorCoord] !== classDict[classtitle][errorCoord]['type']){
+            //         throw new Meteor.Error('not-the-right-type');
+            //     }
+            //     if (typeof userErrorCoords[errorCoord] === 'string' && userErrorCoords[errorCoord].length > 50) {
+            //         throw new Meteor.Error('string-is-too-long'); 
+            //     }
+            //     if (typeof userErrorCoords[errorCoord] === 'number' && (userErrorCoords[errorCoord] > 10000 || userErrorCoords[errorCoord] < 0)) {
+            //         throw new Meteor.Error('number-is-too-large-or-small'); 
+            //     }
+            // }
+
+
         });
 
         var candidateError = errorCoords; //{};
@@ -99,17 +114,24 @@ Meteor.methods({
         candidateError['owner'] = Meteor.userId(); // _id of logged in user
         //candidateError['requesters'] = [];
 
-        Errors.insert(candidateError);
+        //Errors.insert(candidateError);
 
+        Errors.insert(candidateError,function (err, result) {
+            if (err) {console.log('problem adding errors')} 
+            else {
+                //logThis(classtitle,'addError',result);
+                logObj = {};
+                logObj['owner'] = candidateError['owner'];
+                //logObj['username'] = Meteor.user().username;
+                logObj['action'] = 'addError';
+                logObj['object'] = candidateError;
+                logObj['createdAt'] = candidateError['createdAt']
+                logObj['class'] = candidateError['class'];
+                Log.insert(logObj);
+            }
+        });
 
-        logObj = {};
-        logObj['owner'] = candidateError['owner'];
-        //logObj['username'] = Meteor.user().username;
-        logObj['action'] = 'addError';
-        logObj['object'] = candidateError;
-        logObj['createdAt'] = candidateError['createdAt']
-        logObj['class'] = candidateError['class'];
-        Log.insert(logObj);
+        
     },
     addHint: function (theclass,errorId,hintText) {
 
@@ -137,16 +159,23 @@ Meteor.methods({
         //hintObj['upvoters'] = [];
 
 
-        var insertedHint = Hints.insert(hintObj);
+        //var insertedHint = Hints.insert(hintObj);
+        Hints.insert(hintObj,function (err, result) {
+            if (err) {console.log('problem adding hints')} 
+            else {
+                //logThis(classtitle,'addHint',result);
+                logObj = {};
+                logObj['owner'] = hintObj['owner'];
+                //logObj['username'] = Meteor.user().username;
+                logObj['action'] = 'addHint';
+                logObj['object'] = insertedHint;
+                logObj['createdAt'] = hintObj['createdAt']
+                logObj['class'] = hintObj['class'];
+                Log.insert(logObj);
+            }
+        });
 
-        logObj = {};
-        logObj['owner'] = hintObj['owner'];
-        //logObj['username'] = Meteor.user().username;
-        logObj['action'] = 'addHint';
-        logObj['object'] = insertedHint;
-        logObj['createdAt'] = hintObj['createdAt']
-        logObj['class'] = hintObj['class'];
-        Log.insert(logObj);
+        
 
     },
     toggleRequest: function (theclass,errorId) {
@@ -179,14 +208,21 @@ Meteor.methods({
                 Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.requestedErrors": _.without(requestedErrors,errorId) }} );
                 console.log('new user profile',Meteor.user().profile)
             }
-            Errors.update({ _id: errorId },{$inc: {requests: delta}});
+            //Errors.update({ _id: errorId },{$inc: {requests: delta}});
+            Errors.update({ _id: errorId },{$inc: {requests: delta}},function(err){
+                if (err) {console.log('problem updating error follows')} 
+                else {
+                    //logThis(classtitle,action,errorId)
+                    logObj['owner'] = Meteor.userId();
+                    //logObj['username'] = Meteor.user().username;
+                    logObj['object'] = errorId;
+                    logObj['createdAt'] = new Date();
+                    logObj['class'] = theclass;
+                    Log.insert(logObj);
+                }
+            });
 
-            logObj['owner'] = Meteor.userId();
-            //logObj['username'] = Meteor.user().username;
-            logObj['object'] = errorId;
-            logObj['createdAt'] = new Date();
-            logObj['class'] = theclass;
-            Log.insert(logObj);
+            
         }
 
     },
@@ -224,15 +260,21 @@ Meteor.methods({
                 
                 console.log('new user profile',Meteor.user().profile)
             }
-            Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
+            //Hints.update({ _id: hintId },{$inc: {upvotes: delta}});
+            Hints.update({ _id: hintId },{$inc: {upvotes: delta}},function(err){
+                if (err) {console.log('problem updating hint upvotes')} 
+                else {
+                    //logThis(classtitle,action,hintId)
+                    logObj['owner'] = Meteor.userId();
+                    //logObj['username'] = Meteor.user().username;
+                    logObj['object'] = hintId;
+                    logObj['createdAt'] = new Date();
+                    logObj['class'] = theclass;
+                    Log.insert(logObj);
+                }
+            });
 
-
-            logObj['owner'] = Meteor.userId();
-            //logObj['username'] = Meteor.user().username;
-            logObj['object'] = hintId;
-            logObj['createdAt'] = new Date();
-            logObj['class'] = theclass;
-            Log.insert(logObj);
+            
         }
     },
     'loginAsEdxStudent': function(edxstudentID,source) {
