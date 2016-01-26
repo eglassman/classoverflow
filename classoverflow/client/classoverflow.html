@@ -224,7 +224,7 @@
 <template name="addErrorBtn">
 <!--     <div class="row">
         <div class="col-xs-3 centered bottom-padding"> -->
-            <button type="button" class="btn btn-link add-error">
+            <button type="button" class="btn btn-link btn-xs add-error">
                 <span class="glyphicon glyphicon-search"></span>
                 Cannot find your error? 
             </button>
@@ -248,7 +248,7 @@
             </div>
             <div class="col-xs-9">
                 <h5>is not in our database for {{classtitle}}, but you can
-                <button type="button" class="btn btn-link no-errors-add-error" data-toggle="modal" data-class="{{classtitle}}" data-assignment="{{assignment}}" data-testgroup="{{testgroup}}" data-testnum="{{testnum}}">
+                <button type="button" class="btn btn-link btn-xs no-errors-add-error" data-toggle="modal" data-class="{{classtitle}}" data-assignment="{{assignment}}" data-testgroup="{{testgroup}}" data-testnum="{{testnum}}">
                     <span class="glyphicon glyphicon-plus"></span>
                     Error
                 </button> if you want others to contribute hints for resolving it.</h5>
@@ -304,12 +304,12 @@
     {{/each}}
 
     <div class="col-xs-1">
-        <button type="button" class="btn btn-link request">
+        <button type="button" class="btn btn-link btn-xs request">
             <span class="glyphicon glyphicon-envelope"></span>
             {{#if ifRequested}}Followed{{else}}Follow{{/if}} ({{requests}})
         </button>
         {{#if isAdmin}}
-            <button type="button" class="btn btn-link delete-error">
+            <button type="button" class="btn btn-link btn-xs delete-error">
                 <span class="glyphicon glyphicon-minus"></span>
                 Delete
             </button>
@@ -325,7 +325,7 @@
             {{> addHintModal}}
 
             <li>
-                <button type="button" class="btn btn-link add-hint" data-toggle="modal" data-error-id="{{_id}}">
+                <button type="button" class="btn btn-link btn-xs add-hint" data-toggle="modal" data-error-id="{{_id}}">
                     <span class="glyphicon glyphicon-plus"></span>
                     Hint
                 </button>
@@ -406,12 +406,12 @@
 
 <template name="hint">
     <li>
-        <button type="button" class="btn btn-link upvote">
+        <button type="button" class="btn btn-link btn-xs upvote">
             <span class="glyphicon glyphicon-arrow-up"></span>
             {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} ({{upvotes}})
         </button>
         {{#if isAdmin}}
-            <button type="button" class="btn btn-link delete-hint">
+            <button type="button" class="btn btn-link btn-xs delete-hint">
                 <span class="glyphicon glyphicon-minus"></span>
                 Delete
             </button>
