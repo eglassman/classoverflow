@@ -110,64 +110,7 @@ Template.addErrorBtn.events({
         Meteor.call('logBtnClick','.cannot-find-error')
     }
 });
-Template.addErrorModal.events({
-    'click .submit-error': function(event){
 
-        event.preventDefault();
-
-        console.log('event', event)
-        console.log('event.target', event.target)
-
-        var candidateErrorCoords = {};
-
-        // console.log('#error-class',$('#error-class').val())
-        // var error_class = $('#error-class').val()
-        console.log('#error-assignment',$('#error-assignment').val())
-        console.log('#error-testgroup',$('#error-testgroup').val())
-        console.log('#error-testnum',$('#error-testnum').val())
-
-        // var submit_allowed = False;
-        // $('#submit-error').prop('disabled','disabled');
-
-        var title = Session.get('class');
-        var thisclass = Classes.findOne({
-            classtitle: title
-        });
-        candidateErrorCoords[thisclass['errorCoords'][0]['name']] = $('#error-assignment').val()
-        candidateErrorCoords[thisclass['errorCoords'][1]['name']] = $('#error-testgroup').val()
-        candidateErrorCoords[thisclass['errorCoords'][2]['name']] = $('#error-testnum').val()
-
-
-        // if (Classes.find({classtitle:error_class}).count()>0) {
-        //     console.log('class match')
-        // } else {
-        //     $('#error-testnum').after('<span class="glyphicon glyphicon-remove form-control-feedback"></span>');
-        //     $('#submit-error').prop('disabled',true);
-        // }
-        
-        // for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-        //     if (!event.target[i].value) {
-        //         //alert('Please provide a value for all form fields.');
-        //         return false;
-        //     } else {
-        //         var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
-        //         candidateErrorCoords[event.target[i].name] = coordVal;
-        //     }
-        //     console.log(candidateErrorCoords)
-        // }
-
-        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
-            if (error) {
-                console.log('error during addError', error)
-            } else {
-                console.log('added',candidateErrorCoords)
-                Meteor.call('toggleRequest', Session.get('class'), result);
-                $('#addErrorModal').modal('hide');
-            }
-        });
-        return false;
-    }
-});
 Template.addHintModal.events({
     "click .submit-hint": function(event){
         //event.preventDefault();
@@ -177,8 +120,12 @@ Template.addHintModal.events({
         var hintText = $('#hint-text-for-'+errorId).val();
         console.log(hintText)
 
+        $(event.target).prop('disabled',true);
+
         Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error){
+            $(event.target).prop('disabled',false);
             if (error) {
+                $('#addhintfeedback').text('Hint rejected. May be too short or too long. Please try again.')
                 console.log('error in Meteor.addHint call',error) 
             } else {
                 $('#hint-text-for-'+errorId).val('');
@@ -188,6 +135,9 @@ Template.addHintModal.events({
         });
 
         return false
+    },
+    "shown.bs.modal .addHintModalClass": function(event){
+        $('.addhintfeedback').text('');
     }
 });
 Template.errorTable.events({

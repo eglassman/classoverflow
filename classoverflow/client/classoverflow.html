@@ -21,9 +21,9 @@
               <h4 class="modal-title">Instructions</h4>
             </div>
             <div class="modal-body">
-              <p>If you are looking for hints on how to get your design past a particular test, enter the module and test number into the header and click the button to 'Find or Add Error.'</p>
-
-              <p>If you can contribute another hint to help future students struggling with the same test case, please go ahead and do so! <b>Answer the question "If you were a lab assistant helping a student with this problem, what would you say to help them fix it?"</b></p>
+              <p>To see hints for your error, follow the links to this site given to you by the course autograder.</p>
+              <p>To be notified by email when new hints are available, click 'follow'.</p>
+              <p>To help your classmates, upvote the hints that help you the most and add hints of your own.</p>
             </div>
           </div>
         </div>
@@ -72,10 +72,9 @@
               <h4 class="modal-title">Cannot Find Error</h4>
             </div>
             <div class="modal-body">
-              <p>Use the links along the top left corner of the page to navigate between errors that other students have already added to ClassOverflow.
-              <br>
-              <br>
-              In order to jump to your own errors, follow the personalized links generated for each of your errors and emailed to you by the course auto-grader.</p>
+              <p>
+              To create a thread about your error in ClassOverflow, follow the links given to you by the course auto-grader.
+              </p>
             </div>
           </div>
         </div>
@@ -165,7 +164,6 @@
 <template name="classpage">
 
     {{> altnavbar}}
-    {{> addErrorModal}}
     {{> errorTable}}
     
 </template>
@@ -356,7 +354,7 @@
 
 <template name="addHintModal">
 
-<div class="modal fade" id="addHintModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
+<div class="modal fade addHintModalClass" id="addHintModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="addHintModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -372,10 +370,11 @@
             {{/each}}
           </div>
           <div class="form-group">
-            <label for="hint-text" class="control-label">Hint:</label>
+            <label for="hint-text" class="control-label">If you were a lab assistant helping a student with this problem, what would you say to help them fix it?</label>
             <textarea class="form-control" id="hint-text-for-{{_id}}"></textarea>
           </div>
           <button type="click" class="btn btn-primary submit-hint" id="submit-hint-for-{{_id}}" data-error-id="{{_id}}">Submit Hint</button>
+          <div id="addhintfeedback" class="addhintfeedback"></div>
         </form>
       </div>
     </div>
@@ -384,7 +383,7 @@
 
 </template>
 
-<template name="addErrorModal">
+<!-- <template name="addErrorModal">
 
 <div class="modal fade" id="addErrorModal" tabindex="-1" role="dialog" aria-labelledby="addErrorModalLabel">
   <div class="modal-dialog" role="document">
@@ -397,9 +396,9 @@
         <form>
           <div class="form-group">
 
-                <!-- <label for="error-class" class="control-label">Class:</label>
+                <! <label for="error-class" class="control-label">Class:</label>
                 <input type="text" class="form-control" id="error-class" value="{{classtitle}}"> -->
-
+<!-- 
                 <label for="error-assignment" class="control-label">Assignment:</label>
                 <input type="text" class="form-control" id="error-assignment" value="{{assignment}}">
 
@@ -409,19 +408,20 @@
                 <label for="error-testnum" class="control-label">Test Number:</label>
                 <input type="text" class="form-control" id="error-testnum">
 
-          </div>
+          </div> -->
           <!-- <div class="form-group">
             <label for="hint-text-in-error-modal" class="control-label">(Optional) Hint:</label>
             <textarea class="form-control" id="hint-text-in-error-modal" placeholder="If you already have a hint for this error, please write it here."></textarea>
           </div> -->
-          <button type="click" class="btn btn-primary submit-error" id="submit-error">Find Error</button>
+          <!-- <button type="click" class="btn btn-primary submit-error" id="submit-error">Find Error</button>
+          <div id="error-submit-feedback">
         </form>
       </div>
     </div>
   </div>
 </div>
 
-</template>
+</template> --> 
 
 
 

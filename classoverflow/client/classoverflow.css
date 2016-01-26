@@ -62,6 +62,8 @@ td li {
 .bottom-padding {
 	padding-bottom: 20px;
 }
-span.glyphicon {
-    font-size: 1.2em;
-}
+/*span.glyphicon {
+    font-size: 0.8em;
+    vertical-align: baseline;
+    text-decoration: none !important;
+}*/

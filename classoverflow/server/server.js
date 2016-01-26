@@ -323,7 +323,9 @@ Meteor.methods({
 
         var admin = false;
         //Session.set('admin',false);
-        if (edxstudentID==admin_user_urlsafe) {
+        //if (edxstudentID==admin_user_urlsafe) {
+        //['a', 'b', 'c'].indexOf(str) >= 0
+        if (admin_user_urlsafe.indexOf(edxstudentID)>=0) { 
             admin = true;
             //Session.set('admin',true);
         }
