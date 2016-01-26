@@ -325,10 +325,13 @@ Meteor.methods({
         //Session.set('admin',false);
         //if (edxstudentID==admin_user_urlsafe) {
         //['a', 'b', 'c'].indexOf(str) >= 0
-        if (admin_user_urlsafe.indexOf(edxstudentID)>=0) { 
+        console.log(admin_user_urlsafe,admin_user_urlsafe.indexOf(edxstudentID))
+        var hasAnAdminID = admin_user_urlsafe.indexOf(edxstudentID)>=0;
+        if (hasAnAdminID) { 
             admin = true;
             //Session.set('admin',true);
         }
+        console.log('admin',admin)
 
         if (source=='berkeley') {
             try {
@@ -357,6 +360,15 @@ Meteor.methods({
                     admin: admin
                 }
             });
+        } else {
+            //give new administrators admin access
+            if (!user.profile.admin && hasAnAdminID) {
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.admin": true }} );
+            }
+            //revoke admin access for those no longer on the list
+            if (user.profile.admin && !hasAnAdminID) {
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.admin": false }} );
+            }
         }
         return {username: edxstudentID, password:edxpass}
     },
@@ -402,10 +414,11 @@ Meteor.methods({
         try {
             var user = Accounts.findUserByUsername(username);
             //test this!
-            console.log('user.profile',user.profile)
-            console.log(username,admin_user_urlsafe)
-            console.log(username == admin_user_urlsafe)
-            if (username == admin_user_urlsafe) {
+            //console.log('user.profile',user.profile)
+            //console.log(username,admin_user_urlsafe)
+            //console.log(username == admin_user_urlsafe)
+            var hasAnAdminID = admin_user_urlsafe.indexOf(username)>=0;
+            if (hasAnAdminID) {
                 Errors.remove(errorId);
             }
         } catch(err) {
@@ -418,10 +431,9 @@ Meteor.methods({
         try {
             var user = Accounts.findUserByUsername(username);
             //test this!
-            console.log('user.profile',user.profile)
-            console.log(username,admin_user_urlsafe)
-            console.log(username == admin_user_urlsafe)
-            if (username == admin_user_urlsafe) {
+            var hasAnAdminID = admin_user_urlsafe.indexOf(username)>=0;
+
+            if (hasAnAdminID) {
                 Hints.remove(hintId);
             }
         } catch(err) {
@@ -478,7 +490,7 @@ Meteor.startup(function () {
                 errorCoords: [
                     {
                         name: "lab",
-                        placeholder: 'Lab Number',
+                        placeholder: 'Lab',
                         inputType: 'int'
                     },
                     {
@@ -488,7 +500,7 @@ Meteor.startup(function () {
                     },
                     {
                         name: "testNum",
-                        placeholder: 'Test Number',
+                        placeholder: 'Test',
                         inputType: 'int'
                     }
     ],
@@ -499,17 +511,17 @@ Meteor.startup(function () {
                 errorCoords: [
                     {
                         name: "ps",
-                        placeholder: "Problem Set",
+                        placeholder: "PSet",
                         inputType: 'int'
                     },
                     {
                         name: "file",
-                        placeholder: 'File Name',
+                        placeholder: 'File',
                         inputType: 'string'
                     },
                     {
                         name: "line",
-                        placeholder: 'Line Number',
+                        placeholder: 'Line',
                         inputType: 'int'
                     }
     ],
@@ -525,12 +537,12 @@ Meteor.startup(function () {
                     },
                     {
                         name: "testgroup",
-                        placeholder: 'Test Group',
+                        placeholder: 'Group',
                         inputType: 'string'
                     },
                     {
                         name: "testnum",
-                        placeholder: 'Test Number',
+                        placeholder: 'Test',
                         inputType: 'int'
                     }
     ],
