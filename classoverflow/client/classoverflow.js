@@ -103,6 +103,11 @@ Template.addErrorBtn.events({
             $('#mySignInModal').modal('show');
         }
         return false;
+    },
+    "click .cannot-find-error": function(event){
+        console.log("click .cannot-find-error")
+        $('#cannotFindErrorModal').modal('show');
+        Meteor.call('logBtnClick','.cannot-find-error')
     }
 });
 Template.addErrorModal.events({

@@ -61,6 +61,26 @@
         </div>
       </div>
     </div>
+
+
+    <div class="modal fade" id="cannotFindErrorModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Cannot Find Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>Use the links along the top left corner of the page to navigate between errors that other students have already added to ClassOverflow.
+              <br>
+              <br>
+              In order to jump to your own errors, follow the personalized links generated for each of your errors and emailed to you by the course auto-grader.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </head>
 
 
@@ -97,12 +117,12 @@
         <li><a class="certLogin" onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">Sign in with certificates</a></li>
       {{/if}}
     {{/if}}
-    {{#if currentUser.profile.isEdxUser}} 
+    <!-- {{#if currentUser.profile.isEdxUser}} 
     {{else}}
       <li><a>
          {{> loginButtons}}
       </a></li>
-    {{/if}}
+    {{/if}} -->
 </template>
 
 <template name="navbar">
@@ -224,7 +244,7 @@
 <template name="addErrorBtn">
 <!--     <div class="row">
         <div class="col-xs-3 centered bottom-padding"> -->
-            <button type="button" class="btn btn-link btn-xs add-error">
+            <button type="button" class="btn btn-link btn-xs cannot-find-error">
                 <span class="glyphicon glyphicon-search"></span>
                 Cannot find your error? 
             </button>
@@ -371,7 +391,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addErrorModalLabel">New error</h4>
+        <h4 class="modal-title" id="addErrorModalLabel">Find error</h4>
       </div>
       <div class="modal-body">
         <form>
@@ -390,11 +410,11 @@
                 <input type="text" class="form-control" id="error-testnum">
 
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="hint-text-in-error-modal" class="control-label">(Optional) Hint:</label>
             <textarea class="form-control" id="hint-text-in-error-modal" placeholder="If you already have a hint for this error, please write it here."></textarea>
-          </div>
-          <button type="click" class="btn btn-primary submit-error" id="submit-error">Submit Hint</button>
+          </div> -->
+          <button type="click" class="btn btn-primary submit-error" id="submit-error">Find Error</button>
         </form>
       </div>
     </div>
@@ -402,6 +422,8 @@
 </div>
 
 </template>
+
+
 
 
 <template name="hint">

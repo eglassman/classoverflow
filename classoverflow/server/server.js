@@ -427,6 +427,9 @@ Meteor.methods({
             return false
         }
         
+    },
+    logBtnClick: function(btnName){
+        Log.insert({'owner': Meteor.userId(), 'clicked':btnName, 'dateAndTime': new Date()})
     }
 });
 
