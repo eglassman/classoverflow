@@ -63,7 +63,7 @@ emailFollowers = function(errorId){
     //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
     var users = Meteor.users.find({}).fetch();
     users.forEach(function(elem){
-        console.log('elem',elem)
+        //console.log('elem',elem)
         if (elem.profile['requestedErrors']) {
             if (elem.profile['requestedErrors'].indexOf(errorId) >= 0){
                 var error_entry = Errors.findOne({_id:errorId})
@@ -136,7 +136,7 @@ Meteor.methods({
         var candidateError = errorCoords; //{};
 
         candidateError['class'] = theclass;
-        candidateError['requests'] = 1;
+        candidateError['requests'] = 0;
         candidateError['createdAt'] = new Date();
         candidateError['owner'] = Meteor.userId(); // _id of logged in user
         //candidateError['requesters'] = [];
@@ -156,6 +156,11 @@ Meteor.methods({
                 logObj['createdAt'] = candidateError['createdAt']
                 logObj['class'] = candidateError['class'];
                 Log.insert(logObj);
+
+                //Meteor.user().profile['requestedErrors'].push(result);
+                console.log(logObj)
+                Meteor.call('toggleRequest', candidateError['class'], result);
+                //return result
             }
         });
 
@@ -202,6 +207,8 @@ Meteor.methods({
                 logObj['createdAt'] = hintObj['createdAt']
                 logObj['class'] = hintObj['class'];
                 Log.insert(logObj);
+
+                return result
             }
         });
 

@@ -9,7 +9,7 @@ Meteor.startup(function () {
         CertAuth.login();
         Session.set('certAuthEnabled',true);
     }
-    Meteor.call('sendEmail','elg@mit.edu','a','b','c');
+    //Meteor.call('sendEmail','elg@mit.edu','a','b','c');
 }); 
 
 
@@ -151,11 +151,12 @@ Template.addErrorModal.events({
         //     console.log(candidateErrorCoords)
         // }
 
-        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error){
+        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
             if (error) {
                 console.log('error during addError', error)
             } else {
                 console.log('added',candidateErrorCoords)
+                Meteor.call('toggleRequest', Session.get('class'), result);
                 $('#addErrorModal').modal('hide');
             }
         });
@@ -230,6 +231,36 @@ Template.errorTable.events({
             $('#mySignInModal').modal('show');
         }
         return false;
+    },
+    "click .no-errors-add-error": function (event){
+        console.log("click .no-errors-add-error",event.target)
+        
+        event.preventDefault();
+
+        var candidateErrorCoords = {};
+
+        // console.log('#error-class',$('#error-class').val())
+        // var error_class = $('#error-class').val()
+        console.log('#error-assignment',$(event.target).data('assignment'))
+        console.log('#error-testgroup',$(event.target).data('testgroup'))
+        console.log('#error-testnum',$(event.target).data('testnum'))
+
+        // var submit_allowed = False;
+        // $('#submit-error').prop('disabled','disabled');
+
+        var title = Session.get('class');
+        var thisclass = Classes.findOne({
+            classtitle: title
+        });
+        candidateErrorCoords[thisclass['errorCoords'][0]['name']] = $(event.target).data('assignment');
+        candidateErrorCoords[thisclass['errorCoords'][1]['name']] = $(event.target).data('testgroup');
+        candidateErrorCoords[thisclass['errorCoords'][2]['name']] = $(event.target).data('testnum');
+
+        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(err){
+            if (err) {
+                alert('We are sorry, but that is not a valid error.')
+            } 
+        });
     }
 });
 Template.hint.helpers({
