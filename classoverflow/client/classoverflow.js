@@ -151,7 +151,7 @@ Template.addErrorModal.events({
         //     console.log(candidateErrorCoords)
         // }
 
-        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
+        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error){
             if (error) {
                 console.log('error during addError', error)
             } else {
@@ -171,7 +171,7 @@ Template.addHintModal.events({
         var hintText = $('#hint-text-for-'+errorId).val();
         console.log(hintText)
 
-        Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error,result){
+        Meteor.call('addHint',Session.get('class'),errorId,hintText,function(error){
             if (error) {
                 console.log('error in Meteor.addHint call',error) 
             } else {

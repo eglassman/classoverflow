@@ -16,7 +16,7 @@ Meteor.publish("classes", function () {
 Meteor.publish("errors", function (classtitle) {
     check(classtitle,String);
     var error_entries = Errors.find({"class":classtitle},{fields: {
-        'first_follower': 0,
+        'owner': 0,
         'createdAt': 0,
     }});
     if (error_entries) {return error_entries}
@@ -25,7 +25,7 @@ Meteor.publish("errors", function (classtitle) {
 Meteor.publish("hints", function (classtitle) {
     check(classtitle,String);
     var hint_entries = Hints.find({"class":classtitle},{fields: {
-        'user': 0,
+        'owner': 0,
         'createdAt': 0,
     }});
     if (hint_entries) {return hint_entries}
@@ -58,7 +58,34 @@ upvoted = function(hintId) {
     
 };
 
+emailFollowers = function(errorId){
+    //Meteor.users.find({}, {fields: {profile: 1}}).fetch()
+    //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
+    var users = Meteor.users.find({}).fetch();
+    users.forEach(function(elem){
+        console.log('elem',elem)
+        if (elem.profile['requestedErrors']) {
+            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0){
+                var error_entry = Errors.findOne({_id:errorId})
+                var class_entry = Classes.findOne({classtitle:error_entry['class']})
 
+                var route = '';
+                var error_description = '';
+                class_entry['errorCoords'].forEach(function(ec,ind){
+                    route = route + '/' + encodeURIComponent(error_entry[ec['name']]);
+                    error_description = error_description + ec['placeholder'] + ' ' + error_entry[ec['name']] + ' ';
+                });
+
+                var error_link = base_url + error_entry['class'] + route + '?student_id=' + encodeURIComponent(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(elem.profile.email))) + '&source='+elem.profile.source;
+                if (elem.profile.email){
+                    Meteor.call('sendEmail',elem.profile.email,error_description,error_link);
+                } else {
+                    console.log('no email to send update to',elem)
+                }
+            }
+        }
+    });
+}
 
 
 Meteor.methods({
@@ -121,6 +148,7 @@ Meteor.methods({
             else {
                 //logThis(classtitle,'addError',result);
                 logObj = {};
+                logObj['result'] = result;
                 logObj['owner'] = candidateError['owner'];
                 //logObj['username'] = Meteor.user().username;
                 logObj['action'] = 'addError';
@@ -163,12 +191,14 @@ Meteor.methods({
         Hints.insert(hintObj,function (err, result) {
             if (err) {console.log('problem adding hints')} 
             else {
+                emailFollowers(errorId);
                 //logThis(classtitle,'addHint',result);
                 logObj = {};
                 logObj['owner'] = hintObj['owner'];
+                logObj['result'] = result;
                 //logObj['username'] = Meteor.user().username;
                 logObj['action'] = 'addHint';
-                logObj['object'] = insertedHint;
+                //logObj['object'] = insertedHint;
                 logObj['createdAt'] = hintObj['createdAt']
                 logObj['class'] = hintObj['class'];
                 Log.insert(logObj);
@@ -427,6 +457,8 @@ Meteor.startup(function () {
         //console.log('example',CryptoJS.enc.Base64.parse(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('josh@joshh.ug'))))
         // code to run on server at startup
         //if (! Classes.findOne()){
+        base_url = 'http://www.classoverflow.org/class/';
+
         Classes.remove({});
         var classes = [
             {

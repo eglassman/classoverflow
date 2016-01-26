@@ -2,10 +2,10 @@
 
 
 Meteor.methods({
-  sendEmail: function (studentEmail,errorString,errorLink,hint) {
+  sendEmail: function (studentEmail,error_description,errorLink){ //,hint) {
   	console.log('checking strings')
-    check(errorString, String);
-    check(hint, String);
+    check(error_description, String);
+    //check(hint, String);
     check(errorLink, String);
 
     this.unblock();
@@ -14,8 +14,8 @@ Meteor.methods({
     Email.send({
       to: studentEmail,
       from: 'class.overflow.beta@gmail.com',
-      subject: 'New hints for resolving error '+errorString,
-      text: 'Visit www.classoverflow.org to...'+hint+errorString
+      subject: 'New hints for resolving an error at '+error_description,
+      text: 'Visit '+ errorLink +' to see new hints available for revolving an error at '+error_description+'.'
     });
   }
 });
