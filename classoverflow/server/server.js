@@ -241,55 +241,67 @@ Meteor.methods({
         //var edxstudentID = params.query.student_id;
         //var source = params.query.source;
         console.log('edxstudentID,source',edxstudentID,source)
+
+        var admin = false;
+        //Session.set('admin',false);
+        if (edxstudentID==admin_user_urlsafe) {
+            admin = true;
+            //Session.set('admin',true);
+        }
+
         if (source=='berkeley') {
-            var edxUserName = 'berk'+edxstudentID;
-            var user = Accounts.findUserByUsername(edxUserName);
-            //var email = atob(edxstudentID);
             try {
-                var email = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse('am9zaEBqb3NoaC51Zw=='));
+                var email = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(edxstudentID));
                 //var email = atob(edxstudentID);
             } catch(err) {
                 console.log(err,'no extracted email')
-                var email = ''
+                var email = '';
             }     
         } else {
-            var edxUserName = 'edx'+edxstudentID;
-            var user = Accounts.findUserByUsername(edxUserName);
             var email = '';
         }
+
+        var user = Accounts.findUserByUsername(edxstudentID);
+        console.log('found user',user)
+        
         console.log(email,'email',user,'user')
         if (!user) {
-            Accounts.createUser({username: edxUserName,password:edxpass,profile:{
-                'isEdxUser':true,
-                email: email
-            }});
-        }
-        return {username: edxUserName, password:edxpass}
-    },
-    'loginAsBerkeleyStudent': function(studentID) {
-        //var edxUserName = 'edx'+edxstudentID;
-        var admin = false;
-        Session.set('admin',false);
-        if (studentID==admin_user_urlsafe) {
-            admin = true;
-            Session.set('admin',true);
-        }
-        var username = atob(studentID);
-        var user = Accounts.findUserByUsername(username);
-        if (!user) {
             Accounts.createUser({
-                username: username,
-                email: username,
+                username: edxstudentID,
                 password: edxpass,
                 profile:{
-                    'isBerkUser':true,
-                    'studentID': studentID,
-                    'admin': admin
-                    }
+                    'isEdxUser':true,
+                    email: email,
+                    source: source
+                }
             });
         }
-        return {username: username, password:edxpass}
+        return {username: edxstudentID, password:edxpass}
     },
+    // 'loginAsBerkeleyStudent': function(studentID) {
+    //     //var edxUserName = 'edx'+edxstudentID;
+    //     var admin = false;
+    //     Session.set('admin',false);
+    //     if (studentID==admin_user_urlsafe) {
+    //         admin = true;
+    //         Session.set('admin',true);
+    //     }
+    //     var username = atob(studentID);
+    //     var user = Accounts.findUserByUsername(username);
+    //     if (!user) {
+    //         Accounts.createUser({
+    //             username: username,
+    //             email: username,
+    //             password: edxpass,
+    //             profile:{
+    //                 'isBerkUser':true,
+    //                 'studentID': studentID,
+    //                 'admin': admin
+    //                 }
+    //         });
+    //     }
+    //     return {username: username, password:edxpass}
+    // },
     'admin': function(studentID){
         var username = atob(studentID);
         var user = Accounts.findUserByUsername(username);
