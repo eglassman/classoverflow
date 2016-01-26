@@ -332,6 +332,22 @@ Meteor.methods({
             return false
         }
         
+    },
+    deleteHint: function(username,hintId){
+        try {
+            var user = Accounts.findUserByUsername(username);
+            //test this!
+            console.log('user.profile',user.profile)
+            console.log(username,admin_user_urlsafe)
+            console.log(username == admin_user_urlsafe)
+            if (username == admin_user_urlsafe) {
+                Hints.remove(hintId);
+            }
+        } catch(err) {
+            console.log('err',err)
+            return false
+        }
+        
     }
 });
 

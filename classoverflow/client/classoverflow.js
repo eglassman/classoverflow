@@ -241,6 +241,12 @@ Template.hint.helpers({
             }
         }
         return false;
+    },
+    isAdmin: function(){
+        if (Meteor.user()){
+            return Meteor.user().profile.admin
+        }
+        
     }
 });
 Template.hint.events({
@@ -255,7 +261,8 @@ Template.hint.events({
     },
     "click .delete-hint": function(event){
         console.log('i want to delete',this)
-        Meteor.call('deleteHint',errorId);
+        var hintId = this._id;
+        Meteor.call('deleteHint',Meteor.user().username,hintId);
     }
 });
 
