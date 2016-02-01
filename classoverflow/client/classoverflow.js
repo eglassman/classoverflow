@@ -362,7 +362,6 @@ if (Meteor.isClient) {
 
     // BUGBUGBUG
     Template.errorCoord.events({
-        // todo: this is the wrong selector to use; form-control is a bootstrap thing
         // todo: function below should be _.throttle'd
         "keyup .searchBarInput": function(e) {
             var inputname = e.target.name;

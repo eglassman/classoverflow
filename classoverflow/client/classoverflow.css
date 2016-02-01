@@ -55,7 +55,7 @@ td li {
 }
 
 thead {
-    background-color: #606060;
+    background-color: #444444;
     color: white;
     font-size: 12pt;
 }
@@ -126,4 +126,9 @@ thead {
 
 #find-add-error-btn .active {
     font-weight: bold;
+}
+
+.navbar {
+    border-bottom: 1px solid #909090;
+    background-color: #F0F0F0;
 }
