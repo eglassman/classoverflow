@@ -121,9 +121,13 @@
                     <!--li><a>Instructions</a><a>Submit Feedback</a></li-->
                     <!--li><a><button type="button" class="btn btn-default btn-xs instructions">Instructions</button></a></li-->
                     <!-- Trigger the modal with a button -->
-                    <li><a><button type="button" class="btn btn-info btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button></a></li>
+                    <li><a>
+                      <button type="button" class="btn btn-default btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button>
+                    </a></li>
                     <!--li><a><button type="button" class="btn btn-default btn-xs feedback">Feedback</button></a></li-->
-                    <li><a><button type="button" class="btn btn-info btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button></a></li>
+                    <li><a>
+                      <button type="button" class="btn btn-default btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button>
+                    </a></li>
 
                     {{#if certAuthEnabled }}
                       {{#if currentUser }}
@@ -139,26 +143,48 @@
                     {{/if}}
                     
                 </ul>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a>
-                            <form class="errorCoords-form form-inline" role="search">
-                                {{#each errorCoords}} 
-                                  {{> errorCoord}} 
-                                {{/each}}
-                                <button type="submit" class="btn btn-danger {{#if ifAllCoordsExist}}active{{else}}disabled{{/if}}" id='find-add-error-btn'>Find/Add Error</button>
-                            </form>
-                        </a>
-                    </li>
-                </ul>
             </div>
-            {{#if ifErrorMessage}}
+            {{> errorMessageBar }}
+            <!--{{#if ifErrorMessage}}
               {{> errorMessageBar}}
             {{else}}
-              <!-- else: Don't display anything -->
-            {{/if}}
+              {{> errorMessageBar}}
+            {{/if}} -->
+
+            {{> searchBar}}
         </div>
     </nav>
+</template>
+
+<template name="searchBar">
+  <form class="errorCoords-form form-inline" role="search">
+  <table id="searchBar">
+    {{> columnWidths}}
+    <tr>
+      <td></td>
+      {{#each errorCoords}} 
+        {{> errorCoord}} 
+      {{/each}}
+      <td>
+        <button type="submit" class="btn {{#if ifAllCoordsExist}}active btn-danger{{else}}disabled btn-disabled{{/if}}" id='find-add-error-btn'>Add Error</button>
+      </td>
+    </tr>
+    {{> errorTableHead}}
+  </table>
+  </form>
+
+  <!--ul class="nav navbar-nav">
+    <li>
+      <a>
+        <form class="errorCoords-form form-inline" role="search">
+            {{#each errorCoords}} 
+              {{> errorCoord}} 
+            {{/each}}
+            <button type="submit" class="btn btn-danger {{#if ifAllCoordsExist}}active{{else}}disabled{{/if}}" id='find-add-error-btn'>Find/Add Error</button>
+        </form>
+      </a>
+    </li>
+  </ul-->
 </template>
 
 <template name="errorMessageBar">
@@ -168,39 +194,45 @@
 </template>
 
 <template name="errorCoord">
-  <div class="form-group">
-      {{placeholder}} 
-      <input type="text" class="form-control inputText_{{inputType}}" name="{{name}}" value="{{getCurrentErrorCoord}}" />
+  <td>
+    <div class="form-group">
+      <!--{{placeholder}} -->
+      <input type="text" class="form-control inputText_{{inputType}} searchBarInput" name="{{name}}" value="{{getCurrentErrorCoord}}" />
       <!--value="{{coordvalue}}"--> 
-  </div>
+    </div>
+  </td>
+</template>
+
+<template name="errorTableHead">
+  <thead>
+    <th>Requests</th>
+    {{#each errorCoords}} 
+      {{> errorCoordTableHeader}} 
+    {{/each}}
+    <th>Hints</th>
+  </thead>
 </template>
 
 <template name="errorTable">
-    <div class="container">
-        <!--div id="errorTable">This is where the table will go!</div-->
-        <table>
-            <tr>
-                <th>Requests</th>
-                {{#each errorCoords}} 
-                  {{> errorCoordTableHeader}} 
-                {{/each}}
-                <th>Hints</th>
-            </tr>
-            {{#each errors}} 
-              {{> error}} 
-            {{/each}}
-        </table>
-    </div>
+  <div class="container">
+      <!--div id="errorTable">This is where the table will go!</div-->
+      <table>
+          {{> columnWidths}}
+          {{#each errors}} 
+            {{> error}} 
+          {{/each}}
+      </table>
+  </div>
 </template>
 
 <template name="error">
-    <tr id="{{_id}}">
+    <tr id="{{_id}}" class="errorRow">
         <td>
-          <button type="button" class="btn btn-default btn-sm request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
+          <button type="button" class="btn request {{#if ifRequested}}requested btn-warning {{else}}notrequested btn-info{{/if}}">
             {{#if ifRequested}}
-              I'm requesting more hints.
+              Request
             {{else}}
-              I want more hints!
+              Request
             {{/if}}
           </button>
         </td>
@@ -208,17 +240,23 @@
           {{> errorCoordTableRow}} 
         {{/each}}
         <td>
-            <ul>
-                {{#each hintsHelper}} 
-                  {{> hint}} 
-                {{/each}}
-                <li>
-                    <form class="new-hint-entry form-inline">
-                        <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
-                        <button id='new-hint-entry' type="submit" class="btn btn-default btn-primary btn-sm">Submit Hint</button>
-                    </form>
-                </li>
-            </ul>
+          <ul>
+            <li>
+              <div class="hintText">
+                <form class="new-hint-entry form-inline">
+                  <span class="pull-left hintTextLeft">
+                    <input type="text" class="form-control" size="75" placeholder="{{requests}} people want more hints. Add a hint here if you've already resolved this error!">
+                  </span>
+                  <span class="pull-right">
+                    <button id='new-hint-entry' type="submit" class="btn btn-danger">Submit Hint</button>
+                  </span>
+                </form>
+              </div>
+            </li>
+            {{#each hintsHelper}} 
+              {{> hint}} 
+            {{/each}}
+          </ul>
         </td>
     </tr>
 </template>
@@ -228,7 +266,7 @@
 </template>
 
 <template name="errorCoordTableRow">
-    <td>{{{val}}}</td>
+    <td class="errorCoordValue">{{{val}}}</td>
     <!-- Triple curly braces indicates unescaped HTML 
     to process the bold tags of regex matches -->
 </template>
@@ -240,14 +278,16 @@
 </template>
 
 <template name="hint">
-    <li>
-        <div class="clearfix hintText">
-        {{hint}}
-        <button type="button" class="btn btn-default btn-sm pull-right upvote {{#if ifUpvoted}}upvoted btn-warning {{else}}notupvoted btn-info{{/if}}">
-            {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
+  <li>
+    <div class="clearfix hintText">
+      <span class="pull-left hintTextLeft">{{hint}}</span>
+      <span class="pull-right">
+        <button type="button" class="btn pull-right upvote {{#if ifUpvoted}}upvoted btn-warning {{else}}notupvoted btn-info{{/if}}">
+          {{#if ifUpvoted}}Upvoted{{else}}Upvote{{/if}} | {{upvotes}}
         </button>
-        </div>
-    </li>
+      </span>
+    </div>
+  </li>
 </template>
 
 <template name="submission_modal">
@@ -291,6 +331,18 @@
       </div>
     </div>
   </div>
+</template>
+
+<template name="columnWidths">
+  <colgroup>
+    <col span="1" style="width: 100px;">
+
+    <col span="1" style="width: 100px;">
+    <col span="1" style="width: 150px;">
+    <col span="1" style="width: 100px;">
+
+    <col span="1" style="width: 650px;">
+  </colgroup>
 </template>
 
 

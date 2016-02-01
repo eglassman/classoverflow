@@ -1,14 +1,12 @@
 /* CSS declarations go here */
 body {
   min-height: 1000px;
-  padding-top: 150px;
+  padding-top: 220px;
+  font-family: Helvetica, Arial;
 }
 th, td {
     padding: 10px;
     text-align: left;
-}
-th {
-    background-color: lightgray
 }
 ul {
     list-style:none;
@@ -17,11 +15,9 @@ ul {
 /*li {
     border: 1px solid lightgray;
 }*/
-.hintText {
-    border-bottom: 1px solid lightgray;
-}
+
 tr:nth-child(even) {
-    background-color: #FFEEFF;
+    background-color: #ECECEC;
 }
 td li {
     padding: 5px;
@@ -30,10 +26,10 @@ td li {
     background-color: lightgoldenrodyellow !important;
 }
 .inputText_string {
-    width: 150px !important;
+    width: 130px !important;
 }
 .inputText_int {
-    width: 60px !important;
+    width: 70px !important;
 }
 .certLogin {
     color: #428bca !important;
@@ -41,4 +37,93 @@ td li {
 }
 .certLogin:hover {
     text-decoration: underline !important;
+}
+
+.errorCoordValue,
+.searchBarInput {
+    font-family: Consolas, Courier;
+}
+
+#searchBar tr {
+    background-color: transparent;
+}
+
+#errorMessageBar {
+    display: block;
+    height: 30px;
+    text-align: left center;
+}
+
+thead {
+    background-color: #606060;
+    color: white;
+    font-size: 12pt;
+}
+
+.btn-warning, 
+.btn-warning:active, 
+.btn-warning:focus, 
+.btn-warning:hover {
+    background-color: #FF4000;
+    border: 1px solid #B64000;
+}
+
+.btn-info, 
+.btn-info:active, 
+.btn-info:focus, 
+.btn-info:hover {
+    background-color: #FF8D00;
+    border: 1px solid #C16A00;
+}
+
+.btn-disabled, 
+.btn-disabled:active, 
+.btn-disabled:focus, 
+.btn-disabled:hover {    
+    color: #333333;
+    background-color: #EBEBEB;
+    border-color: #ADADAD;
+}
+
+.btn-danger, 
+.btn-danger:active, 
+.btn-danger:focus, 
+.btn-danger:hover,
+.btn-danger.active {
+    background-color: #BD0000;
+    border: 1px solid #890000;
+    color: white;
+}
+
+.new-hint-entry .form-control {
+    width: 90%;
+}
+
+.hintText {
+    display: table-row;
+    border-bottom: 1px solid lightgray;
+}
+
+.hintText>span {
+    display: table-cell;
+}
+
+.hintText>span:last-child {
+    float:right;
+}
+
+.hintTextLeft {
+    width: 520px;
+}
+
+.errorRow>td {
+    vertical-align: text-top;
+}
+
+.navbar-brand {
+    font-size: 20pt;
+}
+
+#find-add-error-btn .active {
+    font-weight: bold;
 }

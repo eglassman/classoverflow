@@ -200,24 +200,6 @@ if (Meteor.isClient) {
                 errorcoord = ec['name'];
                 coordvalue = curError[errorcoord];
                 coordVals.push({val: coordvalue});
-                // // ec stands for errorcoord?
-                // // ec['name'] is 'module', coordvalue is 'excalibur'
-                // currentsearchvalue = Session.get("currentSearch")[errorcoord];
-                // // Use the next line when you enforce some columns to be specific dtypes
-                // //if (Session.get("coord_dtypes")[errorcoord]=="string") {
-                // if (typeof(coordvalue)=="string") {
-                //     if (0 && currentsearchvalue) {
-                //         searchregex = new RegExp("("+currentsearchvalue+")", "i");
-                //         modified_val = coordvalue.replace(searchregex, "<b>$1</b>"); 
-                //     }
-                //     else {
-                //         modified_val = coordvalue;
-                //     }  
-                // } 
-                // else {
-                //     modified_val = coordvalue;
-                // }
-                // coordVals.push({val: modified_val});
             });            
             return coordVals;
         } else {
@@ -382,7 +364,16 @@ if (Meteor.isClient) {
     Template.errorCoord.events({
         // todo: this is the wrong selector to use; form-control is a bootstrap thing
         // todo: function below should be _.throttle'd
-        "keyup .form-control": function(e) {
+        "keyup .searchBarInput": function(e) {
+            var inputname = e.target.name;
+            var inputval = e.target.value;
+            currentSearch = Session.get('currentSearch');
+            currentSearch[inputname] = convert_to_dtype(inputval, "string");
+
+            sanitizeCurrentSearch(currentSearch);
+        },
+        // ugly implementation: function above is copy-pasted
+        "blur .searchBarInput": function(e) {
             var inputname = e.target.name;
             var inputval = e.target.value;
             currentSearch = Session.get('currentSearch');
@@ -392,7 +383,7 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.navbar.helpers({
+    Template.searchBar.helpers({
         errorCoords: function() {
             var title = Session.get('class');
             if (title) {
@@ -404,15 +395,18 @@ if (Meteor.isClient) {
                 console.log('No title supplied');
             }
         },
+        ifAllCoordsExist: function() {
+            return _.size(Session.get("currentSearch"))==_.size(Session.get("coord_dtypes"))
+        }
+    });
+
+    Template.navbar.helpers({
         ifErrorMessage: function() {
             message = Session.get("errorMessage");
             if (!message) {
                 return false;
             }
             return true;
-        },
-        ifAllCoordsExist: function() {
-            return _.size(Session.get("currentSearch"))==_.size(Session.get("coord_dtypes"))
         }
     });
     
