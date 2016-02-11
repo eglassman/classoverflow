@@ -76,14 +76,14 @@ isAdmin = function(meteor_user){
     return hasAnAdminID
 }
 
-emailFollowers = function(errorId){
+emailFollowers = function(errorId,hintId){
     //Meteor.users.find({}, {fields: {profile: 1}}).fetch()
     //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
     var users = Meteor.users.find({}).fetch();
     users.forEach(function(elem){
         console.log('elem',elem)
         if (elem.profile['requestedErrors']) {
-            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0){
+            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0 && elem.profile['hintsCreated'].indexOf(hintId) >=0 ) {
                 var error_entry = Errors.findOne({_id:errorId})
                 var class_entry = Classes.findOne({classtitle:error_entry['class']})
 
@@ -219,22 +219,28 @@ Meteor.methods({
 
 
         //var insertedHint = Hints.insert(hintObj);
-        Hints.insert(hintObj,function (err, result) {
+        Hints.insert(hintObj,function (err, hintId) {
             if (err) {console.log('problem adding hints')} 
             else {
-                emailFollowers(errorId);
-                //logThis(classtitle,'addHint',result);
+                var createdHints = Meteor.user().profile['createdHints']
+                console.log('createdHints',createdHints)
+                var updated_createdHints = createdHints.concat(hintId);
+                //console.log('createdHints update', updated_createdHints)
+                console.log('hintId',hintId)
+                Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.createdHints": updated_createdHints }} );
+                console.log(Meteor.user().profile)
+                
+                emailFollowers(errorId,hintId);
+
                 logObj = {};
                 logObj['owner'] = hintObj['owner'];
-                logObj['result'] = result;
-                //logObj['username'] = Meteor.user().username;
+                logObj['hintId'] = hintId;
                 logObj['action'] = 'addHint';
-                //logObj['object'] = insertedHint;
                 logObj['createdAt'] = hintObj['createdAt']
                 logObj['class'] = hintObj['class'];
                 Log.insert(logObj);
 
-                return result
+                return hintId
             }
         });
 
@@ -456,6 +462,10 @@ Meteor.methods({
 Accounts.onLogin(function(user){
     console.log('logged in',user.user._id )
     Log.insert({'userId': user.user._id, 'loggedInAt': new Date()})
+
+    if (!Meteor.user().profile['createdHints']) {
+        Meteor.users.update( { _id: Meteor.userId() }, { $set: { "profile.createdHints": [] }} );
+    }
 });
 
 /*Accounts.onLoginFailure(function(){
@@ -474,6 +484,7 @@ Accounts.onCreateUser(function(options, user) {
 
     user.profile.upvotedHints = []; 
     user.profile.requestedErrors = [];
+    user.profile.hintsCreated = [];
 
     console.log('user',user);
 

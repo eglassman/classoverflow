@@ -376,6 +376,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
 
         var one_error = false;
         var num_errors = Errors.find(filterObj).count();
+        console.log(filterObj,'filterObj','num_errors',num_errors)
         if (num_errors===0) {
             var no_errors = true;
             var sorted_errors = add_not_firsts(Errors,{},sortObj,coordNames)
@@ -400,6 +401,7 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'one_error': one_error,
             'all_errors': all_errors,
             'error_specified': true};
+        console.log(dataObj,'dataObj')
 
         if (this.ready()) {
             this.render('classpage',{

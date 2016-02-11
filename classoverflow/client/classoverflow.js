@@ -3,12 +3,12 @@ Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
 
-addErrorCallback = function(err){
-    console.log('addError created an error',err)
+addErrorCallback = function(err, result){
+    console.log('addError',err, result)
     if (err['error']=='not-authorized') {
         $('#mySignInModal').modal('show');
         //alert('We are sorry, but that is not a valid error.')
-    } else {
+    } else if (err['error']) {
         $('#unknownModal').modal('show');
     }
 }
@@ -211,15 +211,6 @@ Template.errorTable.events({
 
         var candidateErrorCoords = {};
 
-        // console.log('#error-class',$('#error-class').val())
-        // var error_class = $('#error-class').val()
-        console.log('#error-assignment',$(event.target).data('assignment'))
-        console.log('#error-testgroup',$(event.target).data('testgroup'))
-        console.log('#error-testnum',$(event.target).data('testnum'))
-
-        // var submit_allowed = False;
-        // $('#submit-error').prop('disabled','disabled');
-
         var title = Session.get('class');
         var thisclass = Classes.findOne({
             classtitle: title
@@ -266,72 +257,5 @@ Template.errorCoord.onRendered(function () {
         Session.set('submitQ',false)
     }
 });
-Template.navbar.helpers({
-    errorCoords: function() {
-        var title = Session.get('class');
-        if (title) {
-            var thisclass = Classes.findOne({
-                classtitle: title
-            });
-            var submitQ = true; //just the initialization
 
-            Session.set('errorCoordsRendered',0);
-            for (var ec in thisclass['errorCoords']) {
-                var coordval = Session.get(thisclass['errorCoords'][ec]['name']);
-                thisclass['errorCoords'][ec]['coordvalue'] = coordval;
-                if (coordval==undefined) {
-                    submitQ = false;
-                }
-            }
-            Session.set('submitQ',submitQ);
-            return thisclass['errorCoords'];
-        } else {
-            console.log('no title supplied');
-        }
-    }
-});
-
-Template.navbar.events({
-    "submit .errorCoords-form": function (event) {
-        event.preventDefault();
-
-        var candidateErrorCoords = {};
-        for (i = 0; i < event.target.length-1; i++) { //-1 so that i don't consider the submit button too.
-            if (!event.target[i].value) {
-                alert('Please provide a value for all form fields.');
-                break;
-            } else {
-                var coordVal = isNaN(parseInt(event.target[i].value)) ? event.target[i].value : parseInt(event.target[i].value);
-                candidateErrorCoords[event.target[i].name] = coordVal;
-            }
-        }
-
-        console.log('candidateErrorCoords',candidateErrorCoords);
-        registeredError = Errors.findOne(candidateErrorCoords);
-        console.log('registeredError',registeredError)
-        if (!registeredError) {
-            if (Meteor.userId()) {
-                Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(error,result){
-                    if (error) {
-                        console.log('error during addError', error)
-                    } else {
-                        myScrollIntoView(result);
-                    }
-                });
-            } else {
-                $('#mySignInModal').modal('show');
-            }
-        } else {
-            myScrollIntoView(registeredError._id); 
-        }
-        
-        return false;
-    },
-    "click .feedback": function (event) {
-        console.log('feedback clicked')
-    },
-    "click .instructions": function (event) {
-        console.log('instructions clicked')
-    }
-});
 
