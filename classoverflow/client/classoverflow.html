@@ -1,88 +1,20 @@
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="author" content="Elena Glassman, with help from Aaron Lin">
-
     <title>ClassOverflow</title>
-
-    <div class="container">
-
-      <!--Instructions Modal -->
-      <div class="modal fade" id="myInstructionsModal" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Instructions</h4>
-            </div>
-            <div class="modal-body">
-              <p>To see hints for your error, follow the links to this site given to you by the course autograder.</p>
-              <p>To be notified by email when new hints are available, click 'follow'.</p>
-              <p>To help your classmates, upvote the hints that help you the most and add hints of your own.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!--Feedback Modal -->
-      <div class="modal fade" id="myFeedbackModal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Feedback</h4>
-            </div>
-            <div class="modal-body">
-              <p>Please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a> if you have any feedback on the design or operation of this site.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!--Sign-In Modal -->
-      <div class="modal fade" id="mySignInModal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Sign In</h4>
-            </div>
-            <div class="modal-body">
-              <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please first <!--a onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">sign in</a-->follow one of the personalized links emailed to you by the auto-grader.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="modal fade" id="cannotFindErrorModal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Cannot Find Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>
-              To create a thread about your error in ClassOverflow, follow the links given to you by the course auto-grader.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 </head>
 
-
+<body>
+  <div class="container">
+    {{> instructionsModal}}
+    {{> feedbackModal}}
+    {{> signInModals}}
+    {{> cannotFindErrorModal}}
+  </div>
+</body>
 
 
 <template name="mainpage">
@@ -102,26 +34,9 @@
     </li>
 </template>
 
-
-
-
-
 <template name="mylogin">
     <li><a><button type="button" class="btn btn-default btn-xs instructions" data-toggle="modal" data-target="#myInstructionsModal">Instructions</button></a></li>
     <li><a><button type="button" class="btn btn-default btn-xs feedback" data-toggle="modal" data-target="#myFeedbackModal">Feedback</button></a></li>
-
-    {{#if certAuthEnabled }}
-      {{#if currentUser }}
-      {{else}}
-        <li><a class="certLogin" onclick="CertAuth.login(); $('#mySignInModal').modal('hide');">Sign in with certificates</a></li>
-      {{/if}}
-    {{/if}}
-    <!-- {{#if currentUser.profile.isEdxUser}} 
-    {{else}}
-      <li><a>
-         {{> loginButtons}}
-      </a></li>
-    {{/if}} -->
 </template>
 
 <template name="navbar">
@@ -254,24 +169,26 @@
     <div class="container-fluid">
         
         {{#if no_errors}}
-        <div class="row highlighted">
-            <div class="col-xs-1 centered wrapped">
-                <h5>{{assignment}}</h5>
+          {{#if error_specified}}
+            <div class="row highlighted">
+                <div class="col-xs-1 centered wrapped">
+                    <h5>{{assignment}}</h5>
+                </div>
+                <div class="col-xs-1 centered wrapped">
+                    <h5>{{testgroup}}</h5>
+                </div>
+                <div class="col-xs-1 centered wrapped">
+                    <h5>{{testnum}}</h5>
+                </div>
+                <div class="col-xs-9">
+                    <h5>is not in our database for {{classtitle}}, but you can
+                    <button type="button" class="btn btn-link btn-xs no-errors-add-error" data-toggle="modal" data-class="{{classtitle}}" data-assignment="{{assignment}}" data-testgroup="{{testgroup}}" data-testnum="{{testnum}}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Error
+                    </button> if you want others to contribute hints for resolving it.</h5>
+                </div>
             </div>
-            <div class="col-xs-1 centered wrapped">
-                <h5>{{testgroup}}</h5>
-            </div>
-            <div class="col-xs-1 centered wrapped">
-                <h5>{{testnum}}</h5>
-            </div>
-            <div class="col-xs-9">
-                <h5>is not in our database for {{classtitle}}, but you can
-                <button type="button" class="btn btn-link btn-xs no-errors-add-error" data-toggle="modal" data-class="{{classtitle}}" data-assignment="{{assignment}}" data-testgroup="{{testgroup}}" data-testnum="{{testnum}}">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Error
-                </button> if you want others to contribute hints for resolving it.</h5>
-            </div>
-        </div>
+            {{/if}}
         <div class="row">
             <div class="col-xs-12">
                 <h4>All errors for {{classtitle}}</h4>

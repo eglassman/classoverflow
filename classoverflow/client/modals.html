@@ -1,0 +1,114 @@
+<template name="instructionsModal">
+<!--Instructions Modal -->
+<div class="modal fade" id="myInstructionsModal" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Instructions</h4>
+      </div>
+      <div class="modal-body">
+        <p>To see hints for your error, follow the links to this site given to you by the course autograder.</p>
+        <p>To be notified by email when new hints are available, click 'follow'.</p>
+        <p>To help your classmates, upvote the hints that help you the most and add hints of your own.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<template name="feedbackModal">
+<!--Feedback Modal -->
+<div class="modal fade" id="myFeedbackModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Feedback</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a> if you have any feedback on the design or operation of this site.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<template name="unknownModal">
+<!--Feedback Modal -->
+<div class="modal fade" id="unknownModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Feedback</h4>
+      </div>
+      <div class="modal-body">
+        <p>An unrecognized error has occurred. Please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a> if you continue to experience problems.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<template name="cannotFindErrorModal">
+<div class="modal fade" id="cannotFindErrorModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cannot Find Error</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+        To create a thread about your error in ClassOverflow, follow the links given to you by the course auto-grader.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<template name="signInModals">
+<!--Sign-In Modals alt text:"follow one of the personalized links emailed to you by the auto-grader."-->
+
+{{#if certAuthEnabled}}
+<div class="modal fade" id="mySignInModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Sign In</h4>
+      </div>
+      <div class="modal-body">
+        <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), you need to be logged in with MIT certificates.</p>
+        <p>Please install or update your certificates if they are out of date. If ClassOverflow asked for your certificate and you clicked "No", you may need to restart your browswer or try Incognito/Private browsing mode before the browser asks for your certificate again. If you're still having trouble signing in, please <a href="mailto:classoverflow@mit.edu?subject=Feedback about ClassOverflow">email classoverflow@mit.edu</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{{else}}
+<div class="modal fade" id="mySignInModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Sign In</h4>
+      </div>
+      <div class="modal-body">
+        <p>In order to perform this operation (e.g., add an error, add a hint, upvote a hint, or request more hints for any particular error), please follow one of the personalized links emailed to you by the auto-grader.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}
+</template>
