@@ -58,6 +58,24 @@ upvoted = function(hintId) {
     
 };
 
+isAdmin = function(meteor_user){
+    console.log(meteor_user)
+    var hasAnAdminID = false;
+    if (!Meteor.settings.public.CertAuthURL) {
+        var username = meteor_user.username;
+        var user = Accounts.findUserByUsername(username);
+        //test this!
+        hasAnAdminID = Meteor.settings.admin_user_urlsafe.indexOf(username)>=0;
+    } else {
+        console.log('admin_mit',Meteor.settings.admin_mit)
+        console.log('useraddress',meteor_user.emails[0]['address'])
+        hasAnAdminID = Meteor.settings.admin_mit.indexOf(meteor_user.emails[0]['address'])>=0;
+        console.log(hasAnAdminID)
+    }
+    console.log('returning',hasAnAdminID)
+    return hasAnAdminID
+}
+
 emailFollowers = function(errorId){
     //Meteor.users.find({}, {fields: {profile: 1}}).fetch()
     //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
@@ -76,7 +94,10 @@ emailFollowers = function(errorId){
                     error_description = error_description + ec['placeholder'] + ' ' + error_entry[ec['name']] + ' ';
                 });
 
-                var error_link = base_url + error_entry['class'] + route + '?student_id=' + encodeURIComponent(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(elem.profile.email))) + '&source='+elem.profile.source;
+                var error_link = base_url + 'class/' + error_entry['class'] + route;
+                if (!Meteor.settings.public.CertAuthURL){ 
+                    error_link = error_link + '?student_id=' + encodeURIComponent(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(elem.profile.email))) + '&source='+elem.profile.source;
+                }
                 if (elem.profile.email){
                     Meteor.call('sendEmail',elem.profile.email,error_description,error_link);
                 } else if (elem.emails){
@@ -96,7 +117,7 @@ Meteor.methods({
 
     addError: function(theclass,errorCoords) {
 
-        if (! Meteor.userId() ) {
+        if (!Meteor.user() ) {
             console.log('not-authorized')
             throw new Meteor.Error('not-authorized'); 
         }
@@ -330,8 +351,8 @@ Meteor.methods({
         //Session.set('admin',false);
         //if (edxstudentID==admin_user_urlsafe) {
         //['a', 'b', 'c'].indexOf(str) >= 0
-        console.log(admin_user_urlsafe,admin_user_urlsafe.indexOf(edxstudentID))
-        var hasAnAdminID = admin_user_urlsafe.indexOf(edxstudentID)>=0;
+        console.log(Meteor.settings.admin_user_urlsafe,Meteor.settings.admin_user_urlsafe.indexOf(edxstudentID))
+        var hasAnAdminID = Meteor.settings.admin_user_urlsafe.indexOf(edxstudentID)>=0;
         if (hasAnAdminID) { 
             admin = true;
             //Session.set('admin',true);
@@ -405,68 +426,26 @@ Meteor.methods({
     //     }
     //     return {username: username, password:edxpass}
     // },
-    // 'isAdmin': function(username){
-    //     //var username = atob(studentID);
-    //     try {
-    //         var user = Accounts.findUserByUsername(username);
-    //         //test this!
-    //         console.log('user.profile',user.profile)
-    //         console.log(username,admin_user_urlsafe)
-    //         console.log(username == admin_user_urlsafe)
-    //         return username == admin_user_urlsafe
-    //     } catch(err) {
-    //         console.log('err',err)
-    //         return false
-    //     }
-    // },
-    deleteError: function(meteor_user,errorId){
-        if (!Meteor.settings.public.CertAuthURL) {
-            var username = meteor_user.username;
-            var user = Accounts.findUserByUsername(username);
-            //test this!
-            //console.log('user.profile',user.profile)
-            //console.log(username,admin_user_urlsafe)
-            //console.log(username == admin_user_urlsafe)
-            var hasAnAdminID = admin_user_urlsafe.indexOf(username)>=0;
-            if (hasAnAdminID) {
-                Errors.remove(errorId);
-            }
+    'isAdmin': function(meteor_user){
+        console.log('isAdmin called')
+        return isAdmin(meteor_user);
+    },
+    deleteError: function(errorId){
+        if (isAdmin(Meteor.user())){
+            Errors.remove(errorId);
         } else {
-            //alert('not implemented')
-            console.log('admin_mit',admin_mit)
-            var isAdminID = admin_mit.indexOf(meteor_user.emails[0]['address'])>=0;
-            console.log(isAdminID)
-            if (isAdminID) {
-                Errors.remove(errorId);
-            } else {
-                console.log('not an admin')
-                alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
-                return false
-            }
+            console.log('not an admin')
+            //alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
+            return false
         }
     },
-    deleteHint: function(meteor_user,hintId){
-        console.log(meteor_user)
-        if (!Meteor.settings.public.CertAuthURL) {
-            var username = meteor_user.username;
-            var user = Accounts.findUserByUsername(username);
-            //test this!
-            var hasAnAdminID = admin_user_urlsafe.indexOf(username)>=0;
-
-            if (hasAnAdminID) {
-                Hints.remove(hintId);
-            }
+    deleteHint: function(hintId){
+        if (isAdmin(Meteor.user())){
+            Hints.remove(hintId);
         } else {
-            console.log('admin_mit',admin_mit)
-            var isAdminID = admin_mit.indexOf(meteor_user.emails[0]['address'])>=0;
-            console.log(isAdminID)
-            if (isAdminID) {
-                Hints.remove(hintId);
-            } else {
-                console.log('not an admin')
-                //alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
-                return false
-            }
+            console.log('not an admin')
+            //alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
+            return false
         }
     },
     logBtnClick: function(btnName){
@@ -508,7 +487,8 @@ Meteor.startup(function () {
         //console.log('example',CryptoJS.enc.Base64.parse(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('josh@joshh.ug'))))
         // code to run on server at startup
         //if (! Classes.findOne()){
-        base_url = 'http://www.classoverflow.org/class/';
+        base_url = Meteor.absoluteUrl(); //'http://www.classoverflow.org/class/';
+        console.log(base_url)
 
         Classes.remove({});
         var classes = [

@@ -22,8 +22,15 @@ Meteor.startup(function () {
         Session.set('certAuthEnabled',true);
     }
     //Meteor.call('sendEmail','elg@mit.edu','a','b','c');
+    
 }); 
 
+Accounts.onLogin(function(){
+    console.log('logged in, checking admin status')
+    Meteor.call('isAdmin',Meteor.user(),function (error, result) {
+        Session.set('isAdmin',result);
+    });
+});
 
 Accounts.ui.config({
     passwordSignupFields: 'EMAIL_ONLY', //"USERNAME_ONLY" restrictCreationByEmailDomain: 'school.edu',
@@ -33,7 +40,11 @@ Accounts.ui.config({
 Template.registerHelper('log',function(){
     console.log('template logging',this);
 });
-
+Template.registerHelper('isAdmin',function(){
+    //var isAdmin = Meteor.call('isAdmin',Meteor.user());
+    //console.log('server said that isAdmin is',isAdmin)
+    return Session.get('isAdmin');
+});
 
 
 Template.registerHelper('errorCoordsForAnError',function(){
@@ -89,19 +100,13 @@ Template.error_row.helpers({
             } 
         }
         return false;
-    },
-    isAdmin: function(){
-        if (Meteor.user()){
-            return Meteor.user().profile.admin
-        }
-        
     }
 });
 Template.error_row.events({
     "click .delete-error": function(event){
         console.log('i want to delete',this)
         var errorId = this._id;
-        Meteor.call('deleteError',Meteor.user().username,errorId);
+        Meteor.call('deleteError',errorId);
     }
 })
 
@@ -235,12 +240,6 @@ Template.hint.helpers({
             }
         }
         return false;
-    },
-    isAdmin: function(){
-        if (Meteor.user()){
-            return Meteor.user().profile.admin
-        }
-        
     }
 });
 Template.hint.events({
@@ -256,7 +255,7 @@ Template.hint.events({
     "click .delete-hint": function(event){
         console.log('i want to delete',this)
         var hintId = this._id;
-        Meteor.call('deleteHint',Meteor.user(),hintId);
+        Meteor.call('deleteHint',hintId);
     }
 });
 
