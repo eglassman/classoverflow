@@ -256,7 +256,7 @@ Template.hint.events({
     "click .delete-hint": function(event){
         console.log('i want to delete',this)
         var hintId = this._id;
-        Meteor.call('deleteHint',Meteor.user().username,hintId);
+        Meteor.call('deleteHint',Meteor.user(),hintId);
     }
 });
 
