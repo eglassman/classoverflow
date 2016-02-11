@@ -5,9 +5,14 @@ CertAuth.login = function() {
     console.log("cert-auth: no CertAuthURL found.\n"
                +"Need to configure settings.json, and run meteor --settings settings.json");
   } else {
+    console.log('logging in with certauth package', Meteor.settings.public.CertAuthURL)
     $.ajax(Meteor.settings.public.CertAuthURL, {
       dataType: "jsonp",
-      success: sendCertInfoToServer
+      success: sendCertInfoToServer,
+      error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        console.log("Status: " + textStatus);
+        console.log("Error: " + errorThrown); 
+      } 
     });
   }
 };

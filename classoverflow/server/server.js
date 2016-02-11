@@ -93,6 +93,7 @@ Meteor.methods({
     addError: function(theclass,errorCoords) {
 
         if (! Meteor.userId() ) {
+            console.log('not-authorized')
             throw new Meteor.Error('not-authorized'); 
         }
 
