@@ -63,7 +63,7 @@ emailFollowers = function(errorId){
     //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
     var users = Meteor.users.find({}).fetch();
     users.forEach(function(elem){
-        //console.log('elem',elem)
+        console.log('elem',elem)
         if (elem.profile['requestedErrors']) {
             if (elem.profile['requestedErrors'].indexOf(errorId) >= 0){
                 var error_entry = Errors.findOne({_id:errorId})
@@ -79,6 +79,10 @@ emailFollowers = function(errorId){
                 var error_link = base_url + error_entry['class'] + route + '?student_id=' + encodeURIComponent(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(elem.profile.email))) + '&source='+elem.profile.source;
                 if (elem.profile.email){
                     Meteor.call('sendEmail',elem.profile.email,error_description,error_link);
+                } else if (elem.emails){
+                    var email_address = elem.emails[0]['address'];
+                    console.log('sending an email to', email_address)
+                    Meteor.call('sendEmail',email_address,error_description,error_link);
                 } else {
                     console.log('no email to send update to',elem)
                 }
@@ -346,8 +350,12 @@ Meteor.methods({
             var email = '';
         }
 
-        var user = Accounts.findUserByUsername(edxstudentID);
-        console.log('found user',user)
+        try {
+            var user = Accounts.findUserByUsername(edxstudentID);
+            console.log('found user',user)
+        } catch(err){
+            console.log('not user found',err)
+        }
         
         console.log(email,'email',user,'user')
         if (!user) {
@@ -411,8 +419,9 @@ Meteor.methods({
     //         return false
     //     }
     // },
-    deleteError: function(username,errorId){
-        try {
+    deleteError: function(meteor_user,errorId){
+        if (!Meteor.settings.public.CertAuthURL) {
+            var username = meteor_user.username;
             var user = Accounts.findUserByUsername(username);
             //test this!
             //console.log('user.profile',user.profile)
@@ -422,14 +431,24 @@ Meteor.methods({
             if (hasAnAdminID) {
                 Errors.remove(errorId);
             }
-        } catch(err) {
-            console.log('err',err)
-            return false
+        } else {
+            //alert('not implemented')
+            console.log('admin_mit',admin_mit)
+            var isAdminID = admin_mit.indexOf(meteor_user.emails[0]['address'])>=0;
+            console.log(isAdminID)
+            if (isAdminID) {
+                Errors.remove(errorId);
+            } else {
+                console.log('not an admin')
+                alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
+                return false
+            }
         }
-        
     },
-    deleteHint: function(username,hintId){
-        try {
+    deleteHint: function(meteor_user,hintId){
+        console.log(meteor_user)
+        if (!Meteor.settings.public.CertAuthURL) {
+            var username = meteor_user.username;
             var user = Accounts.findUserByUsername(username);
             //test this!
             var hasAnAdminID = admin_user_urlsafe.indexOf(username)>=0;
@@ -437,11 +456,18 @@ Meteor.methods({
             if (hasAnAdminID) {
                 Hints.remove(hintId);
             }
-        } catch(err) {
-            console.log('err',err)
-            return false
+        } else {
+            console.log('admin_mit',admin_mit)
+            var isAdminID = admin_mit.indexOf(meteor_user.emails[0]['address'])>=0;
+            console.log(isAdminID)
+            if (isAdminID) {
+                Hints.remove(hintId);
+            } else {
+                console.log('not an admin')
+                //alert('Sorry, you are not currently an admin and do not have the right to delete a hint');
+                return false
+            }
         }
-        
     },
     logBtnClick: function(btnName){
         Log.insert({'owner': Meteor.userId(), 'clicked':btnName, 'dateAndTime': new Date()})
