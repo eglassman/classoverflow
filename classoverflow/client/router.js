@@ -398,7 +398,8 @@ Router.route('/class/:classtitle/:assignment/:testgroup/:testnum',{
             'sorted_errors': sorted_errors,
             'no_errors': no_errors,
             'one_error': one_error,
-            'all_errors': all_errors};
+            'all_errors': all_errors,
+            'error_specified': true};
 
         if (this.ready()) {
             this.render('classpage',{
