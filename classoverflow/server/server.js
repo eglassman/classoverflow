@@ -83,7 +83,7 @@ emailFollowers = function(errorId,hintId){
     users.forEach(function(elem){
         console.log('elem',elem)
         if (elem.profile['requestedErrors']) {
-            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0 && elem.profile['hintsCreated'].indexOf(hintId) >=0 ) {
+            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0 && elem.profile['createdHints'].indexOf(hintId) >=0 ) {
                 var error_entry = Errors.findOne({_id:errorId})
                 var class_entry = Classes.findOne({classtitle:error_entry['class']})
 
@@ -484,7 +484,7 @@ Accounts.onCreateUser(function(options, user) {
 
     user.profile.upvotedHints = []; 
     user.profile.requestedErrors = [];
-    user.profile.hintsCreated = [];
+    user.profile.createdHints = [];
 
     console.log('user',user);
 
