@@ -2,6 +2,18 @@ Classes = new Meteor.Collection('classes');
 Errors = new Mongo.Collection("errors");
 Hints = new Mongo.Collection("hints");
 
+
+addErrorCallback = function(err){
+    console.log('addError created an error',err)
+    if (err['error']=='not-authorized') {
+        $('#mySignInModal').modal('show');
+        //alert('We are sorry, but that is not a valid error.')
+    } else {
+        $('#unknownModal').modal('show');
+    }
+}
+
+
 Meteor.startup(function () {
 
     //Deploy edX version without settings.json
@@ -211,11 +223,7 @@ Template.errorTable.events({
         candidateErrorCoords[thisclass['errorCoords'][1]['name']] = $(event.target).data('testgroup');
         candidateErrorCoords[thisclass['errorCoords'][2]['name']] = $(event.target).data('testnum');
 
-        Meteor.call('addError',Session.get('class'),candidateErrorCoords,function(err){
-            if (err) {
-                alert('We are sorry, but that is not a valid error.')
-            } 
-        });
+        Meteor.call('addError',Session.get('class'),candidateErrorCoords,addErrorCallback);
     }
 });
 Template.hint.helpers({
