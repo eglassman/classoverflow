@@ -81,9 +81,17 @@ emailFollowers = function(errorId,hintId){
     //Meteor.users().profile['requestedErrors'].indexOf(errorId) >= 0)
     var users = Meteor.users.find({}).fetch();
     users.forEach(function(elem){
-        console.log('elem',elem)
-        if (elem.profile['requestedErrors']) {
-            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0 && elem.profile['createdHints'].indexOf(hintId) >=0 ) {
+        console.log('elem',elem);
+        console.log('Meteor.settings.rooturl',Meteor.settings.rooturl);
+        //console.log('requestedErrors',elem.profile['requestedErrors'].indexOf(errorId))
+        //console.log('createdHints',elem.profile['createdHints'].indexOf(hintId))
+        if (elem.profile['requestedErrors']){
+            if (elem.profile['requestedErrors'].indexOf(errorId) >= 0) {
+                if (elem.profile['createdHints']) {
+                    if (elem.profile['createdHints'].indexOf(hintId) >= 0){
+                        return;
+                    }
+                }
                 var error_entry = Errors.findOne({_id:errorId})
                 var class_entry = Classes.findOne({classtitle:error_entry['class']})
 
@@ -94,11 +102,12 @@ emailFollowers = function(errorId,hintId){
                     error_description = error_description + ec['placeholder'] + ' ' + error_entry[ec['name']] + ' ';
                 });
 
-                var error_link = base_url + 'class/' + error_entry['class'] + route;
+                var error_link = Meteor.settings.rooturl + '/class/' + error_entry['class'] + route;
                 if (!Meteor.settings.public.CertAuthURL){ 
                     error_link = error_link + '?student_id=' + encodeURIComponent(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(elem.profile.email))) + '&source='+elem.profile.source;
                 }
                 if (elem.profile.email){
+                    console.log('sending an email to', elem.profile.email)
                     Meteor.call('sendEmail',elem.profile.email,error_description,error_link);
                 } else if (elem.emails){
                     var email_address = elem.emails[0]['address'];
@@ -108,7 +117,10 @@ emailFollowers = function(errorId,hintId){
                     console.log('no email to send update to',elem)
                 }
             }
-        }
+        } 
+        // catch(user_try_err) {
+        //     console.log('user_try_err',user_try_err)
+        // }
     });
 }
 
@@ -498,8 +510,8 @@ Meteor.startup(function () {
         //console.log('example',CryptoJS.enc.Base64.parse(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('josh@joshh.ug'))))
         // code to run on server at startup
         //if (! Classes.findOne()){
-        base_url = Meteor.absoluteUrl(); //'http://www.classoverflow.org/class/';
-        console.log(base_url)
+        // base_url = Meteor.settings.rooturl; //Meteor.absoluteUrl(); //'http://www.classoverflow.org/class/';
+        // console.log(base_url)
 
         Classes.remove({});
         var classes = [

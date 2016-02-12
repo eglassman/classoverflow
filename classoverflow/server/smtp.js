@@ -13,6 +13,7 @@ Meteor.methods({
     console.log('calling email send!')
     Email.send({
       to: studentEmail,
+      bcc: 'elena.glassman@gmail.com',
       from: 'class.overflow.beta@gmail.com',
       subject: 'New hints for resolving an error at '+error_description,
       text: 'Visit '+ errorLink +' to see new hints available for revolving an error at '+error_description+'.'
