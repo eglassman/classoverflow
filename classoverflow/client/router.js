@@ -27,22 +27,6 @@ loginAsEdxStudent = function(edxstudentID,source) {
     });
 }
 
-// loginAsBerkeleyStudent = function(studentID) {
-//     Meteor.call('loginAsBerkeleyStudent',studentID, function(error,result){
-//         if (error) {
-//             console.log('error on login as berkeley student',error);
-//         } else {
-//             Meteor.loginWithPassword(result.username,result.password,function(error){
-//                 if (error) {
-//                     console.log('error logging in with password',error);
-//                 }
-//             });
-//         }
-
-//     });
-// }
-
-
 
 //ADD NOTFIRST ATTRIBUTES
 //logic based on code here:

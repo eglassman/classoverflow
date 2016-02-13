@@ -21,7 +21,6 @@ Meteor.startup(function () {
         CertAuth.login();
         Session.set('certAuthEnabled',true);
     }
-    //Meteor.call('sendEmail','elg@mit.edu','a','b','c');
     
 }); 
 
@@ -41,8 +40,6 @@ Template.registerHelper('log',function(){
     console.log('template logging',this);
 });
 Template.registerHelper('isAdmin',function(){
-    //var isAdmin = Meteor.call('isAdmin',Meteor.user());
-    //console.log('server said that isAdmin is',isAdmin)
     return Session.get('isAdmin');
 });
 

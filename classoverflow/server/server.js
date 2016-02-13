@@ -65,7 +65,7 @@ isAdmin = function(meteor_user){
         var username = meteor_user.username;
         var user = Accounts.findUserByUsername(username);
         //test this!
-        hasAnAdminID = Meteor.settings.admin_user_urlsafe.indexOf(username)>=0;
+        hasAnAdminID = Meteor.settings.admin_username.indexOf(username)>=0;
     } else {
         console.log('admin_mit',Meteor.settings.admin_mit)
         console.log('useraddress',meteor_user.emails[0]['address'])
@@ -369,8 +369,8 @@ Meteor.methods({
         //Session.set('admin',false);
         //if (edxstudentID==admin_user_urlsafe) {
         //['a', 'b', 'c'].indexOf(str) >= 0
-        console.log(Meteor.settings.admin_user_urlsafe,Meteor.settings.admin_user_urlsafe.indexOf(edxstudentID))
-        var hasAnAdminID = Meteor.settings.admin_user_urlsafe.indexOf(edxstudentID)>=0;
+        console.log(Meteor.settings.admin_username,Meteor.settings.admin_username.indexOf(edxstudentID))
+        var hasAnAdminID = Meteor.settings.admin_username.indexOf(edxstudentID)>=0;
         if (hasAnAdminID) { 
             admin = true;
             //Session.set('admin',true);
@@ -379,7 +379,28 @@ Meteor.methods({
 
         if (source=='berkeley') {
             try {
-                var email = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(edxstudentID));
+                //based on http://stackoverflow.com/questions/30990129/encrypt-in-python-decrypt-in-javascript
+                var base64ciphertextFromPython = edxstudentID;
+                var ciphertext = CryptoJS.enc.Base64.parse(base64ciphertextFromPython);
+
+                // split iv and ciphertext
+                var iv = ciphertext.clone();
+                iv.sigBytes = 16;
+                iv.clamp();
+                ciphertext.words.splice(0, 4); // delete 4 words = 16 bytes
+                ciphertext.sigBytes -= 16;
+
+                var key = CryptoJS.enc.Utf8.parse("a2z4c6y8w0d2v4i6");
+
+                // decryption
+                var decrypted = CryptoJS.AES.decrypt({ciphertext: ciphertext}, key, {
+                  iv: iv,
+                  mode: CryptoJS.mode.CFB
+                });
+                
+                var email = decrypted.toString(CryptoJS.enc.Utf8);
+                console.log ( 'new decrypted', email);
+                //var email = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(edxstudentID));
                 //var email = atob(edxstudentID);
             } catch(err) {
                 console.log(err,'no extracted email')
@@ -504,14 +525,6 @@ Accounts.onCreateUser(function(options, user) {
 });
 
 Meteor.startup(function () {
-        // var Base64test = 'am9zaEBqb3NoaC51Zw==';
-        // var wordsObj = CryptoJS.enc.Base64.parse(Base64test);
-        // console.log('crypto',CryptoJS.enc.Utf8.stringify(wordsObj))
-        //console.log('example',CryptoJS.enc.Base64.parse(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('josh@joshh.ug'))))
-        // code to run on server at startup
-        //if (! Classes.findOne()){
-        // base_url = Meteor.settings.rooturl; //Meteor.absoluteUrl(); //'http://www.classoverflow.org/class/';
-        // console.log(base_url)
 
         Classes.remove({});
         var classes = [
