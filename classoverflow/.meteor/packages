@@ -29,3 +29,4 @@ email
 base64
 crypto-base64
 jparker:crypto-base64
+jparker:crypto-aes
